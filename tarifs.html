@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/currency.js" defer></script>
 <style>
 .tg{display:inline-flex;padding:.25rem;border-radius:.75rem;background:var(--sf);border:1px solid var(--bd)}
 .tg button{padding:.6rem 1.15rem;border-radius:.5rem;font-size:.8rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.4rem}
@@ -187,7 +188,6 @@ const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
 let cycle='m',sel=null,PLANS=[];
 const $=id=>document.getElementById(id);
 
-/* ── Toggle Mensuel / Annuel ── */
 $('tg').addEventListener('click',e=>{
   const b=e.target.closest('button[data-c]');if(!b)return;
   cycle=b.dataset.c;
@@ -195,7 +195,6 @@ $('tg').addEventListener('click',e=>{
   renderPlans();
 });
 
-/* ── Rendu des formules ── */
 function renderPlans(){
   const grid = $('plansGrid');
   if(!PLANS.length){
@@ -218,6 +217,10 @@ function renderPlans(){
       ? `Facturé ${fmt(p.monthly)} FCFA chaque mois`
       : `Soit ${fmt(Math.round(p.yearly / 12))} FCFA par mois (10 % économisés)`;
 
+    const altPrice = (typeof Currency !== 'undefined')
+      ? Currency.format(price, 'XOF', 'EUR')
+      : '';
+
     return `<article class="${borderClass}" data-slug="${p.slug}">
       ${badge}
       <h3 class="font-bold text-lg mb-1 ${relClass}" style="color:var(--ink)">${p.name}</h3>
@@ -227,6 +230,7 @@ function renderPlans(){
           <span class="text-4xl font-bold" style="color:var(--ink)">${fmt(price)}</span>
           <span class="text-sm mb-1" style="color:var(--mu)">FCFA <span>${cycle==='m'?'/ mois':'/ an'}</span></span>
         </div>
+        ${altPrice ? `<p class="text-xs mt-1 font-semibold" style="color:var(--ac)">${altPrice}</p>` : ''}
         <p class="text-xs mt-2" style="color:var(--mu)">${billing}</p>
       </div>
       <ul class="space-y-3 text-sm mb-8 flex-1 ${relClass}" style="list-style:none;padding:0;margin:0">
@@ -243,7 +247,6 @@ function renderPlans(){
   });
 }
 
-/* ── Choix passerelle ── */
 document.querySelectorAll('.gt').forEach(t=>{
   t.addEventListener('click',()=>{
     if(sel)sel.g=t.dataset.g;
@@ -252,7 +255,6 @@ document.querySelectorAll('.gt').forEach(t=>{
   });
 });
 
-/* ── Alerte ── */
 function showError(msg){
   const box=$('pE'),em=$('pEm');
   if(!box||!em)return;
@@ -266,7 +268,6 @@ function hideError(){
   const box=$('pE');if(box)box.style.display='none';
 }
 
-/* ── Validation ── */
 function validate(name,ref){
   const n=(name||'').trim(),r=(ref||'').trim();
   if(n.length<2)return "Le nom doit contenir au moins 2 caractères.";
@@ -285,7 +286,8 @@ const Pay={
     sel = { slug, label: p.name, cycle, price, g: 'wave' };
     $('pP').textContent = p.name;
     $('pC').textContent = cycle === 'm' ? 'mensuel' : 'annuel';
-    $('pA').textContent = fmt(price) + ' FCFA';
+    const altPrice = (typeof Currency !== 'undefined') ? Currency.format(price, 'XOF', 'EUR') : '';
+    $('pA').innerHTML = fmt(price) + ' FCFA' + (altPrice ? `<div class="text-xs mt-1" style="color:var(--mu)">${altPrice}</div>` : '');
     $('pN').value='';
     $('pR').value='';
     hideError();
@@ -360,7 +362,6 @@ const Pay={
   }
 };
 
-/* ── FAQ depuis DB (avec Realtime) ── */
 async function renderFaqs(){
   const list = $('faqList');
   try{
@@ -380,7 +381,6 @@ async function renderFaqs(){
   }
 }
 
-/* ── Init ── */
 addEventListener('DOMContentLoaded',async()=>{
   try{
     PLANS = await DB.getPlans();
@@ -390,7 +390,6 @@ addEventListener('DOMContentLoaded',async()=>{
   }
   renderFaqs();
 
-  // ─── Realtime : écoute les modifications de plans et FAQ ───
   if(typeof Realtime !== 'undefined'){
     Realtime.on('content:plans', async () => {
       try{

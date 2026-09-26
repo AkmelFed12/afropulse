@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/timezone.js" defer></script>
 <style>
 .msg-layout{display:grid;grid-template-columns:1fr;gap:1rem;height:calc(100vh - 200px);min-height:520px}
 @media(min-width:768px){.msg-layout{grid-template-columns:320px 1fr}}
@@ -60,7 +61,10 @@
           <div id="chatAvatar" class="avatar" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.75rem;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">?</div>
           <div class="flex-1 min-w-0">
             <div id="chatName" class="font-semibold text-sm truncate" style="color:var(--ink)">—</div>
-            <div class="text-[10px]" style="color:var(--mu)">Conversation privée</div>
+            <div class="text-[10px] flex items-center gap-2" style="color:var(--mu)">
+              <span>Conversation privée</span>
+              <span id="chatTz" class="font-semibold"></span>
+            </div>
           </div>
         </div>
         <div class="chat-messages" id="chatMessages"></div>
@@ -127,6 +131,38 @@ const Chat=(()=>{
     $('chatContent').classList.remove('hidden');
     $('chatAvatar').textContent=initials(otherName);
     $('chatName').textContent=otherName;
+
+    // Fuseau horaire du correspondant
+    const tzLabel = document.getElementById('chatTz');
+    if(tzLabel && typeof Timezone !== 'undefined'){
+      tzLabel.textContent = '';
+      try{
+        const otherProfile = await DB.getProfileById(otherId);
+        if(otherProfile?.city){
+          const tz = Timezone.detectFromCity(otherProfile.city);
+          if(tz){
+            const h = Timezone.getHour(tz);
+            const st = Timezone.status(tz);
+            const flagMap = {
+              'Africa/Abidjan':'🇨🇮','Africa/Dakar':'🇸🇳','Africa/Bamako':'🇲🇱',
+              'Africa/Ouagadougou':'🇧🇫','Africa/Porto-Novo':'🇧🇯','Africa/Lome':'🇹🇬',
+              'Africa/Accra':'🇬🇭','Africa/Lagos':'🇳🇬','Africa/Nairobi':'🇰🇪',
+              'Africa/Casablanca':'🇲🇦','Africa/Tunis':'🇹🇳','Africa/Algiers':'🇩🇿',
+              'Africa/Cairo':'🇪🇬','Africa/Kinshasa':'🇨🇩','Africa/Brazzaville':'🇨🇬',
+              'Africa/Douala':'🇨🇲','Africa/Libreville':'🇬🇦','Africa/Kigali':'🇷🇼',
+              'Africa/Addis_Ababa':'🇪🇹','Africa/Johannesburg':'🇿🇦','Europe/Paris':'🇫🇷',
+              'Europe/London':'🇬🇧','Europe/Brussels':'🇧🇪','Europe/Zurich':'🇨🇭',
+              'America/Toronto':'🇨🇦','America/New_York':'🇺🇸','America/Los_Angeles':'🇺🇸',
+              'Asia/Dubai':'🇦🇪','Asia/Riyadh':'🇸🇦'
+            };
+            const flag = flagMap[tz] || '🌍';
+            tzLabel.innerHTML = `<span style="color:${st.color}">${flag} ${h}h</span>`;
+            tzLabel.title = st.label;
+          }
+        }
+      }catch(e){}
+    }
+
     await DB.markConversationRead(conversationId);
     await loadMessages();
     await loadConversations();
@@ -233,7 +269,6 @@ addEventListener('DOMContentLoaded',async()=>{
   if(!Auth.requireLogin())return;
   await Chat.init();
 
-  // Realtime : nouveaux messages en direct
   if(typeof Realtime !== 'undefined'){
     Realtime.on('message', (m) => {
       Chat.loadConversations();

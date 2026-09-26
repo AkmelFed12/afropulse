@@ -190,6 +190,14 @@ const Render=(()=>{
           const label=CAT_LABEL_REAL[m.category]||CAT_LABEL[m.category]||m.category;
           const verified=m.business_verified!==false;
           const isFav=favIds.missions.includes(m.id);
+
+          // Conversion FCFA → EUR (si Currency est chargé)
+          let altBudget = '';
+          if(typeof Currency !== 'undefined' && m.budget){
+            const budgetNum = parseInt(String(m.budget).replace(/\s/g,''), 10) || 0;
+            if(budgetNum) altBudget = Currency.format(budgetNum, 'XOF', 'EUR');
+          }
+
           return `<article class="card p-5 flex flex-col">
             <div class="flex items-center justify-between mb-3">
               <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase" style="background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac)">${label}</span>
@@ -201,7 +209,10 @@ const Render=(()=>{
             <h3 class="font-semibold text-sm mb-2 leading-snug">${esc(m.title)}</h3>
             <div class="text-xs mb-4 flex items-center gap-1" style="color:var(--mu)"><i class="fa-solid fa-building text-[10px]"></i>${esc(m.business_name)}${m.location?' · '+esc(m.location):''}</div>
             <div class="flex items-center justify-between text-xs mb-4 pt-3" style="border-top:1px solid var(--bd)">
-              ${m.budget?`<span class="font-semibold" style="color:var(--ok)">${esc(m.budget)} FCFA</span>`:'<span></span>'}
+              ${m.budget?`<div class="min-w-0">
+                <span class="font-semibold" style="color:var(--ok)">${esc(m.budget)} FCFA</span>
+                ${altBudget ? `<div class="text-[10px] mt-0.5" style="color:var(--ac)">${altBudget}</div>` : ''}
+              </div>`:'<span></span>'}
               ${m.duration?`<span style="color:var(--mu)"><i class="fa-regular fa-clock mr-1"></i>${esc(m.duration)}</span>`:''}
             </div>
             <button class="btn bo w-full text-xs mt-auto" data-apply='${JSON.stringify({title:m.title,company:m.business_name,budget:m.budget||'',companyId:m.business_id||'',missionId:m.id||''}).replace(/'/g,"&#39;")}'>Envoyer ma candidature</button>
@@ -262,7 +273,6 @@ const Render=(()=>{
         missions(b.dataset.cat);
       });
 
-      // Realtime : recharger les témoignages à la volée
       if(typeof Realtime !== 'undefined'){
         Realtime.on('content:testimonials', () => testimonials());
       }

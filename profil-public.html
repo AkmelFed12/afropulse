@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/timezone.js" defer></script>
 <style>
 .stars-row{color:var(--gd);display:inline-flex;gap:2px}
 .rating-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;border-radius:999px;background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd);font-size:.8rem;font-weight:700}
@@ -243,7 +244,7 @@ async function renderProfile(p){
     ?`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-shield-halved"></i>RCCM vérifié</span>`
     :'';
 
-  // Charger les badges utilisateur
+  // Badges utilisateur
   let userBadgesHtml = '';
   try{
     const [allBadges, userBadges] = await Promise.all([
@@ -256,6 +257,36 @@ async function renderProfile(p){
       .map(b => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,${b.color} 12%,transparent);color:${b.color}" title="${esc(b.description||'')}"><i class="fa-solid ${b.icon||'fa-award'}"></i>${esc(b.label)}</span>`)
       .join('');
   }catch(e){}
+
+  // Fuseau horaire
+  let tzBadgeHtml = '';
+  if(typeof Timezone !== 'undefined' && p.city){
+    const tz = Timezone.detectFromCity(p.city);
+    if(tz){
+      const st = Timezone.status(tz);
+      const h = Timezone.getHour(tz);
+      const flagMap = {
+        'Africa/Abidjan':'🇨🇮','Africa/Dakar':'🇸🇳','Africa/Bamako':'🇲🇱',
+        'Africa/Ouagadougou':'🇧🇫','Africa/Porto-Novo':'🇧🇯','Africa/Lome':'🇹🇬',
+        'Africa/Accra':'🇬🇭','Africa/Lagos':'🇳🇬','Africa/Nairobi':'🇰🇪',
+        'Africa/Casablanca':'🇲🇦','Africa/Tunis':'🇹🇳','Africa/Algiers':'🇩🇿',
+        'Africa/Cairo':'🇪🇬','Africa/Kinshasa':'🇨🇩','Africa/Brazzaville':'🇨🇬',
+        'Africa/Douala':'🇨🇲','Africa/Libreville':'🇬🇦','Africa/Kigali':'🇷🇼',
+        'Africa/Addis_Ababa':'🇪🇹','Africa/Johannesburg':'🇿🇦','Europe/Paris':'🇫🇷',
+        'Europe/London':'🇬🇧','Europe/Brussels':'🇧🇪','Europe/Zurich':'🇨🇭',
+        'America/Toronto':'🇨🇦','America/New_York':'🇺🇸','America/Los_Angeles':'🇺🇸',
+        'Asia/Dubai':'🇦🇪','Asia/Riyadh':'🇸🇦'
+      };
+      const flag = flagMap[tz] || '🌍';
+      tzBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,${st.color} 12%,transparent);color:${st.color}" title="${st.label}">${flag} ${h}h là-bas</span>`;
+    }
+  }
+
+  // Partage WhatsApp
+  const shareText = encodeURIComponent(
+    `Découvre le profil de ${p.full_name}${p.job_title ? ' (' + p.job_title + ')' : ''} sur AfroPulse : ${location.href}`
+  );
+  const shareUrl = `https://wa.me/?text=${shareText}`;
 
   let statsHTML='';
   let missionsHTML='';
@@ -301,8 +332,10 @@ async function renderProfile(p){
   }
 
   const ctaHtml=isMe
-    ?`<a href="profil.html" class="btn bp"><i class="fa-solid fa-pen"></i>Modifier mon profil</a>`
-    :`<button id="btnContact" class="btn bp"><i class="fa-solid fa-comment"></i>Envoyer un message</button>`;
+    ?`<a href="profil.html" class="btn bp"><i class="fa-solid fa-pen"></i>Modifier mon profil</a>
+      <a href="${shareUrl}" target="_blank" rel="noopener" class="btn bo"><i class="fa-brands fa-whatsapp"></i>Partager</a>`
+    :`<button id="btnContact" class="btn bp"><i class="fa-solid fa-comment"></i>Envoyer un message</button>
+      <a href="${shareUrl}" target="_blank" rel="noopener" class="btn bo"><i class="fa-brands fa-whatsapp"></i>Partager</a>`;
 
   $('container').innerHTML=`
     <div class="text-center mb-6">
@@ -312,6 +345,7 @@ async function renderProfile(p){
         ${typeBadge}
         ${rccmBadge}
         ${userBadgesHtml}
+        ${tzBadgeHtml}
         ${rating.count?`<div class="rating-badge"><span class="stars-row" style="font-size:.75rem">${starsHTML(rating.average)}</span><span>${rating.average.toFixed(1)}</span></div>`:''}
       </div>
       ${p.job_title?`<div class="text-sm font-semibold mb-1" style="color:var(--ac)">${esc(p.job_title)}</div>`:''}
