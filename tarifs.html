@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tarifs — AfroPulse</title>
+<title>Tarifs, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -181,6 +181,7 @@ details.card-static[open] summary::after{content:'−'}
 <script src="assets/env.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
 <script>
 const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
 let cycle='m',sel=null,PLANS=[];
@@ -359,7 +360,7 @@ const Pay={
   }
 };
 
-/* ── FAQ depuis DB ── */
+/* ── FAQ depuis DB (avec Realtime) ── */
 async function renderFaqs(){
   const list = $('faqList');
   try{
@@ -388,6 +389,19 @@ addEventListener('DOMContentLoaded',async()=>{
     $('plansGrid').innerHTML='<div class="text-center py-12 col-span-full text-sm" style="color:var(--mu)">Chargement indisponible</div>';
   }
   renderFaqs();
+
+  // ─── Realtime : écoute les modifications de plans et FAQ ───
+  if(typeof Realtime !== 'undefined'){
+    Realtime.on('content:plans', async () => {
+      try{
+        PLANS = await DB.getPlans();
+        renderPlans();
+      }catch(e){}
+    });
+    Realtime.on('content:faqs', () => {
+      renderFaqs();
+    });
+  }
 });
 
 $('pay').addEventListener('click',e=>{if(e.target.id==='pay')Pay.close()});

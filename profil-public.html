@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Profil — AfroPulse</title>
+<title>Profil, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -38,7 +38,6 @@
 </div>
 </main>
 
-<!-- Modal avis -->
 <div id="reviewModal" class="modal-bg">
   <div class="w-full max-w-md p-6 rounded-2xl" style="background:var(--sf);border:1px solid var(--bd)">
     <div class="flex items-center justify-between mb-4">
@@ -57,7 +56,7 @@
     </div>
     <div class="mb-4">
       <label for="reviewComment" class="lbl">Commentaire (optionnel)</label>
-      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience…" maxlength="500"></textarea>
+      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience" maxlength="500"></textarea>
     </div>
     <p id="reviewError" class="hidden text-xs mb-3" style="color:var(--er)"></p>
     <div class="flex gap-2">
@@ -99,7 +98,6 @@ const fmtDate=iso=>{
 let currentProfile=null;
 let selectedRating=0;
 
-/* Ouvre la modale d'avis */
 async function openReview(targetId,targetName,targetRole){
   if(!Auth.requireLogin())return;
   const me=Auth.getUser();
@@ -114,7 +112,6 @@ async function openReview(targetId,targetName,targetRole){
   $('reviewModal').classList.add('on');
 }
 
-/* Étoiles interactives */
 document.querySelectorAll('#rateInput i').forEach(star=>{
   star.addEventListener('click',()=>{
     selectedRating=parseInt(star.dataset.v);
@@ -143,7 +140,7 @@ $('submitReview').onclick=async()=>{
   if(!selectedRating){err.textContent='Choisissez une note.';err.classList.remove('hidden');return}
   const btn=$('submitReview');
   btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication';
   try{
     const p=Auth.getProfile(),u=Auth.getUser();
     await DB.saveReview({
@@ -156,7 +153,6 @@ $('submitReview').onclick=async()=>{
       comment:$('reviewComment').value.trim()||null
     });
     $('reviewModal').classList.remove('on');
-    // Recharge la page
     location.reload();
   }catch(e){
     err.textContent=e.message;
@@ -166,7 +162,6 @@ $('submitReview').onclick=async()=>{
   }
 };
 
-/* Envoie un message */
 async function contactProfile(id,name){
   if(!Auth.requireLogin())return;
   const me=Auth.getUser();
@@ -186,7 +181,6 @@ async function contactProfile(id,name){
   }catch(e){alert('Erreur : '+e.message)}
 }
 
-/* Construction section avis */
 function renderReviewsSection(reviews,rating,isMe,profile){
   const me=Auth.getUser();
   const canReview=!isMe && !!me;
@@ -224,12 +218,11 @@ function renderReviewsSection(reviews,rating,isMe,profile){
             </div>
           `).join('')}
         </div>
-      `:`<div class="text-center py-6 text-xs" style="color:var(--mu)">Aucun avis pour le moment.</div>`}
+      `:`<div class="text-center py-6 text-xs" style="color:var(--mu)">Aucun avis pour le moment</div>`}
     </div>
   `;
 }
 
-/* Rendu du profil */
 async function renderProfile(p){
   const me=Auth.getUser();
   const isMe=me&&me.id===p.id;
@@ -250,15 +243,24 @@ async function renderProfile(p){
     ?`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-shield-halved"></i>RCCM vérifié</span>`
     :'';
 
-  // Bloc stats spécifique au rôle
+  // Charger les badges utilisateur
+  let userBadgesHtml = '';
+  try{
+    const [allBadges, userBadges] = await Promise.all([
+      DB.getBadges(),
+      DB.getUserBadges(p.id)
+    ]);
+    const awardedSlugs = userBadges.map(b => b.badge_slug);
+    userBadgesHtml = allBadges
+      .filter(b => awardedSlugs.includes(b.slug))
+      .map(b => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,${b.color} 12%,transparent);color:${b.color}" title="${esc(b.description||'')}"><i class="fa-solid ${b.icon||'fa-award'}"></i>${esc(b.label)}</span>`)
+      .join('');
+  }catch(e){}
+
   let statsHTML='';
   let missionsHTML='';
   if(isEntreprise){
-    const [missions,businessApps]=await Promise.all([
-      DB.getCompanyMissions(p.id),
-      DB.getBusinessApplications?Promise.resolve([]):Promise.resolve([])
-    ]);
-    const acceptedCount=0; // à remplir si on veut afficher le nombre de missions réussies
+    const missions=await DB.getCompanyMissions(p.id);
 
     statsHTML=`
       <div class="grid grid-cols-3 gap-3 mb-6">
@@ -309,6 +311,7 @@ async function renderProfile(p){
       <div class="flex items-center justify-center gap-2 flex-wrap mb-2">
         ${typeBadge}
         ${rccmBadge}
+        ${userBadgesHtml}
         ${rating.count?`<div class="rating-badge"><span class="stars-row" style="font-size:.75rem">${starsHTML(rating.average)}</span><span>${rating.average.toFixed(1)}</span></div>`:''}
       </div>
       ${p.job_title?`<div class="text-sm font-semibold mb-1" style="color:var(--ac)">${esc(p.job_title)}</div>`:''}
@@ -357,11 +360,9 @@ async function renderProfile(p){
     </div>
   `;
 
-  // Bind contact
   const btnC=document.getElementById('btnContact');
   if(btnC)btnC.addEventListener('click',()=>contactProfile(p.id,p.full_name));
 
-  // Bind avis
   const btnR=document.getElementById('btnReview');
   if(btnR)btnR.addEventListener('click',()=>openReview(p.id,p.full_name,p.role));
 }
@@ -378,7 +379,7 @@ addEventListener('DOMContentLoaded',async()=>{
   if(!p){
     $('container').innerHTML=`<div class="text-center py-16">
       <i class="fa-solid fa-user-slash text-3xl mb-3" style="color:var(--mu);opacity:.5"></i>
-      <p class="text-sm mb-4" style="color:var(--mu)">Ce profil n'existe pas ou a été supprimé.</p>
+      <p class="text-sm mb-4" style="color:var(--mu)">Ce profil n'existe pas ou a été supprimé</p>
       <a href="index.html" class="btn bp inline-flex">Retour à l'accueil</a>
     </div>`;
     return;

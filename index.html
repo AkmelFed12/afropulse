@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AfroPulse — Le réseau du talent africain</title>
+<title>AfroPulse, le réseau du talent africain</title>
 <meta name="description" content="AfroPulse relie les talents du continent et de la diaspora : troc de compétences, mentorat et micro-missions vérifiées RCCM.">
 <meta name="author" content="LMO SERVICES">
-<meta property="og:title" content="AfroPulse — Le réseau du talent africain">
+<meta property="og:title" content="AfroPulse, le réseau du talent africain">
 <meta property="og:description" content="Troc de compétences, mentorat diaspora et micro-missions vérifiées.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://afro-pulse.netlify.app/">
@@ -14,7 +14,7 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="AfroPulse">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AfroPulse — Le réseau du talent africain">
+<meta name="twitter:title" content="AfroPulse, le réseau du talent africain">
 <meta name="twitter:description" content="Troc de compétences, mentorat diaspora et micro-missions vérifiées.">
 <meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/icon-512.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
@@ -92,7 +92,7 @@
         </div>
         <div class="live-feed-body" id="liveFeed">
           <div class="p-4 text-center text-xs" style="color:var(--mu)">
-            <i class="fa-solid fa-circle-notch fa-spin"></i> Chargement…
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Chargement
           </div>
         </div>
         <div class="p-3 text-center" style="border-top:1px solid var(--bd)">
@@ -291,15 +291,21 @@ const timeAgo=iso=>{
   return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
 };
 
-/* ─── Témoignages dynamiques ─── */
+/* ─── Témoignages dynamiques (avec Realtime) ─── */
 async function renderTestimonials(){
   const g=$('gTestiHome');
   if(!g)return;
+
+  // Adoucir visuellement pendant le rechargement
+  if(g.querySelector('figure')){
+    g.style.opacity='.55';
+  }
 
   try{
     const list = await DB.getTestimonials(3);
     if(!list.length){
       g.innerHTML='';
+      g.style.opacity='';
       return;
     }
     g.innerHTML=list.map(t=>{
@@ -321,8 +327,9 @@ async function renderTestimonials(){
           </figcaption>
         </figure>`;
     }).join('');
+    g.style.opacity='';
   }catch(e){
-    g.innerHTML='';
+    g.style.opacity='';
   }
 }
 
@@ -455,6 +462,13 @@ addEventListener('DOMContentLoaded',async()=>{
     renderTicker(acts);
   }catch(e){
     renderTicker([]);
+  }
+
+  // ─── Realtime : écoute les modifications de témoignages ───
+  if(typeof Realtime !== 'undefined'){
+    Realtime.on('content:testimonials', () => {
+      renderTestimonials();
+    });
   }
 });
 </script>

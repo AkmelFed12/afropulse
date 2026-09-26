@@ -1,5 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   AfroPulse — Module Realtime (v2, console propre)
+   AfroPulse — Module Realtime v4
+   Channels :
+     • notif:<userId>       → notifications utilisateur
+     • content:public       → témoignages, plans, FAQ
+     • messages:<userId>    → nouveaux messages reçus en direct
    ═══════════════════════════════════════════════════════════════════════ */
 
 (function(){
@@ -97,59 +101,91 @@
   }
 
   const Realtime = (() => {
-    let channel = null;
+    let notifChannel = null;
+    let contentChannel = null;
+    let messagesChannel = null;
     let currentUserId = null;
+    const listeners = {
+      notification: [], unread: [], ready: [], error: [],
+      'content:testimonials': [], 'content:plans': [], 'content:faqs': [],
+      'message': []
+    };
 
-    const init = async () => {
-      if(channel) return;
-      const sb = await waitForSb();
-      if(!sb) return;
+    const on = (evt, cb) => {
+      if(!listeners[evt]) listeners[evt] = [];
+      listeners[evt].push(cb);
+      return () => { listeners[evt] = listeners[evt].filter(fn => fn !== cb); };
+    };
+    const emit = (evt, payload) => {
+      (listeners[evt] || []).forEach(cb => {
+        try { cb(payload); } catch(e){}
+      });
+    };
 
-      const { data:{ user } } = await sb.auth.getUser();
-      if(!user) return;
+    const initNotif = async (sb, user) => {
+      if(notifChannel) return;
       currentUserId = user.id;
-
-      channel = sb.channel('notif:' + user.id, { config: { broadcast: { self: false } } });
-
-      channel
-        .on('postgres_changes', {
-          event: 'INSERT', schema: 'public', table: 'user_notifications',
-          filter: `user_id=eq.${user.id}`
-        }, (payload) => {
+      notifChannel = sb.channel('notif:' + user.id, { config: { broadcast: { self: false } } });
+      notifChannel
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
           const n = payload.new;
           bumpBadge(+1);
           prependToPanel(n);
-          showToast({
-            id: n.id, type: n.type, title: n.title, body: n.body,
-            link: n.link, icon: n.icon, read: n.read, createdAt: n.created_at
-          });
+          showToast({ id: n.id, type: n.type, title: n.title, body: n.body, link: n.link, icon: n.icon, read: n.read, createdAt: n.created_at });
+          emit('notification', n);
         })
-        .on('postgres_changes', {
-          event: 'UPDATE', schema: 'public', table: 'user_notifications',
-          filter: `user_id=eq.${user.id}`
-        }, (payload) => {
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
           const n = payload.new;
-          if(payload.old && payload.old.read !== n.read){
-            bumpBadge(n.read ? -1 : +1);
-          }
+          if(payload.old && payload.old.read !== n.read){ bumpBadge(n.read ? -1 : +1); }
           prependToPanel(n);
         })
-        .on('postgres_changes', {
-          event: 'DELETE', schema: 'public', table: 'user_notifications',
-          filter: `user_id=eq.${user.id}`
-        }, () => {
-          if(typeof Bell !== 'undefined' && typeof Bell.refresh === 'function'){
-            Bell.refresh();
-          }
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${user.id}` }, () => {
+          if(typeof Bell !== 'undefined' && typeof Bell.refresh === 'function'){ Bell.refresh(); }
         })
-        .subscribe(() => { /* silencieux */ });
+        .subscribe(() => {});
+    };
+
+    const initMessages = async (sb, user) => {
+      if(messagesChannel) return;
+      messagesChannel = sb.channel('messages:' + user.id, { config: { broadcast: { self: false } } });
+      messagesChannel
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${user.id}` }, (payload) => {
+          const m = payload.new;
+          emit('message', {
+            id: m.id, senderId: m.sender_id, senderName: m.sender_name,
+            recipientId: m.recipient_id, recipientName: m.recipient_name,
+            conversationId: m.conversation_id, content: m.content, createdAt: m.created_at
+          });
+        })
+        .subscribe(() => {});
+    };
+
+    const initContent = async (sb) => {
+      if(contentChannel) return;
+      contentChannel = sb.channel('content:public', { config: { broadcast: { self: false } } });
+      contentChannel
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'testimonials' }, () => emit('content:testimonials'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, () => emit('content:plans'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'faqs' }, () => emit('content:faqs'))
+        .subscribe(() => {});
+    };
+
+    const init = async () => {
+      const sb = await waitForSb();
+      if(!sb) return;
+      initContent(sb);
+      const { data:{ user } } = await sb.auth.getUser();
+      if(user){
+        initNotif(sb, user);
+        initMessages(sb, user);
+        emit('ready', true);
+      }
     };
 
     const destroy = async () => {
-      if(!channel) return;
       const sb = await waitForSb();
-      try { await sb.removeChannel(channel); } catch(e){}
-      channel = null;
+      if(notifChannel){ try { await sb.removeChannel(notifChannel); } catch(e){} notifChannel = null; emit('unread', 0); }
+      if(messagesChannel){ try { await sb.removeChannel(messagesChannel); } catch(e){} messagesChannel = null; }
       currentUserId = null;
     };
 
@@ -163,9 +199,9 @@
     })();
 
     return {
-      init, destroy,
+      init, destroy, on,
       getUserId: () => currentUserId,
-      isConnected: () => !!channel
+      isConnected: () => !!notifChannel
     };
   })();
 
@@ -174,12 +210,9 @@
   function start(){
     injectStyles();
     setTimeout(() => {
-      if(typeof Auth !== 'undefined' && Auth.isLogged && Auth.isLogged()){
-        Realtime.init();
-      } else {
-        if(typeof Auth !== 'undefined' && Auth.onChange){
-          Auth.onChange((u) => { if(u) Realtime.init(); else Realtime.destroy(); });
-        }
+      Realtime.init();
+      if(typeof Auth !== 'undefined' && Auth.onChange){
+        Auth.onChange((u) => { if(u) Realtime.init(); else Realtime.destroy(); });
       }
     }, 1200);
   }

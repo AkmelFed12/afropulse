@@ -87,7 +87,6 @@ const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCa
 
 const Chat=(()=>{
   let current=null;
-  let pollInterval=null;
 
   async function loadConversations(){
     const list=$('convList');
@@ -131,8 +130,6 @@ const Chat=(()=>{
     await DB.markConversationRead(conversationId);
     await loadMessages();
     await loadConversations();
-    if(pollInterval)clearInterval(pollInterval);
-    pollInterval=setInterval(loadMessages,5000);
   }
 
   async function loadMessages(){
@@ -197,7 +194,6 @@ const Chat=(()=>{
 
   function closeChat(){
     current=null;
-    if(pollInterval)clearInterval(pollInterval);
     $('chatContent').classList.add('hidden');
     $('emptyChat').classList.remove('hidden');
     loadConversations();
@@ -214,24 +210,40 @@ const Chat=(()=>{
     });
   }
 
-  return{init:async()=>{
-    bindInput();
-    await loadConversations();
-    const params=new URLSearchParams(location.search);
-    const withId=params.get('with');
-    const withName=params.get('name');
-    if(withId&&withName){
-      const me=Auth.getUser()?.id;
-      const convId=DB._convIdPublic(me,withId);
-      await open(convId,withId,withName);
-    }
-  },open,send,closeChat,loadMessages,loadConversations};
+  return{
+    init:async()=>{
+      bindInput();
+      await loadConversations();
+      const params=new URLSearchParams(location.search);
+      const withId=params.get('with');
+      const withName=params.get('name');
+      if(withId&&withName){
+        const me=Auth.getUser()?.id;
+        const convId=DB._convIdPublic(me,withId);
+        await open(convId,withId,withName);
+      }
+    },
+    open,send,closeChat,loadMessages,loadConversations,
+    getCurrent:()=>current
+  };
 })();
 
 addEventListener('DOMContentLoaded',async()=>{
   await new Promise(r=>setTimeout(r,600));
   if(!Auth.requireLogin())return;
   await Chat.init();
+
+  // Realtime : nouveaux messages en direct
+  if(typeof Realtime !== 'undefined'){
+    Realtime.on('message', (m) => {
+      Chat.loadConversations();
+      const me = Auth.getUser()?.id;
+      const cur = Chat.getCurrent();
+      if(cur && cur.conversationId === m.conversationId && m.recipientId === me){
+        Chat.loadMessages();
+      }
+    });
+  }
 });
 </script>
 </body>

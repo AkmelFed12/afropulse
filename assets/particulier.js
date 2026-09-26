@@ -261,6 +261,11 @@ const Render=(()=>{
         b.style.background='var(--ac)';b.style.color='#fff';b.style.borderColor='var(--ac)';
         missions(b.dataset.cat);
       });
+
+      // Realtime : recharger les témoignages à la volée
+      if(typeof Realtime !== 'undefined'){
+        Realtime.on('content:testimonials', () => testimonials());
+      }
     }
   };
 })();

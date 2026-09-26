@@ -19,7 +19,7 @@
 
   <div class="mb-8">
     <span class="chip mb-4"><i class="fa-solid fa-briefcase text-[10px]"></i>Espace entreprise</span>
-    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Publier une mission</h1>
+    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)" id="pageTitle">Publier une mission</h1>
     <p class="text-sm" style="color:var(--mu)">Votre annonce sera visible par les membres du réseau.</p>
   </div>
 
@@ -98,6 +98,9 @@
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+let editingMissionId = null;
+let currentMissionsCache = [];
+
 addEventListener('DOMContentLoaded',async()=>{
   await new Promise(r=>setTimeout(r,600));
   if(!Auth.requireLogin())return;
@@ -112,27 +115,39 @@ async function loadMy(){
   const container=$('myMissions');
   try{
     const list=await DB.getMyMissions();
+    currentMissionsCache = list;
     if(!list.length){
       container.innerHTML=`<div class="card-static p-6 text-center text-xs" style="color:var(--mu)">Aucune mission publiée pour le moment</div>`;
       return;
     }
     container.innerHTML=list.map(m=>`
-      <div class="card-static p-4 flex items-start gap-3">
-        <div class="w-10 h-10 rounded-lg grid place-items-center shrink-0" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)">
-          <i class="fa-solid fa-briefcase"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm truncate" style="color:var(--ink)">${esc(m.title)}</div>
-          <div class="text-xs" style="color:var(--mu)">
-            ${esc(m.category)}${m.budget?` · <strong style="color:var(--ok)">${esc(m.budget)} FCFA</strong>`:''}
+      <div class="card-static p-4">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg grid place-items-center shrink-0" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)">
+            <i class="fa-solid fa-briefcase"></i>
           </div>
-          <div class="text-[10px] mt-1" style="color:var(--mu)">
-            Publiée le ${new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-sm truncate" style="color:var(--ink)">${esc(m.title)}</div>
+            <div class="text-xs" style="color:var(--mu)">
+              ${esc(m.category)}${m.budget?` · <strong style="color:var(--ok)">${esc(m.budget)} FCFA</strong>`:''}
+            </div>
+            <div class="text-[10px] mt-1" style="color:var(--mu)">
+              Publiée le ${new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}
+              · <span style="color:${m.status==='active'?'var(--ok)':'var(--mu)'}">${m.status==='active'?'Active':'Fermée'}</span>
+            </div>
           </div>
         </div>
-        <button onclick="delMission('${m.id}')" class="text-[10px]" style="color:var(--er);background:none;border:none;cursor:pointer">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+        <div class="flex gap-2 mt-3">
+          <button onclick="editMission('${m.id}')" class="act text-xs" style="flex:1">
+            <i class="fa-solid fa-pen"></i>Modifier
+          </button>
+          <button onclick="toggleMission('${m.id}','${m.status}')" class="act text-xs" style="flex:1">
+            <i class="fa-solid fa-${m.status==='active'?'pause':'play'}"></i>${m.status==='active'?'Désactiver':'Réactiver'}
+          </button>
+          <button onclick="delMission('${m.id}')" class="act act-ko text-xs">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
       </div>
     `).join('');
   }catch(e){}
@@ -142,6 +157,61 @@ async function delMission(id){
   if(!confirm('Supprimer cette mission ?'))return;
   await DB.deleteMission(id);
   await loadMy();
+}
+
+async function editMission(id){
+  try{
+    if(!currentMissionsCache.length){
+      currentMissionsCache = await DB.getMyMissions();
+    }
+    const m = currentMissionsCache.find(x => x.id === id);
+    if(!m){ alert('Mission introuvable'); return; }
+
+    editingMissionId = id;
+    $('fTitle').value = m.title || '';
+    $('fCategory').value = m.category || 'design';
+    $('fDescription').value = m.description || '';
+    $('fBudget').value = m.budget || '';
+    $('fDuration').value = m.duration || '';
+    $('fLocation').value = m.location || '';
+
+    $('pageTitle').textContent = 'Modifier la mission';
+    const btn = $('btn');
+    btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i>Enregistrer les modifications';
+
+    $('missionForm').scrollIntoView({behavior:'smooth', block:'start'});
+    $('fTitle').focus();
+
+    let cancelBtn = document.getElementById('cancelEditBtn');
+    if(!cancelBtn){
+      cancelBtn = document.createElement('button');
+      cancelBtn.id = 'cancelEditBtn';
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'btn bo';
+      cancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>Annuler';
+      cancelBtn.onclick = cancelEdit;
+      $('btn').parentElement.appendChild(cancelBtn);
+    }
+  }catch(e){ alert('Erreur : ' + e.message); }
+}
+
+function cancelEdit(){
+  editingMissionId = null;
+  $('missionForm').reset();
+  $('pageTitle').textContent = 'Publier une mission';
+  const btn = $('btn');
+  btn.innerHTML = 'Publier la mission';
+  const cancelBtn = document.getElementById('cancelEditBtn');
+  if(cancelBtn) cancelBtn.remove();
+}
+
+async function toggleMission(id, currentStatus){
+  const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+  try{
+    await DB.updateMission(id, { status: newStatus });
+    currentMissionsCache = [];
+    await loadMy();
+  }catch(e){ alert('Erreur : ' + e.message); }
 }
 
 $('missionForm').addEventListener('submit',async e=>{
@@ -161,25 +231,39 @@ $('missionForm').addEventListener('submit',async e=>{
 
   const p=Auth.getProfile(),u=Auth.getUser();
   btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication';
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Enregistrement…';
 
   try{
-    await DB.saveMission({
-      businessId:u.id,
-      businessName:p?.company_name||p?.full_name||u.email,
-      businessVerified:!!(p?.company_rccm&&p.company_rccm.length>3),
-      title,category,description,budget,duration,location
-    });
-    succ.textContent='Mission publiée.';
+    if(editingMissionId){
+      await DB.updateMission(editingMissionId, {
+        title, category, description, budget, duration, location
+      });
+      succ.textContent = 'Mission mise à jour.';
+      cancelEdit();
+    }else{
+      await DB.saveMission({
+        businessId:u.id,
+        businessName:p?.company_name||p?.full_name||u.email,
+        businessVerified:!!(p?.company_rccm&&p.company_rccm.length>3),
+        title,category,description,budget,duration,location
+      });
+      succ.textContent = 'Mission publiée.';
+      $('missionForm').reset();
+    }
     succ.classList.remove('hidden');
-    $('missionForm').reset();
+    currentMissionsCache = [];
     await loadMy();
   }catch(ex){
-    err.textContent=ex.message;
+    err.textContent = ex.message;
     err.classList.remove('hidden');
   }
+
   btn.disabled=false;
-  btn.textContent='Publier la mission';
+  if(editingMissionId){
+    btn.innerHTML='<i class="fa-solid fa-check text-xs"></i>Enregistrer les modifications';
+  }else{
+    btn.textContent='Publier la mission';
+  }
 });
 </script>
 </body>

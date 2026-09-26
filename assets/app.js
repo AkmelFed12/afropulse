@@ -17,7 +17,6 @@ const Theme=(()=>{
 const PWA=(()=>{
   return{
     init(){
-      // Injecte manifest + meta PWA
       if(!document.querySelector('link[rel="manifest"]')){
         const link=document.createElement('link');
         link.rel='manifest';
@@ -36,8 +35,6 @@ const PWA=(()=>{
         apple.href='assets/icon-192.png';
         document.head.appendChild(apple);
       }
-
-      // Meta PWA — standard moderne + fallback Apple
       if(!document.querySelector('meta[name="mobile-web-app-capable"]')){
         const m1=document.createElement('meta');
         m1.name='mobile-web-app-capable';
@@ -50,8 +47,6 @@ const PWA=(()=>{
         m2.content='yes';
         document.head.appendChild(m2);
       }
-
-      // Enregistre le service worker (silencieux)
       if('serviceWorker' in navigator){
         window.addEventListener('load',()=>{
           navigator.serviceWorker.register('/sw.js').catch(()=>{});
@@ -120,7 +115,7 @@ const Layout=(()=>{
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
       <div>
         <div class="text-sm font-bold mb-3">Afro<span style="color:var(--ac)">Pulse</span></div>
-        <p class="text-xs leading-relaxed" style="color:var(--mu)">Le réseau du talent africain — continent et diaspora.</p>
+        <p class="text-xs leading-relaxed" style="color:var(--mu)">Le réseau du talent africain, continent et diaspora.</p>
       </div>
       <div>
         <div class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--mu)">Plateforme</div>
@@ -437,5 +432,10 @@ addEventListener('DOMContentLoaded',async()=>{
       Bell.init(u);
     });
     await Auth.init();
+  }
+
+  // Tracking analytics (une fois par page)
+  if(typeof DB !== 'undefined' && DB.trackPageView){
+    DB.trackPageView();
   }
 });

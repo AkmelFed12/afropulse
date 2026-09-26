@@ -37,6 +37,8 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
 .act-ok{border-color:color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
 .act-ko{border-color:color-mix(in srgb,var(--er) 40%,transparent);color:var(--er);background:color-mix(in srgb,var(--er) 8%,transparent)}
 .act-pdf{border-color:color-mix(in srgb,var(--ac) 40%,transparent);color:var(--ac);background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.act-add{border-color:var(--ac);background:var(--ac);color:#fff;padding:.5rem .9rem;font-size:.75rem}
+.act-add:hover{background:color-mix(in srgb,var(--ac) 85%,black)}
 .tabs{display:inline-flex;gap:.2rem;padding:.2rem;border-radius:.65rem;background:var(--sf);border:1px solid var(--bd)}
 .tabs button{padding:.45rem .85rem;font-size:.72rem;font-weight:600;border-radius:.45rem;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit}
 .tabs button.on{background:var(--ac);color:#fff}
@@ -51,6 +53,30 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
 .nav-admin{display:flex;gap:.25rem;overflow-x:auto;padding:.5rem 0;margin-bottom:1.5rem;border-bottom:1px solid var(--bd)}
 .nav-admin button{padding:.55rem 1rem;font-size:.8rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;border-radius:.5rem;white-space:nowrap}
 .nav-admin button.on{background:var(--ac);color:#fff}
+.track-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.15rem}
+.track-num{font-size:1.75rem;font-weight:800;line-height:1;margin-bottom:.25rem;color:var(--ink)}
+.track-lbl{font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu)}
+.content-section{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
+.content-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
+.content-item{display:flex;gap:1rem;padding:1rem;border:1px solid var(--bd);border-radius:.75rem;margin-bottom:.75rem;background:var(--bg)}
+.content-item:hover{border-color:var(--ac)}
+.content-item-body{flex:1;min-width:0}
+.content-item-title{font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.25rem}
+.content-item-sub{font-size:.75rem;color:var(--mu);line-height:1.5}
+.content-item-actions{display:flex;gap:.35rem;flex-shrink:0}
+.modal{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+.modal.on{display:flex}
+.modal-box{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:1.5rem}
+.modal-title{font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:1.25rem}
+.form-row{margin-bottom:1rem}
+.form-row label{display:block;font-size:.72rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.form-row input,.form-row textarea,.form-row select{width:100%;background:var(--bg);border:1px solid var(--bd);color:var(--ink);border-radius:.5rem;padding:.6rem .8rem;font-size:.85rem;font-family:inherit;outline:none;transition:.15s}
+.form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--ac)}
+.form-row textarea{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+.form-hint{font-size:.7rem;color:var(--mu);margin-top:.3rem}
+.modal-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--bd)}
 </style>
 </head>
 <body class="font-sans" data-no-layout data-no-life>
@@ -90,8 +116,11 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
     <div class="nav-admin" id="navAdmin">
       <button data-tab="overview" class="on">Vue d'ensemble</button>
       <button data-tab="stats">Statistiques</button>
+      <button data-tab="traffic">Trafic</button>
       <button data-tab="subs">Abonnements</button>
       <button data-tab="rccm">RCCM</button>
+      <button data-tab="content">Contenu</button>
+      <button data-tab="badges">Badges</button>
     </div>
 
     <!-- Vue d'ensemble -->
@@ -136,6 +165,8 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
       </section>
 
       <div class="flex flex-wrap items-center justify-end gap-2 pt-4" style="border-top:1px solid var(--bd)">
+        <button onclick="Admin.exportSubs()" class="act"><i class="fa-solid fa-download"></i>Export abonnements</button>
+        <button onclick="Admin.exportRccm()" class="act"><i class="fa-solid fa-download"></i>Export RCCM</button>
         <button onclick="Admin.seed()" class="act"><i class="fa-solid fa-flask"></i>Charger la démo</button>
         <button onclick="Admin.clear()" class="act act-ko"><i class="fa-solid fa-trash"></i>Tout effacer</button>
       </div>
@@ -165,6 +196,26 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
       </div>
     </div>
 
+    <!-- Trafic -->
+    <div id="tab-traffic" class="tab-content hidden">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="track-card"><div class="track-num" id="trafficTotal">—</div><div class="track-lbl">Pages vues (7j)</div></div>
+        <div class="track-card"><div class="track-num" id="trafficUnique">—</div><div class="track-lbl">Visiteurs uniques</div></div>
+        <div class="track-card"><div class="track-num" id="trafficToday">—</div><div class="track-lbl">Vues aujourd'hui</div></div>
+        <div class="track-card"><div class="track-num" id="trafficAvg">—</div><div class="track-lbl">Vues par jour</div></div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-5 mb-6">
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Visites (7 derniers jours)</div>
+          <div style="height:260px"><canvas id="chartTraffic"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Pages les plus vues</div>
+          <div id="topPages" class="space-y-2"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Abonnements -->
     <div id="tab-subs" class="tab-content hidden">
       <div class="tw"><table class="tb">
@@ -180,7 +231,77 @@ table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
         <tbody id="tbR2"></tbody>
       </table></div>
     </div>
+
+    <!-- Contenu dynamique -->
+    <div id="tab-content" class="tab-content hidden">
+      <section class="content-section">
+        <div class="content-head">
+          <div>
+            <h2 class="text-base font-bold">Témoignages</h2>
+            <p class="text-xs mt-.5" style="color:var(--mu)">Affichés sur la page d'accueil et la page particulier.</p>
+          </div>
+          <button onclick="Content.openTestimonial()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter un témoignage</button>
+        </div>
+        <div id="listTestimonials"></div>
+      </section>
+
+      <section class="content-section">
+        <div class="content-head">
+          <div>
+            <h2 class="text-base font-bold">Formules tarifaires</h2>
+            <p class="text-xs mt-.5" style="color:var(--mu)">Affichées sur la page tarifs. Prix en FCFA.</p>
+          </div>
+          <button onclick="Content.openPlan()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter une formule</button>
+        </div>
+        <div id="listPlans"></div>
+      </section>
+
+      <section class="content-section">
+        <div class="content-head">
+          <div>
+            <h2 class="text-base font-bold">FAQ</h2>
+            <p class="text-xs mt-.5" style="color:var(--mu)">Affichée sur la page tarifs.</p>
+          </div>
+          <button onclick="Content.openFaq()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter une question</button>
+        </div>
+        <div id="listFaqs"></div>
+      </section>
+    </div>
+
+    <!-- Badges -->
+    <div id="tab-badges" class="tab-content hidden">
+      <div class="content-section">
+        <div class="content-head">
+          <div>
+            <h2 class="text-base font-bold">Attribution des badges</h2>
+            <p class="text-xs mt-.5" style="color:var(--mu)">Recherchez un membre par email, puis attribuez ou retirez un badge.</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Email du membre</label>
+          <div class="flex gap-2">
+            <input id="badgeEmail" type="email" placeholder="email@exemple.com" style="flex:1">
+            <button onclick="Badges.search()" class="act act-add">Rechercher</button>
+          </div>
+        </div>
+        <div id="badgeResult" class="mt-4"></div>
+      </div>
+    </div>
   </main>
+</div>
+
+<!-- Modal générique pour édition -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="editTitle">Édition</div>
+    <form id="editForm" onsubmit="Content.submit(event)">
+      <div id="editFields"></div>
+      <div class="modal-actions">
+        <button type="button" onclick="Content.close()" class="act">Annuler</button>
+        <button type="submit" id="editSubmit" class="act act-add">Enregistrer</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="toast" id="toast"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i><span id="toastMsg">—</span></div>
@@ -225,25 +346,12 @@ const Lock=(()=>{
   };
 })();
 
-/* ═══════════════════════════════════════════
-   Ouverture sécurisée d'un PDF RCCM
-   ═══════════════════════════════════════════ */
 async function ouvrirRccm(pathOrUrl){
-  if(!pathOrUrl){
-    alert('Aucun document associé à ce dossier.');
-    return;
-  }
-
+  if(!pathOrUrl){alert('Aucun document associé à ce dossier.');return;}
   const w = window.open('', '_blank');
   if(w){
-    w.document.write(`
-      <html><head><title>Chargement du PDF</title></head>
-      <body style="font-family:system-ui,sans-serif;padding:2rem;color:#0f172a">
-        <p>Génération du lien sécurisé…</p>
-      </body></html>
-    `);
+    w.document.write('<html><head><title>Chargement du PDF</title></head><body style="font-family:system-ui,sans-serif;padding:2rem;color:#0f172a"><p>Génération du lien sécurisé…</p></body></html>');
   }
-
   try{
     const url = await DB.getRccmSignedUrl(pathOrUrl, 3600);
     if(!url){
@@ -251,11 +359,7 @@ async function ouvrirRccm(pathOrUrl){
       alert("Impossible de générer le lien. Vérifiez vos droits ou la présence du fichier.");
       return;
     }
-    if(w){
-      w.location.href = url;
-    }else{
-      window.location.href = url;
-    }
+    if(w){w.location.href = url;}else{window.location.href = url;}
   }catch(e){
     if(w) w.close();
     alert('Erreur lors de l\'ouverture du document.');
@@ -268,7 +372,7 @@ const Admin=(()=>{
   const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
   const dstr=iso=>new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
   let S=[],R=[],fS='all',fR='all';
-  let chartDaily=null,chartRevenue=null;
+  let chartDaily=null,chartRevenue=null,chartTraffic=null;
 
   const bd=s=>s==='actif'||s==='approuve'
     ?`<span class="bd o"><i class="fa-solid fa-circle-check"></i>${s==='actif'?'Actif':'Approuvé'}</span>`
@@ -420,6 +524,82 @@ const Admin=(()=>{
     }
   }
 
+  async function renderTraffic(){
+    try{
+      const { total, uniqueVisitors, topPages, daily } = await DB.getAnalytics(7);
+      $('trafficTotal').textContent = total.toLocaleString('fr-FR');
+      $('trafficUnique').textContent = uniqueVisitors.toLocaleString('fr-FR');
+      const today = new Date().toISOString().slice(0,10);
+      const todayEntry = daily.find(d => d.jour === today);
+      $('trafficToday').textContent = todayEntry ? todayEntry.views : '0';
+      $('trafficAvg').textContent = daily.length ? Math.round(total / daily.length) : '0';
+
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#e6edf7' : '#0f172a';
+      const gridColor = isDark ? 'rgba(148,163,184,0.1)' : 'rgba(15,23,42,0.08)';
+
+      if(chartTraffic) chartTraffic.destroy();
+      const ctx = $('chartTraffic');
+      if(ctx){
+        chartTraffic = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: daily.map(d => new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),
+            datasets: [
+              { label:'Vues', data: daily.map(d => d.views), borderColor:'#0b5fff', backgroundColor:'rgba(11,95,255,.1)', tension:.35, fill:true },
+              { label:'Visiteurs', data: daily.map(d => d.visitors), borderColor:'#b8860b', backgroundColor:'rgba(184,134,11,.1)', tension:.35, fill:true }
+            ]
+          },
+          options:{ responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{ labels:{ color:textColor, font:{size:11} } } },
+            scales:{
+              x:{ ticks:{color:textColor,font:{size:10}}, grid:{color:gridColor} },
+              y:{ ticks:{color:textColor,font:{size:10}}, grid:{color:gridColor}, beginAtZero:true }
+            }
+          }
+        });
+      }
+
+      const tp = $('topPages');
+      const maxCount = topPages[0]?.count || 1;
+      tp.innerHTML = topPages.length
+        ? topPages.map((p,i) => `
+          <div class="flex items-center gap-3">
+            <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-semibold truncate" style="color:var(--ink)">${p.path}</span>
+                <span style="color:var(--mu)">${p.count}</span>
+              </div>
+              <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
+                <div style="height:100%;width:${(p.count/maxCount*100)}%;background:linear-gradient(90deg,var(--ac),var(--gd))"></div>
+              </div>
+            </div>
+          </div>`).join('')
+        : '<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
+    }catch(e){}
+  }
+
+  function toCSV(rows, headers){
+    if(!rows.length) return '';
+    const escape = v => {
+      const s = String(v == null ? '' : v);
+      return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    };
+    const head = headers.map(h => escape(h.label)).join(';');
+    const body = rows.map(r => headers.map(h => escape(h.get(r))).join(';')).join('\n');
+    return '\uFEFF' + head + '\n' + body;
+  }
+
+  function downloadCSV(filename, content){
+    const blob = new Blob([content], { type:'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
   return{
     async reload(){
       await load();
@@ -427,10 +607,46 @@ const Admin=(()=>{
       renderS('tbS');renderS('tbS2');
       renderR('tbR');renderR('tbR2');
       renderStats();
+      renderTraffic();
+      if(typeof Content!=='undefined') Content.reload();
     },
     logout(){sessionStorage.removeItem('ap-admin');location.href='index.html'},
+    toast,
     async setS(id,s){await DB.updateSubscriptionStatus(id,s);await this.reload();toast(s==='actif'?'Abonnement activé':s==='rejete'?'Abonnement rejeté':'Statut réinitialisé',s!=='rejete')},
     async setR(id,s){await DB.updateRccmStatus(id,s);await this.reload();toast(s==='approuve'?'Dossier RCCM approuvé':s==='rejete'?'Dossier rejeté':'Statut réinitialisé',s!=='rejete')},
+
+    exportSubs(){
+      if(!S.length){ toast('Aucun abonnement à exporter', false); return; }
+      const csv = toCSV(S, [
+        { label:'Référence', get: x => x.ref },
+        { label:'Nom', get: x => x.name },
+        { label:'Formule', get: x => x.plan },
+        { label:'Cycle', get: x => x.cycle },
+        { label:'Montant FCFA', get: x => x.amount },
+        { label:'Passerelle', get: x => x.gateway },
+        { label:'Statut', get: x => x.status },
+        { label:'Date', get: x => x.createdAt ? new Date(x.createdAt).toLocaleString('fr-FR') : '' }
+      ]);
+      const date = new Date().toISOString().slice(0,10);
+      downloadCSV(`afropulse-abonnements-${date}.csv`, csv);
+      toast('Export abonnements téléchargé');
+    },
+
+    exportRccm(){
+      if(!R.length){ toast('Aucun dossier RCCM à exporter', false); return; }
+      const csv = toCSV(R, [
+        { label:'Référence', get: x => x.ref },
+        { label:'Entreprise', get: x => x.company },
+        { label:'RCCM', get: x => x.rccm },
+        { label:'CC', get: x => x.cc },
+        { label:'Statut', get: x => x.status },
+        { label:'Date', get: x => x.createdAt ? new Date(x.createdAt).toLocaleString('fr-FR') : '' }
+      ]);
+      const date = new Date().toISOString().slice(0,10);
+      downloadCSV(`afropulse-rccm-${date}.csv`, csv);
+      toast('Export RCCM téléchargé');
+    },
+
     async seed(){
       const n=Date.now();
       for(const s of [
@@ -459,6 +675,400 @@ const Admin=(()=>{
     }
   };
 })();
+
+/* ═══ MODULE CONTENU (témoignages, plans, FAQ) ═══ */
+const Content=(()=>{
+  const $=id=>document.getElementById(id);
+  let currentEdit={ type:null, id:null };
+  let dataTestimonials=[], dataPlans=[], dataFaqs=[];
+
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  async function reload(){
+    await Promise.all([loadTestimonials(), loadPlans(), loadFaqs()]);
+  }
+
+  async function loadTestimonials(){
+    try{ dataTestimonials = await DB.getTestimonialsAll(); }catch(e){ dataTestimonials=[] }
+    renderTestimonials();
+  }
+  async function loadPlans(){
+    try{ dataPlans = await DB.getPlansAll(); }catch(e){ dataPlans=[] }
+    renderPlans();
+  }
+  async function loadFaqs(){
+    try{ dataFaqs = await DB.getFaqsAll(); }catch(e){ dataFaqs=[] }
+    renderFaqs();
+  }
+
+  function renderTestimonials(){
+    const list=$('listTestimonials');
+    if(!dataTestimonials.length){
+      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-quote-left"></i>Aucun témoignage. Cliquez sur Ajouter pour commencer.</div>';
+      return;
+    }
+    list.innerHTML=dataTestimonials.map(t=>`
+      <div class="content-item">
+        <div class="content-item-body">
+          <div class="content-item-title">${esc(t.name)}${t.published?'':' <span style="font-size:.7rem;color:var(--er)">(brouillon)</span>'}</div>
+          <div class="content-item-sub">${esc(t.role||'')} · ${esc(t.city||'')} · ${t.rating||5}★</div>
+          <div class="content-item-sub" style="margin-top:.5rem">« ${esc((t.quote||'').slice(0,140))}${t.quote && t.quote.length>140?'…':''} »</div>
+        </div>
+        <div class="content-item-actions">
+          <button class="act" onclick="Content.openTestimonial('${t.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
+          <button class="act act-ko" onclick="Content.remove('testimonial','${t.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderPlans(){
+    const list=$('listPlans');
+    if(!dataPlans.length){
+      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-tag"></i>Aucune formule. Cliquez sur Ajouter pour commencer.</div>';
+      return;
+    }
+    list.innerHTML=dataPlans.map(p=>`
+      <div class="content-item">
+        <div class="content-item-body">
+          <div class="content-item-title">${esc(p.name)}${p.recommended?' <span style="font-size:.65rem;background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac);padding:.15rem .4rem;border-radius:999px">Recommandé</span>':''}${p.active?'':' <span style="font-size:.7rem;color:var(--er)">(inactif)</span>'}</div>
+          <div class="content-item-sub">${esc(p.description||'')}</div>
+          <div class="content-item-sub" style="margin-top:.5rem"><strong style="color:var(--ink)">${p.monthly.toLocaleString('fr-FR')} FCFA/mois</strong> · ${p.yearly.toLocaleString('fr-FR')} FCFA/an · ${(p.features||[]).length} avantages</div>
+        </div>
+        <div class="content-item-actions">
+          <button class="act" onclick="Content.openPlan('${p.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
+          <button class="act act-ko" onclick="Content.remove('plan','${p.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderFaqs(){
+    const list=$('listFaqs');
+    if(!dataFaqs.length){
+      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-circle-question"></i>Aucune question. Cliquez sur Ajouter pour commencer.</div>';
+      return;
+    }
+    list.innerHTML=dataFaqs.map(f=>`
+      <div class="content-item">
+        <div class="content-item-body">
+          <div class="content-item-title">${esc(f.question)}${f.active?'':' <span style="font-size:.7rem;color:var(--er)">(inactif)</span>'}</div>
+          <div class="content-item-sub" style="margin-top:.5rem">${esc((f.answer||'').slice(0,160))}${f.answer && f.answer.length>160?'…':''}</div>
+        </div>
+        <div class="content-item-actions">
+          <button class="act" onclick="Content.openFaq('${f.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
+          <button class="act act-ko" onclick="Content.remove('faq','${f.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openModal(title, fieldsHtml, submitLabel){
+    $('editTitle').textContent=title;
+    $('editFields').innerHTML=fieldsHtml;
+    $('editSubmit').textContent=submitLabel||'Enregistrer';
+    $('editModal').classList.add('on');
+  }
+
+  function close(){
+    $('editModal').classList.remove('on');
+    currentEdit={ type:null, id:null };
+    $('editFields').innerHTML='';
+  }
+
+  function openTestimonial(id){
+    const t = id ? dataTestimonials.find(x=>x.id===id) : null;
+    currentEdit={ type:'testimonial', id: id||null };
+    openModal(
+      id ? 'Éditer le témoignage' : 'Nouveau témoignage',
+      `
+        <div class="form-row">
+          <label>Nom de l'auteur *</label>
+          <input name="name" required value="${t?esc(t.name):''}">
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Rôle / métier</label>
+            <input name="role" value="${t?esc(t.role||''):''}">
+          </div>
+          <div class="form-row">
+            <label>Ville, pays</label>
+            <input name="city" placeholder="Ex : Abidjan, Côte d'Ivoire" value="${t?esc(t.city||''):''}">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Initiales</label>
+            <input name="initials" maxlength="3" placeholder="Ex : DK" value="${t?esc(t.initials||''):''}">
+            <p class="form-hint">Laissez vide pour générer automatiquement.</p>
+          </div>
+          <div class="form-row">
+            <label>Couleur</label>
+            <select name="color">
+              ${['var(--ac)','var(--gd)','var(--ok)'].map(c=>`<option value="${c}"${t&&t.color===c?' selected':''}>${c==='var(--ac)'?'Bleu':c==='var(--gd)'?'Or':'Vert'}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Témoignage *</label>
+          <textarea name="quote" required rows="5">${t?esc(t.quote):''}</textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Note (1 à 5)</label>
+            <input name="rating" type="number" min="1" max="5" value="${t?t.rating:5}">
+          </div>
+          <div class="form-row">
+            <label>Ordre d'affichage</label>
+            <input name="display_order" type="number" value="${t?t.display_order:0}">
+            <p class="form-hint">Les plus petits chiffres en premier.</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <label><input type="checkbox" name="published" ${(!t || t.published)?'checked':''} style="width:auto;margin-right:.5rem">Publier ce témoignage</label>
+        </div>
+      `,
+      id ? 'Enregistrer' : 'Créer'
+    );
+  }
+
+  function openPlan(id){
+    const p = id ? dataPlans.find(x=>x.id===id) : null;
+    currentEdit={ type:'plan', id: id||null };
+    openModal(
+      id ? 'Éditer la formule' : 'Nouvelle formule',
+      `
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Identifiant (slug) *</label>
+            <input name="slug" required placeholder="Ex : young" value="${p?esc(p.slug):''}" ${id?'readonly style="opacity:.6"':''}>
+            <p class="form-hint">Unique, en minuscules, sans espace.</p>
+          </div>
+          <div class="form-row">
+            <label>Nom affiché *</label>
+            <input name="name" required placeholder="Ex : Jeune & Pro" value="${p?esc(p.name):''}">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Description</label>
+          <input name="description" placeholder="Ex : Pour les talents indépendants." value="${p?esc(p.description||''):''}">
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Prix mensuel (FCFA) *</label>
+            <input name="monthly" type="number" required min="0" value="${p?p.monthly:0}">
+          </div>
+          <div class="form-row">
+            <label>Prix annuel (FCFA) *</label>
+            <input name="yearly" type="number" required min="0" value="${p?p.yearly:0}">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Avantages (un par ligne) *</label>
+          <textarea name="features" required rows="5" placeholder="Profil visible dans le réseau&#10;Troc illimité&#10;1 session mentorat par mois">${p?(p.features||[]).join('\n'):''}</textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Ordre d'affichage</label>
+            <input name="display_order" type="number" value="${p?p.display_order:0}">
+          </div>
+          <div class="form-row">
+            <label>Options</label>
+            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="recommended" ${p&&p.recommended?'checked':''} style="width:auto;margin-right:.4rem">Marquer comme recommandé</label>
+            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="active" ${(!p || p.active)?'checked':''} style="width:auto;margin-right:.4rem">Formule active</label>
+          </div>
+        </div>
+      `,
+      id ? 'Enregistrer' : 'Créer'
+    );
+  }
+
+  function openFaq(id){
+    const f = id ? dataFaqs.find(x=>x.id===id) : null;
+    currentEdit={ type:'faq', id: id||null };
+    openModal(
+      id ? 'Éditer la question' : 'Nouvelle question',
+      `
+        <div class="form-row">
+          <label>Question *</label>
+          <input name="question" required value="${f?esc(f.question):''}">
+        </div>
+        <div class="form-row">
+          <label>Réponse *</label>
+          <textarea name="answer" required rows="5">${f?esc(f.answer):''}</textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Ordre d'affichage</label>
+            <input name="display_order" type="number" value="${f?f.display_order:0}">
+          </div>
+          <div class="form-row">
+            <label>Options</label>
+            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="active" ${(!f || f.active)?'checked':''} style="width:auto;margin-right:.4rem">Question active</label>
+          </div>
+        </div>
+      `,
+      id ? 'Enregistrer' : 'Créer'
+    );
+  }
+
+  async function submit(e){
+    e.preventDefault();
+    const form=e.target;
+    const fd=new FormData(form);
+    const btn=$('editSubmit');
+    btn.disabled=true;
+    const original=btn.textContent;
+    btn.textContent='Enregistrement…';
+
+    try{
+      if(currentEdit.type==='testimonial'){
+        const d={
+          name: fd.get('name').trim(),
+          role: fd.get('role').trim(),
+          city: fd.get('city').trim(),
+          initials: fd.get('initials').trim(),
+          color: fd.get('color'),
+          quote: fd.get('quote').trim(),
+          rating: parseInt(fd.get('rating'),10)||5,
+          display_order: parseInt(fd.get('display_order'),10)||0,
+          published: !!fd.get('published')
+        };
+        if(currentEdit.id) await DB.updateTestimonial(currentEdit.id, d);
+        else await DB.createTestimonial(d);
+      }else if(currentEdit.type==='plan'){
+        const d={
+          slug: fd.get('slug').trim().toLowerCase(),
+          name: fd.get('name').trim(),
+          description: fd.get('description').trim(),
+          monthly: parseInt(fd.get('monthly'),10)||0,
+          yearly: parseInt(fd.get('yearly'),10)||0,
+          features: fd.get('features').split('\n').map(s=>s.trim()).filter(Boolean),
+          recommended: !!fd.get('recommended'),
+          active: !!fd.get('active'),
+          display_order: parseInt(fd.get('display_order'),10)||0
+        };
+        if(currentEdit.id) await DB.updatePlan(currentEdit.id, d);
+        else await DB.createPlan(d);
+      }else if(currentEdit.type==='faq'){
+        const d={
+          question: fd.get('question').trim(),
+          answer: fd.get('answer').trim(),
+          display_order: parseInt(fd.get('display_order'),10)||0,
+          active: !!fd.get('active')
+        };
+        if(currentEdit.id) await DB.updateFaq(currentEdit.id, d);
+        else await DB.createFaq(d);
+      }
+      Admin.toast('Enregistrement effectué');
+      close();
+      await reload();
+    }catch(err){
+      Admin.toast('Erreur : '+(err.message||''), false);
+      btn.disabled=false;
+      btn.textContent=original;
+    }
+  }
+
+  async function remove(type, id){
+    if(!confirm('Supprimer cet élément ? Cette action est définitive.'))return;
+    try{
+      if(type==='testimonial') await DB.deleteTestimonial(id);
+      else if(type==='plan') await DB.deletePlan(id);
+      else if(type==='faq') await DB.deleteFaq(id);
+      Admin.toast('Élément supprimé');
+      await reload();
+    }catch(e){
+      Admin.toast('Erreur : '+(e.message||''), false);
+    }
+  }
+
+  return { reload, openTestimonial, openPlan, openFaq, submit, close, remove };
+})();
+window.Content = Content;
+
+/* ═══ MODULE BADGES ═══ */
+const Badges=(()=>{
+  const $=id=>document.getElementById(id);
+  let allBadges = [];
+  let currentUser = null;
+
+  async function loadBadges(){
+    if(allBadges.length) return allBadges;
+    allBadges = await DB.getBadges();
+    return allBadges;
+  }
+
+  async function search(){
+    const email = $('badgeEmail').value.trim();
+    if(!email){
+      $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Entrez un email.</div>';
+      return;
+    }
+    $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--mu)">Recherche…</div>';
+
+    try{
+      const sb = window.__sb;
+      if(!sb){ $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Supabase indisponible.</div>'; return; }
+
+      const { data, error } = await sb.from('profiles')
+        .select('id, email, full_name, city, role')
+        .eq('email', email.toLowerCase())
+        .limit(1);
+
+      if(error || !data || !data.length){
+        $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Aucun membre trouvé avec cet email.</div>';
+        return;
+      }
+
+      currentUser = data[0];
+      await loadBadges();
+      const userBadges = await DB.getUserBadges(currentUser.id);
+      const awardedSlugs = userBadges.map(b => b.badge_slug);
+
+      $('badgeResult').innerHTML = `
+        <div class="content-item">
+          <div class="content-item-body">
+            <div class="content-item-title">${currentUser.full_name || currentUser.email}</div>
+            <div class="content-item-sub">${currentUser.email} · ${currentUser.city || ''} · ${currentUser.role}</div>
+            <div class="flex flex-wrap gap-2 mt-3">
+              ${allBadges.map(b => `
+                <button onclick="Badges.toggle('${b.slug}')" class="act ${awardedSlugs.includes(b.slug)?'act-ok':''}" style="font-size:.72rem">
+                  <i class="fa-solid ${b.icon||'fa-award'}"></i>${b.label}
+                  ${awardedSlugs.includes(b.slug)?'<i class="fa-solid fa-check"></i>':''}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }catch(e){
+      $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Erreur : ' + e.message + '</div>';
+    }
+  }
+
+  async function toggle(slug){
+    if(!currentUser) return;
+    try{
+      const userBadges = await DB.getUserBadges(currentUser.id);
+      const has = userBadges.some(b => b.badge_slug === slug);
+      if(has){
+        await DB.removeBadge(currentUser.id, slug);
+        Admin.toast('Badge retiré');
+      }else{
+        await DB.awardBadge(currentUser.id, slug);
+        Admin.toast('Badge attribué');
+      }
+      const email = $('badgeEmail').value.trim();
+      if(email) search();
+    }catch(e){
+      Admin.toast('Erreur : ' + e.message, false);
+    }
+  }
+
+  return { search, toggle };
+})();
+window.Badges = Badges;
 
 document.querySelectorAll('[data-t]').forEach(w=>{
   w.addEventListener('click',e=>{
