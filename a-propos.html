@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>À propos — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-3xl mx-auto px-4 pt-16 sm:pt-20 pb-10">
+  <span class="chip mb-6">À propos</span>
+  <h1 class="text-4xl sm:text-5xl font-bold leading-[1.05] mb-6">
+    Pourquoi nous construisons <span class="serif" style="color:var(--ac)">AfroPulse</span>.
+  </h1>
+</div>
+
+<div class="relative max-w-3xl mx-auto px-4 pb-16 space-y-10">
+  <section>
+    <h2 class="text-xl font-bold mb-3">Le constat</h2>
+    <p class="text-sm leading-relaxed mb-3" style="color:var(--mu)">Chaque année, des milliers de talents africains terminent leurs études avec des compétences solides, mais sans réseau. En parallèle, des entreprises cherchent ces profils et n'ont aucun moyen fiable de vérifier qui est sérieux.</p>
+    <p class="text-sm leading-relaxed" style="color:var(--mu)">Résultat : les opportunités circulent mal, et le talent reste sous-exploité sur le continent.</p>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-bold mb-3">Notre réponse</h2>
+    <p class="text-sm leading-relaxed mb-3" style="color:var(--mu)">AfroPulse connecte trois mondes — jeunes talents, diaspora, entreprises — autour du troc de compétences, du mentorat individuel et des micro-missions rémunérées.</p>
+    <p class="text-sm leading-relaxed" style="color:var(--mu)">Chaque annonce d'entreprise est vérifiée via son RCCM. Chaque mentor est un professionnel confirmé.</p>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-bold mb-3">Nos principes</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="card-static p-5"><i class="fa-solid fa-shield-halved mb-3" style="color:var(--ac)"></i><h3 class="font-semibold text-sm mb-1">Vérification systématique</h3><p class="text-xs leading-relaxed" style="color:var(--mu)">Toute entreprise doit soumettre son RCCM.</p></div>
+      <div class="card-static p-5"><i class="fa-solid fa-handshake mb-3" style="color:var(--gd)"></i><h3 class="font-semibold text-sm mb-1">Pas de commission</h3><p class="text-xs leading-relaxed" style="color:var(--mu)">AfroPulse ne prend rien sur les échanges.</p></div>
+      <div class="card-static p-5"><i class="fa-solid fa-globe mb-3" style="color:var(--ok)"></i><h3 class="font-semibold text-sm mb-1">Continent & diaspora</h3><p class="text-xs leading-relaxed" style="color:var(--mu)">Une seule plateforme, partout.</p></div>
+      <div class="card-static p-5"><i class="fa-solid fa-lock mb-3" style="color:var(--ac)"></i><h3 class="font-semibold text-sm mb-1">Données protégées</h3><p class="text-xs leading-relaxed" style="color:var(--mu)">Vos documents restent privés.</p></div>
+    </div>
+  </section>
+
+  <section class="card-static p-6 text-center" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent))">
+    <p class="text-sm mb-4" style="color:var(--mu)">Une question, un partenariat, une idée ?</p>
+    <a href="contact.html" class="btn bp">Nous contacter <i class="fa-solid fa-arrow-right text-xs"></i></a>
+  </section>
+</div>
+</main>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

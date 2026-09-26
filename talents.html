@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Talents — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.searchbar{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1rem;display:grid;gap:.75rem}
+@media(min-width:768px){.searchbar{grid-template-columns:2fr 1fr 1fr auto;align-items:end}}
+.filter-input{background:var(--bg);border:1px solid var(--bd);color:var(--ink);border-radius:.5rem;padding:.55rem .85rem;font-size:.8rem;width:100%;outline:none;font-family:inherit;transition:.15s}
+.filter-input:focus{border-color:var(--ac)}
+.talent-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem;transition:.2s;display:flex;flex-direction:column}
+.talent-card:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:0 12px 28px -14px rgba(0,0,0,.15)}
+.skill-tag{font-size:.65rem;padding:.2rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);white-space:nowrap}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-6xl mx-auto px-4 py-10">
+
+  <div class="mb-8">
+    <span class="chip mb-4"><i class="fa-solid fa-magnifying-glass text-[10px]"></i>Annuaire</span>
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Trouver un talent.</h1>
+    <p class="text-sm max-w-2xl" style="color:var(--mu)">Filtrez par compétence, métier ou ville. Tous les profils sont des membres vérifiés du réseau AfroPulse.</p>
+  </div>
+
+  <div class="searchbar mb-8">
+    <div>
+      <label for="q" class="text-xs mb-1 block" style="color:var(--mu)">Recherche libre</label>
+      <input id="q" class="filter-input" type="text" placeholder="Nom, métier, compétence…">
+    </div>
+    <div>
+      <label for="role" class="text-xs mb-1 block" style="color:var(--mu)">Type</label>
+      <select id="role" class="filter-input">
+        <option value="">Tous</option>
+        <option value="particulier">Particulier</option>
+        <option value="entreprise">Entreprise</option>
+      </select>
+    </div>
+    <div>
+      <label for="country" class="text-xs mb-1 block" style="color:var(--mu)">Pays</label>
+      <select id="country" class="filter-input"><option value="">Tous les pays</option></select>
+    </div>
+    <div>
+      <button onclick="Talents.search()" class="btn bp" style="width:100%">
+        <i class="fa-solid fa-magnifying-glass text-xs"></i>Chercher
+      </button>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <div class="text-xs" style="color:var(--mu)"><span id="count">—</span> résultat(s)</div>
+    <button onclick="Talents.reset()" class="text-xs font-semibold" style="color:var(--ac);background:none;border:none;cursor:pointer;font-family:inherit">
+      <i class="fa-solid fa-rotate-left"></i> Réinitialiser
+    </button>
+  </div>
+
+  <div id="results" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+</div>
+</main>
+
+<script src="assets/ui.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
+
+const Talents=(()=>{
+  let all=[];
+
+  async function load(){
+    const g=$('results');
+    await UI.load({
+      container:g,
+      skeletonHtml:UI.skeleton.cards(6),
+      loader:()=>UI.withTimeout(DB.searchTalents({limit:100}), 12000),
+      onRender:(list)=>{
+        all=list;
+        render(list);
+      }
+    });
+  }
+
+  function render(list){
+    const g=$('results');
+    $('count').textContent=list.length;
+
+    if(!list.length){
+      g.innerHTML=UI.empty(
+        'fa-user-slash',
+        'Aucun talent trouvé',
+        'Essayez d\'élargir vos critères ou parcourez tous les profils.',
+        `<button onclick="Talents.reset()" class="btn bo text-xs">Voir tous les talents</button>`
+      );
+      return;
+    }
+
+    g.innerHTML=list.map(p=>{
+      const skills=(p.skills||'').split(',').map(s=>s.trim()).filter(Boolean).slice(0,3);
+      const avatar=p.avatar_url
+        ?`<img src="${p.avatar_url}" alt="${esc(p.full_name)}" class="w-14 h-14 rounded-full object-cover shrink-0" style="border:1px solid var(--bd)">`
+        :`<div class="w-14 h-14 rounded-full grid place-items-center font-bold text-sm shrink-0" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent)">${initials(p.full_name)}</div>`;
+      return `
+      <article class="talent-card">
+        <div class="flex items-start gap-3 mb-3">
+          ${avatar}
+          <div class="min-w-0 flex-1">
+            <div class="font-semibold text-sm truncate" style="color:var(--ink)">${esc(p.full_name)}</div>
+            ${p.job_title?`<div class="text-xs truncate" style="color:var(--ac)">${esc(p.job_title)}</div>`:''}
+            ${p.city?`<div class="text-[10px] flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot"></i>${esc(p.city)}</div>`:''}
+          </div>
+        </div>
+        ${skills.length?`<div class="flex flex-wrap gap-1 mb-3">${skills.map(s=>`<span class="skill-tag">${esc(s)}</span>`).join('')}</div>`:''}
+        <p class="text-xs leading-relaxed mb-4 flex-1" style="color:var(--mu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(p.bio||'Membre AfroPulse.')}</p>
+        <div class="flex gap-2">
+          <a href="profil-public.html?id=${encodeURIComponent(p.id)}" class="btn bo flex-1 text-xs">Voir</a>
+          <button onclick="contact('${esc(p.id)}','${esc(p.full_name)}')" class="btn bp text-xs" style="padding:.6rem .8rem">
+            <i class="fa-solid fa-comment"></i>
+          </button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  async function search(){
+    const g=$('results');
+    await UI.load({
+      container:g,
+      skeletonHtml:UI.skeleton.cards(6),
+      loader:()=>UI.withTimeout(DB.searchTalents({
+        q:$('q').value.trim(),
+        role:$('role').value,
+        country:$('country').value
+      }), 12000),
+      onRender:render
+    });
+  }
+
+  function reset(){
+    $('q').value='';$('role').value='';$('country').value='';
+    render(all);
+  }
+
+  return{load,search,reset};
+})();
+
+async function contact(id,name){
+  if(!Auth.requireLogin())return;
+  const me=Auth.getUser();
+  if(me.id===id){UI.toast('Vous ne pouvez pas vous contacter vous-même.','warn');return}
+  const prefill=`Bonjour ${name.split(' ')[0]}, j'ai vu votre profil sur AfroPulse et j'aimerais échanger.`;
+  try{
+    await DB.sendMessage({
+      senderId:me.id,
+      senderName:Auth.getProfile()?.full_name||me.email,
+      recipientId:id,
+      recipientName:name,
+      conversationId:DB._convIdPublic(me.id,id),
+      content:prefill
+    });
+    location.href=`messages.html?with=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`;
+  }catch(e){
+    console.error(e);
+    UI.toast('Erreur : '+e.message,'error');
+  }
+}
+
+addEventListener('DOMContentLoaded',async()=>{
+  await Locations.fillCountries($('country'));
+  await new Promise(r=>setTimeout(r,600));
+  await Talents.load();
+
+  $('q').addEventListener('keydown',e=>{if(e.key==='Enter')Talents.search()});
+  $('role').addEventListener('change',()=>Talents.search());
+  $('country').addEventListener('change',()=>Talents.search());
+});
+</script>
+</body>
+</html>

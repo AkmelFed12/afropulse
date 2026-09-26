@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Messages — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.msg-layout{display:grid;grid-template-columns:1fr;gap:1rem;height:calc(100vh - 200px);min-height:520px}
+@media(min-width:768px){.msg-layout{grid-template-columns:320px 1fr}}
+.conv-list{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;overflow-y:auto}
+.conv-item{padding:.9rem 1rem;border-bottom:1px solid var(--bd);cursor:pointer;transition:.15s;display:flex;gap:.75rem;align-items:center}
+.conv-item:hover{background:var(--bg)}
+.conv-item.active{background:color-mix(in srgb,var(--ac) 8%,transparent);border-left:3px solid var(--ac)}
+.conv-item .avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;font-size:.75rem}
+.conv-unread{background:var(--er);color:#fff;font-size:.6rem;font-weight:700;padding:.15rem .4rem;border-radius:999px;margin-left:auto}
+.chat-panel{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.75rem}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+.msg{padding:.65rem 1rem;border-radius:1rem;max-width:78%;word-wrap:break-word;font-size:.85rem;line-height:1.4}
+.msg.me{align-self:flex-end;background:var(--ac);color:#fff;border-bottom-right-radius:.25rem}
+.msg.them{align-self:flex-start;background:var(--bg);border:1px solid var(--bd);border-bottom-left-radius:.25rem}
+.msg-time{font-size:.6rem;opacity:.6;margin-top:.25rem}
+.chat-input{padding:1rem;border-top:1px solid var(--bd);display:flex;gap:.5rem;align-items:flex-end}
+.chat-input textarea{resize:none;max-height:120px;min-height:44px}
+.empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--mu)}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-6xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <span class="chip mb-3"><i class="fa-solid fa-comments text-[10px]"></i>Messagerie</span>
+    <h1 class="text-2xl sm:text-3xl font-bold" style="color:var(--ink)">Mes messages</h1>
+    <p class="text-sm mt-1" style="color:var(--mu)">Échangez directement avec les autres membres du réseau.</p>
+  </div>
+
+  <div class="msg-layout">
+    <aside class="conv-list" id="convList">
+      <div class="p-4 text-center text-xs" style="color:var(--mu)"><i class="fa-solid fa-circle-notch fa-spin"></i> Chargement…</div>
+    </aside>
+
+    <section class="chat-panel" id="chatPanel">
+      <div class="empty-chat" id="emptyChat">
+        <i class="fa-solid fa-comments text-3xl mb-3" style="color:var(--ac);opacity:.4"></i>
+        <div class="font-semibold mb-1" style="color:var(--ink)">Sélectionnez une conversation</div>
+        <div class="text-xs">Ou démarrez-en une depuis une candidature, un profil ou une mission.</div>
+      </div>
+
+      <div id="chatContent" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+        <div class="chat-header">
+          <button onclick="Chat.closeChat()" class="md:hidden w-8 h-8 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--bg);cursor:pointer"><i class="fa-solid fa-arrow-left text-xs"></i></button>
+          <div id="chatAvatar" class="avatar" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.75rem;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">?</div>
+          <div class="flex-1 min-w-0">
+            <div id="chatName" class="font-semibold text-sm truncate" style="color:var(--ink)">—</div>
+            <div class="text-[10px]" style="color:var(--mu)">Conversation privée</div>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <textarea id="msgInput" class="input" rows="1" placeholder="Écrivez un message…"></textarea>
+          <button onclick="Chat.send()" class="btn bp" style="padding:.7rem .9rem" id="sendBtn"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
+
+<script src="assets/ui.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+
+const Chat=(()=>{
+  let current=null;
+  let pollInterval=null;
+
+  async function loadConversations(){
+    const list=$('convList');
+    try{
+      const convs=await DB.getConversations();
+      if(!convs.length){
+        list.innerHTML=`<div class="p-6 text-center text-xs" style="color:var(--mu)">
+          <i class="fa-solid fa-inbox text-2xl mb-2 block" style="opacity:.4"></i>
+          Aucune conversation pour le moment.
+          <div class="mt-3"><a href="particulier.html" class="text-xs font-semibold" style="color:var(--ac)">Explorer les missions</a></div>
+        </div>`;
+        return;
+      }
+      list.innerHTML=convs.map(c=>{
+        const ini=initials(c.otherName);
+        const dt=new Date(c.lastAt);
+        const time=dt.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+        return `<div class="conv-item ${current?.conversationId===c.conversationId?'active':''}" onclick="Chat.open('${c.conversationId}','${esc(c.otherId)}','${esc(c.otherName)}')">
+          <div class="avatar" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">${ini}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <div class="font-semibold text-xs truncate" style="color:var(--ink)">${esc(c.otherName)}</div>
+              <div class="text-[10px] ml-auto" style="color:var(--mu)">${time}</div>
+            </div>
+            <div class="text-xs truncate mt-0.5" style="color:var(--mu)">${esc(c.lastMessage)}</div>
+          </div>
+          ${c.unread?`<span class="conv-unread">${c.unread}</span>`:''}
+        </div>`;
+      }).join('');
+    }catch(e){
+      console.error(e);
+      list.innerHTML=`<div class="p-6 text-center text-xs" style="color:var(--er)">Erreur de chargement</div>`;
+    }
+  }
+
+  async function open(conversationId,otherId,otherName){
+    current={conversationId,otherId,otherName};
+    $('emptyChat').classList.add('hidden');
+    $('chatContent').classList.remove('hidden');
+    $('chatAvatar').textContent=initials(otherName);
+    $('chatName').textContent=otherName;
+    await DB.markConversationRead(conversationId);
+    await loadMessages();
+    await loadConversations();
+    if(pollInterval)clearInterval(pollInterval);
+    pollInterval=setInterval(loadMessages,5000);
+  }
+
+  async function loadMessages(){
+    if(!current)return;
+    const container=$('chatMessages');
+    try{
+      const msgs=await DB.getMessages(current.conversationId);
+      const me=Auth.getUser()?.id;
+      if(!msgs.length){
+        container.innerHTML=`<div class="text-center text-xs my-auto" style="color:var(--mu)">Aucun message. Commencez la conversation.</div>`;
+        return;
+      }
+      const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<40;
+      container.innerHTML=msgs.map(m=>{
+        const mine=m.senderId===me;
+        const time=new Date(m.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        return `<div class="msg ${mine?'me':'them'}">${esc(m.content)}<div class="msg-time">${time}</div></div>`;
+      }).join('');
+      if(wasAtBottom)container.scrollTop=container.scrollHeight;
+    }catch(e){console.error(e)}
+  }
+
+  async function send(){
+    if(!current)return;
+    const input=$('msgInput');
+    const content=input.value.trim();
+    if(!content)return;
+    const btn=$('sendBtn');
+    btn.disabled=true;
+    try{
+      const p=Auth.getProfile(),u=Auth.getUser();
+      await DB.sendMessage({
+        senderId:u.id,senderName:p?.full_name||u.email,
+        recipientId:current.otherId,recipientName:current.otherName,
+        conversationId:current.conversationId,content
+      });
+      try{
+        const target=await DB.getProfileById(current.otherId);
+        if(target?.email){
+          const tpl=DB.templateMessage({sender:p?.full_name||u.email,preview:content.slice(0,100)});
+          DB.notify({recipientId:current.otherId,to:target.email,toName:target.full_name,subject:tpl.subject,htmlBody:tpl.html,type:'message'});
+        }
+        DB.createNotification({
+          userId:current.otherId,type:'message',
+          title:`Nouveau message de ${p?.full_name||u.email}`,
+          body:content.slice(0,80),
+          link:'messages.html',
+          icon:'fa-comment'
+        });
+      }catch(e){}
+      input.value='';
+      input.style.height='auto';
+      await loadMessages();
+      await loadConversations();
+      const container=$('chatMessages');
+      container.scrollTop=container.scrollHeight;
+    }catch(e){
+      console.error(e);
+      alert('Erreur : '+e.message);
+    }
+    btn.disabled=false;
+  }
+
+  function closeChat(){
+    current=null;
+    if(pollInterval)clearInterval(pollInterval);
+    $('chatContent').classList.add('hidden');
+    $('emptyChat').classList.remove('hidden');
+    loadConversations();
+  }
+
+  function bindInput(){
+    const input=$('msgInput');
+    input.addEventListener('input',()=>{
+      input.style.height='auto';
+      input.style.height=Math.min(input.scrollHeight,120)+'px';
+    });
+    input.addEventListener('keydown',e=>{
+      if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}
+    });
+  }
+
+  return{init:async()=>{
+    bindInput();
+    await loadConversations();
+    const params=new URLSearchParams(location.search);
+    const withId=params.get('with');
+    const withName=params.get('name');
+    if(withId&&withName){
+      const me=Auth.getUser()?.id;
+      const convId=DB._convIdPublic(me,withId);
+      await open(convId,withId,withName);
+    }
+  },open,send,closeChat,loadMessages,loadConversations};
+})();
+
+addEventListener('DOMContentLoaded',async()=>{
+  await new Promise(r=>setTimeout(r,600));
+  if(!Auth.requireLogin())return;
+  await Chat.init();
+});
+</script>
+</body>
+</html>

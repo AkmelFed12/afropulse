@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mes activités — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.tabs-bar{display:inline-flex;gap:.25rem;padding:.25rem;border-radius:.75rem;background:var(--sf);border:1px solid var(--bd)}
+.tabs-bar button{padding:.5rem 1rem;border-radius:.5rem;font-size:.75rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;transition:.2s}
+.tabs-bar button.on{background:var(--ac);color:#fff}
+.item-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1rem;transition:.2s}
+.item-card:hover{border-color:var(--ac)}
+.bdg{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;white-space:nowrap}
+.bdg.w{background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)}
+.bdg.o{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.bdg.k{background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er)}
+.bdg.b{background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)}
+.act{padding:.4rem .75rem;font-size:.7rem;font-weight:600;border-radius:.45rem;border:1px solid var(--bd);background:var(--sf);color:var(--ink);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.3rem}
+.act:hover{background:var(--bg)}
+.act-gold{border-color:color-mix(in srgb,var(--gd) 40%,transparent);color:var(--gd);background:color-mix(in srgb,var(--gd) 8%,transparent)}
+.empty{padding:3rem 1rem;text-align:center;color:var(--mu);font-size:.85rem}
+.empty i{display:block;font-size:2rem;margin-bottom:.75rem;opacity:.4}
+.modal-bg{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+.modal-bg.on{display:flex}
+.rate-input{display:flex;gap:.4rem;font-size:1.75rem;color:var(--mu);cursor:pointer;justify-content:center}
+.rate-input i{transition:.15s}
+.rate-input i.active{color:var(--gd);transform:scale(1.1)}
+.rate-input i:hover{transform:scale(1.2)}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-4xl mx-auto px-4 py-12">
+  <div class="mb-8">
+    <span class="chip mb-4">Mes activités</span>
+    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Historique</h1>
+    <p class="text-sm" style="color:var(--mu)">Toutes vos candidatures et demandes de contact.</p>
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-3 items-center">
+    <div class="tabs-bar" id="tabsBar">
+      <button data-tab="all" class="on">Tout</button>
+      <button data-tab="applications">Candidatures</button>
+      <button data-tab="contacts">Contacts</button>
+    </div>
+    <button onclick="Page.load()" class="btn bo text-xs"><i class="fa-solid fa-rotate"></i>Rafraîchir</button>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+</div>
+</main>
+
+<div id="reviewModal" class="modal-bg">
+  <div class="w-full max-w-md p-6 rounded-2xl" style="background:var(--sf);border:1px solid var(--bd)">
+    <div class="flex items-center justify-between mb-4">
+      <div class="font-bold" style="color:var(--ink)">Noter l'entreprise</div>
+      <button id="closeReview" class="w-8 h-8 rounded-lg grid place-items-center" style="color:var(--mu);background:none;border:none;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="text-center mb-4">
+      <div class="text-sm mb-2" style="color:var(--mu)">Votre note</div>
+      <div class="rate-input" id="rateInput">
+        <i class="fa-solid fa-star" data-v="1"></i>
+        <i class="fa-solid fa-star" data-v="2"></i>
+        <i class="fa-solid fa-star" data-v="3"></i>
+        <i class="fa-solid fa-star" data-v="4"></i>
+        <i class="fa-solid fa-star" data-v="5"></i>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label for="reviewComment" class="lbl">Commentaire (optionnel)</label>
+      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience…" maxlength="500"></textarea>
+    </div>
+    <p id="reviewError" class="hidden text-xs mb-3" style="color:var(--er)"></p>
+    <div class="flex gap-2">
+      <button id="cancelReview" class="btn bo flex-1">Annuler</button>
+      <button id="submitReview" class="btn bp flex-1">Publier</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tab='all',apps=[],contacts=[];
+let reviewTarget=null,selectedRating=0;
+
+const fmtDate=iso=>{
+  const d=new Date(iso),diff=(Date.now()-d)/1000;
+  if(diff<60)return 'à l\'instant';
+  if(diff<3600)return `il y a ${Math.floor(diff/60)} min`;
+  if(diff<86400)return `il y a ${Math.floor(diff/3600)} h`;
+  if(diff<604800)return `il y a ${Math.floor(diff/86400)} j`;
+  return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+};
+
+const statusBadge=s=>{
+  if(s==='acceptee')return '<span class="bdg o"><i class="fa-solid fa-check"></i>Acceptée</span>';
+  if(s==='refusee')return '<span class="bdg k"><i class="fa-solid fa-xmark"></i>Refusée</span>';
+  if(s==='vue')return '<span class="bdg b"><i class="fa-solid fa-eye"></i>Vue</span>';
+  return '<span class="bdg w"><i class="fa-solid fa-clock"></i>Envoyée</span>';
+};
+
+function resetModal(){
+  selectedRating=0;reviewTarget=null;
+  $('reviewComment').value='';$('reviewError').classList.add('hidden');
+  document.querySelectorAll('#rateInput i').forEach(i=>{i.classList.remove('active');i.style.color=''});
+}
+document.querySelectorAll('#rateInput i').forEach(star=>{
+  star.addEventListener('click',()=>{
+    selectedRating=parseInt(star.dataset.v);
+    document.querySelectorAll('#rateInput i').forEach(s=>{
+      s.classList.toggle('active',parseInt(s.dataset.v)<=selectedRating);
+    });
+  });
+});
+$('closeReview').onclick=()=>{$('reviewModal').classList.remove('on');resetModal()};
+$('cancelReview').onclick=()=>{$('reviewModal').classList.remove('on');resetModal()};
+$('reviewModal').addEventListener('click',e=>{if(e.target.id==='reviewModal'){$('reviewModal').classList.remove('on');resetModal()}});
+
+$('submitReview').onclick=async()=>{
+  const err=$('reviewError');err.classList.add('hidden');
+  if(!selectedRating){err.textContent='Choisissez une note.';err.classList.remove('hidden');return}
+  const btn=$('submitReview');btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  try{
+    const p=Auth.getProfile(),u=Auth.getUser();
+    await DB.saveReview({
+      authorId:u.id,authorName:p?.full_name||u.email,authorRole:p?.role||'particulier',
+      targetId:reviewTarget.id,targetRole:'entreprise',
+      rating:selectedRating,comment:$('reviewComment').value.trim()||null,
+      missionTitle:reviewTarget.mission||null
+    });
+    $('reviewModal').classList.remove('on');resetModal();
+    alert('Avis publié avec succès.');
+  }catch(e){
+    err.textContent=e.message;err.classList.remove('hidden');
+    btn.disabled=false;btn.textContent='Publier';
+  }
+};
+
+async function openReview(id,name,mission){
+  const me=Auth.getUser();
+  if(!me)return;
+  if(me.id===id){alert('Vous ne pouvez pas vous noter vous-même.');return}
+  const already=await DB.hasReviewed(me.id,id);
+  if(already){alert('Vous avez déjà laissé un avis sur cette entreprise.');return}
+  reviewTarget={id,name,mission};resetModal();
+  $('reviewModal').classList.add('on');
+}
+
+async function load(){
+  try{
+    [apps,contacts]=await Promise.all([DB.getApplications(),DB.getContacts()]);
+  }catch(e){apps=[];contacts=[]}
+  render();
+}
+
+function render(){
+  const list=$('list');
+  let html='';
+
+  if(tab==='all'||tab==='applications'){
+    if(apps.length){
+      if(tab==='all')html+=`<div class="text-xs font-bold uppercase tracking-wider mt-4 mb-1" style="color:var(--mu)">Candidatures</div>`;
+      html+=apps.map(a=>`
+        <div class="item-card flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg grid place-items-center shrink-0" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-paper-plane"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2 flex-wrap">
+              <div class="min-w-0">
+                <div class="font-semibold text-sm truncate" style="color:var(--ink)">${esc(a.title)}</div>
+                <div class="text-xs" style="color:var(--mu)">${esc(a.company)}${a.budget?` · <strong style="color:var(--ok)">${esc(a.budget)} FCFA</strong>`:''}</div>
+              </div>
+              ${statusBadge(a.status)}
+            </div>
+            ${a.message?`<p class="text-xs mt-2 italic" style="color:var(--mu)">« ${esc(a.message)} »</p>`:''}
+            <div class="flex items-center justify-between gap-2 mt-2 flex-wrap">
+              <span class="text-[10px]" style="color:var(--mu)"><i class="fa-regular fa-clock mr-1"></i>${fmtDate(a.createdAt)}</span>
+              <div class="flex gap-2">
+                ${a.status==='acceptee' && a.businessId?`
+                  <button class="act act-gold" data-review="${esc(a.businessId)}" data-reviewname="${esc(a.company)}" data-mission="${esc(a.title)}"><i class="fa-solid fa-star"></i>Noter</button>
+                `:''}
+                <button onclick="Page.delApp('${a.id}')" class="act" style="color:var(--er);border-color:color-mix(in srgb,var(--er) 40%,transparent)"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  if(tab==='all'||tab==='contacts'){
+    if(contacts.length){
+      if(tab==='all')html+=`<div class="text-xs font-bold uppercase tracking-wider mt-6 mb-1" style="color:var(--mu)">Contacts</div>`;
+      html+=contacts.map(c=>{
+        const isMentor=c.type==='mentorat';
+        const icon=isMentor?'fa-globe':'fa-arrows-rotate';
+        const color=isMentor?'var(--gd)':'var(--ac)';
+        const label=isMentor?'Mentorat':'Troc';
+        return `
+        <div class="item-card flex items-start gap-3">
+          <div class="w-10 h-10 rounded-lg grid place-items-center shrink-0" style="background:color-mix(in srgb,${color} 12%,transparent);color:${color}"><i class="fa-solid ${icon}"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2 flex-wrap">
+              <div class="min-w-0">
+                <div class="font-semibold text-sm" style="color:var(--ink)">${esc(c.target)}</div>
+                <div class="text-xs" style="color:var(--mu)">${label}</div>
+              </div>
+              ${statusBadge(c.status)}
+            </div>
+            ${c.message?`<p class="text-xs mt-2 italic" style="color:var(--mu)">« ${esc(c.message)} »</p>`:''}
+            <div class="flex items-center justify-between gap-2 mt-2">
+              <span class="text-[10px]" style="color:var(--mu)"><i class="fa-regular fa-clock mr-1"></i>${fmtDate(c.createdAt)}</span>
+              <button onclick="Page.delContact('${c.id}')" class="act" style="color:var(--er);border-color:color-mix(in srgb,var(--er) 40%,transparent)"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  if(!html){
+    html=`<div class="empty">
+      <i class="fa-solid fa-inbox"></i>
+      <div class="font-semibold mb-1" style="color:var(--ink)">Aucune activité pour le moment</div>
+      <div class="text-xs mb-5">Explorez les modules et commencez à interagir.</div>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <a href="particulier.html#troc" class="btn bo text-xs">Troc</a>
+        <a href="particulier.html#mentorat" class="btn bo text-xs">Mentorat</a>
+        <a href="particulier.html#missions" class="btn bp text-xs">Missions</a>
+      </div>
+    </div>`;
+  }
+
+  list.innerHTML=html;
+  list.querySelectorAll('[data-review]').forEach(b=>{
+    b.addEventListener('click',()=>openReview(b.dataset.review,b.dataset.reviewname,b.dataset.mission));
+  });
+}
+
+const Page={
+  async load(){await load()},
+  async delApp(id){
+    if(!confirm('Retirer cette candidature ?'))return;
+    await DB.deleteApplication(id);await load();
+  },
+  async delContact(id){
+    if(!confirm('Retirer ce contact ?'))return;
+    await DB.deleteContact(id);await load();
+  }
+};
+
+$('tabsBar').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tab]');if(!b)return;
+  $('tabsBar').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  tab=b.dataset.tab;render();
+});
+
+addEventListener('DOMContentLoaded',async()=>{
+  await new Promise(r=>setTimeout(r,600));
+  if(!Auth.requireLogin())return;
+  load();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>·</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+:root{--bg:#fafaf9;--sf:#fff;--bd:#e2e8f0;--ink:#0f172a;--mu:#64748b;--ac:#0b5fff;--gd:#b8860b;--ok:#059669;--er:#dc2626}
+.dark{--bg:#0a0e17;--sf:#111826;--bd:#1e293b;--ink:#e6edf7;--mu:#94a3b8;--ac:#3b82f6;--gd:#e0a800;--ok:#10b981;--er:#f87171}
+*{box-sizing:border-box;min-width:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;margin:0;min-height:100vh}
+.card-stat{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.15rem}
+.card-stat-ic{width:36px;height:36px;border-radius:.6rem;display:grid;place-items:center;margin-bottom:.6rem}
+.card-stat-v{font-size:1.75rem;font-weight:800;line-height:1;margin-bottom:.2rem}
+.card-stat-l{font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu)}
+.chart-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem}
+.tw{overflow-x:auto;border-radius:1rem;border:1px solid var(--bd);background:var(--sf)}
+table.tb{width:100%;border-collapse:collapse;font-size:.8rem;min-width:720px}
+table.tb th{text-align:left;padding:.75rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--bd);background:color-mix(in srgb,var(--bg) 60%,transparent)}
+table.tb td{padding:.75rem .9rem;border-bottom:1px solid var(--bd);color:var(--ink);vertical-align:middle}
+table.tb tbody tr:last-child td{border-bottom:none}
+table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
+.bd{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;white-space:nowrap}
+.bd.w{background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)}
+.bd.o{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.bd.k{background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er)}
+.act{padding:.35rem .65rem;font-size:.7rem;font-weight:600;border-radius:.45rem;border:1px solid var(--bd);background:var(--sf);color:var(--ink);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.3rem}
+.act:hover{background:var(--bg)}
+.act-ok{border-color:color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+.act-ko{border-color:color-mix(in srgb,var(--er) 40%,transparent);color:var(--er);background:color-mix(in srgb,var(--er) 8%,transparent)}
+.act-pdf{border-color:color-mix(in srgb,var(--ac) 40%,transparent);color:var(--ac);background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.tabs{display:inline-flex;gap:.2rem;padding:.2rem;border-radius:.65rem;background:var(--sf);border:1px solid var(--bd)}
+.tabs button{padding:.45rem .85rem;font-size:.72rem;font-weight:600;border-radius:.45rem;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit}
+.tabs button.on{background:var(--ac);color:#fff}
+.empty{padding:2.5rem 1rem;text-align:center;color:var(--mu);font-size:.85rem}
+.empty i{display:block;font-size:1.5rem;margin-bottom:.6rem;opacity:.4}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(150%);background:var(--sf);border:1px solid var(--bd);border-radius:.75rem;padding:.7rem 1.2rem;box-shadow:0 12px 32px -8px rgba(0,0,0,.25);font-size:.8rem;font-weight:600;color:var(--ink);z-index:200;transition:transform .35s;display:flex;align-items:center;gap:.5rem}
+.toast.on{transform:translateX(-50%) translateY(0)}
+#lockScreen{background:rgba(10,14,23,.85);backdrop-filter:blur(14px)}
+.admin-bar{border-bottom:1px solid var(--bd);background:var(--sf)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.shake{animation:shake .45s}
+.nav-admin{display:flex;gap:.25rem;overflow-x:auto;padding:.5rem 0;margin-bottom:1.5rem;border-bottom:1px solid var(--bd)}
+.nav-admin button{padding:.55rem 1rem;font-size:.8rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;border-radius:.5rem;white-space:nowrap}
+.nav-admin button.on{background:var(--ac);color:#fff}
+</style>
+</head>
+<body class="font-sans" data-no-layout data-no-life>
+
+<div id="lockScreen" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
+  <div class="w-full max-w-sm p-7 rounded-2xl shadow-2xl" style="background:var(--sf);border:1px solid var(--bd)">
+    <div class="w-12 h-12 rounded-xl grid place-items-center mb-5 mx-auto" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
+      <i class="fa-solid fa-shield-halved" style="color:var(--ac)"></i>
+    </div>
+    <h3 class="text-lg font-bold text-center mb-1">Vérification requise</h3>
+    <p class="text-sm text-center mb-6" style="color:var(--mu)">Entrez le code PIN administrateur</p>
+    <input id="lockInput" type="password" maxlength="20" placeholder="••••••••" class="input text-center text-xl font-bold mb-3 tracking-[.25em]" autocomplete="off">
+    <p id="lockErr" class="hidden text-xs text-center mb-3" style="color:var(--er)"><i class="fa-solid fa-circle-exclamation mr-1"></i>Code incorrect</p>
+    <button onclick="Lock.verify()" class="btn bp w-full"><i class="fa-solid fa-unlock text-xs"></i>Accéder</button>
+    <button onclick="location.href='index.html'" class="btn bo w-full mt-2 text-xs"><i class="fa-solid fa-arrow-left"></i>Retour à l'accueil</button>
+  </div>
+</div>
+
+<div id="adminContent" style="visibility:hidden">
+  <header class="admin-bar sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="w-8 h-8 rounded-lg grid place-items-center" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
+        </span>
+        <span class="text-sm font-bold">Afro<span style="color:var(--ac)">Pulse</span> <span class="font-normal" style="color:var(--mu)">/ Administration</span></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="Theme.toggle()" aria-label="Thème" class="w-8 h-8 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--bg);cursor:pointer"><i data-theme-icon class="fa-solid fa-moon text-xs"></i></button>
+        <button onclick="Admin.reload()" class="act"><i class="fa-solid fa-rotate"></i>Rafraîchir</button>
+        <button onclick="Admin.logout()" class="act"><i class="fa-solid fa-right-from-bracket"></i>Déconnexion</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="nav-admin" id="navAdmin">
+      <button data-tab="overview" class="on">Vue d'ensemble</button>
+      <button data-tab="stats">Statistiques</button>
+      <button data-tab="subs">Abonnements</button>
+      <button data-tab="rccm">RCCM</button>
+    </div>
+
+    <!-- Vue d'ensemble -->
+    <div id="tab-overview" class="tab-content">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-clock"></i></div><div class="card-stat-v" id="sSW" style="color:var(--gd)">0</div><div class="card-stat-l">Abonnements en attente</div></div>
+        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-file-shield"></i></div><div class="card-stat-v" id="sRW" style="color:var(--gd)">0</div><div class="card-stat-l">RCCM en attente</div></div>
+        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-circle-check"></i></div><div class="card-stat-v" id="sOk" style="color:var(--ok)">0</div><div class="card-stat-l">Validés</div></div>
+        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er)"><i class="fa-solid fa-circle-xmark"></i></div><div class="card-stat-v" id="sKo" style="color:var(--er)">0</div><div class="card-stat-l">Rejetés</div></div>
+      </div>
+
+      <section class="mb-8">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <h2 class="text-base font-bold">Abonnements récents</h2>
+          <div class="tabs" data-t="sub">
+            <button data-f="all" class="on">Tous</button>
+            <button data-f="en_attente">En attente</button>
+            <button data-f="actif">Actifs</button>
+            <button data-f="rejete">Rejetés</button>
+          </div>
+        </div>
+        <div class="tw"><table class="tb">
+          <thead><tr><th>Nom</th><th>Formule</th><th>Montant</th><th>Passerelle</th><th>Réf. SMS</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="tbS"></tbody>
+        </table></div>
+      </section>
+
+      <section class="mb-8">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <h2 class="text-base font-bold">Dossiers RCCM</h2>
+          <div class="tabs" data-t="rccm">
+            <button data-f="all" class="on">Tous</button>
+            <button data-f="en_attente">En attente</button>
+            <button data-f="approuve">Approuvés</button>
+            <button data-f="rejete">Rejetés</button>
+          </div>
+        </div>
+        <div class="tw"><table class="tb">
+          <thead><tr><th>Référence</th><th>Entreprise</th><th>RCCM</th><th>CC</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="tbR"></tbody>
+        </table></div>
+      </section>
+
+      <div class="flex flex-wrap items-center justify-end gap-2 pt-4" style="border-top:1px solid var(--bd)">
+        <button onclick="Admin.seed()" class="act"><i class="fa-solid fa-flask"></i>Charger la démo</button>
+        <button onclick="Admin.clear()" class="act act-ko"><i class="fa-solid fa-trash"></i>Tout effacer</button>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div id="tab-stats" class="tab-content hidden">
+      <div class="grid lg:grid-cols-2 gap-5 mb-6">
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Inscriptions (30 derniers jours)</div>
+          <div style="height:260px"><canvas id="chartDaily"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Revenus par mois (FCFA)</div>
+          <div style="height:260px"><canvas id="chartRevenue"></canvas></div>
+        </div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-5">
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Top villes</div>
+          <div id="topCities" class="space-y-2"></div>
+        </div>
+        <div class="chart-card">
+          <div class="text-sm font-bold mb-4">Top compétences</div>
+          <div id="topSkills" class="space-y-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Abonnements -->
+    <div id="tab-subs" class="tab-content hidden">
+      <div class="tw"><table class="tb">
+        <thead><tr><th>Nom</th><th>Formule</th><th>Montant</th><th>Passerelle</th><th>Réf. SMS</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="tbS2"></tbody>
+      </table></div>
+    </div>
+
+    <!-- RCCM -->
+    <div id="tab-rccm" class="tab-content hidden">
+      <div class="tw"><table class="tb">
+        <thead><tr><th>Référence</th><th>Entreprise</th><th>RCCM</th><th>CC</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="tbR2"></tbody>
+      </table></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i><span id="toastMsg">—</span></div>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script>
+const Theme=(()=>{
+  const K='ap-theme',r=document.documentElement;
+  const apply=m=>{r.classList.toggle('dark',m==='dark');document.querySelectorAll('[data-theme-icon]').forEach(i=>{i.className=m==='dark'?'fa-solid fa-sun text-xs':'fa-solid fa-moon text-xs'})};
+  return{
+    toggle(){const n=r.classList.contains('dark')?'light':'dark';localStorage.setItem(K,n);apply(n)},
+    init(){apply(localStorage.getItem(K)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))}
+  };
+})();
+
+const Lock=(()=>{
+  const HASH='c366e74277c0026a2ebf8ef9f75315e32171b555ff9d4cd01aeb116609c847f4';
+  const sha=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+  return{
+    init(){
+      const lock=document.getElementById('lockScreen'),content=document.getElementById('adminContent');
+      if(sessionStorage.getItem('ap-admin')==='1'){content.style.visibility='visible';lock.classList.add('hidden');lock.classList.remove('flex');return}
+      lock.classList.remove('hidden');lock.classList.add('flex');
+      const i=document.getElementById('lockInput');
+      if(i){i.addEventListener('keypress',e=>{if(e.key==='Enter')Lock.verify()});setTimeout(()=>i.focus(),100)}
+    },
+    async verify(){
+      const v=document.getElementById('lockInput').value.trim();
+      const lock=document.getElementById('lockScreen'),err=document.getElementById('lockErr'),box=lock.querySelector('.w-full.max-w-sm');
+      if(await sha(v)===HASH){
+        sessionStorage.setItem('ap-admin','1');
+        lock.classList.add('hidden');lock.classList.remove('flex');
+        document.getElementById('adminContent').style.visibility='visible';
+        Admin.reload();
+      }else{
+        err.classList.remove('hidden');box.classList.add('shake');
+        setTimeout(()=>box.classList.remove('shake'),500);
+        const i=document.getElementById('lockInput');i.value='';i.focus();
+      }
+    }
+  };
+})();
+
+/* ═══════════════════════════════════════════
+   Ouverture sécurisée d'un PDF RCCM
+   - Récupère une URL signée (valable 1h)
+   - Ouvre dans un nouvel onglet
+   ═══════════════════════════════════════════ */
+async function ouvrirRccm(pathOrUrl){
+  if(!pathOrUrl){
+    alert('Aucun document associé à ce dossier.');
+    return;
+  }
+
+  // Petit loader visuel dans un onglet
+  const w = window.open('', '_blank');
+  if(w){
+    w.document.write(`
+      <html><head><title>Chargement du PDF…</title></head>
+      <body style="font-family:system-ui,sans-serif;padding:2rem;color:#0f172a">
+        <p>🔐 Génération du lien sécurisé…</p>
+      </body></html>
+    `);
+  }
+
+  try{
+    const url = await DB.getRccmSignedUrl(pathOrUrl, 3600);
+    if(!url){
+      if(w) w.close();
+      alert("Impossible de générer le lien (droits insuffisants ou fichier absent).");
+      return;
+    }
+    if(w){
+      w.location.href = url;
+    }else{
+      // Popup bloquée → fallback
+      window.location.href = url;
+    }
+  }catch(e){
+    console.error('Erreur ouverture RCCM :', e);
+    if(w) w.close();
+    alert('Erreur lors de l\'ouverture du document.');
+  }
+}
+window.ouvrirRccm = ouvrirRccm;
+
+const Admin=(()=>{
+  const $=id=>document.getElementById(id);
+  const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
+  const dstr=iso=>new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  let S=[],R=[],fS='all',fR='all';
+  let chartDaily=null,chartRevenue=null;
+
+  const bd=s=>s==='actif'||s==='approuve'
+    ?`<span class="bd o"><i class="fa-solid fa-circle-check"></i>${s==='actif'?'Actif':'Approuvé'}</span>`
+    :s==='rejete'
+    ?`<span class="bd k"><i class="fa-solid fa-circle-xmark"></i>Rejeté</span>`
+    :`<span class="bd w"><i class="fa-solid fa-clock"></i>En attente</span>`;
+
+  const actS=x=>x.status==='en_attente'
+    ?`<div style="display:flex;gap:.4rem"><button class="act act-ok" onclick="Admin.setS('${x.id||x.ref}','actif')"><i class="fa-solid fa-check"></i>Valider</button><button class="act act-ko" onclick="Admin.setS('${x.id||x.ref}','rejete')"><i class="fa-solid fa-xmark"></i>Rejeter</button></div>`
+    :`<button class="act" onclick="Admin.setS('${x.id||x.ref}','en_attente')"><i class="fa-solid fa-rotate-left"></i>Réinitialiser</button>`;
+
+  /* ── Actions RCCM : bouton "Voir PDF" ajouté si un document est présent ── */
+  const actR=x=>{
+    const hasDoc = !!(x.documentUrl || x.fileName);
+    const voirPdf = hasDoc
+      ? `<button class="act act-pdf" onclick="ouvrirRccm('${(x.documentUrl||x.fileName||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-file-pdf"></i>Voir PDF</button>`
+      : `<span class="act" style="opacity:.5;cursor:not-allowed" title="Aucun document"><i class="fa-solid fa-file-slash"></i>Pas de PDF</span>`;
+
+    const actions = x.status==='en_attente'
+      ? `<button class="act act-ok" onclick="Admin.setR('${x.id||x.ref}','approuve')"><i class="fa-solid fa-check"></i>Valider</button>
+         <button class="act act-ko" onclick="Admin.setR('${x.id||x.ref}','rejete')"><i class="fa-solid fa-xmark"></i>Rejeter</button>`
+      : `<button class="act" onclick="Admin.setR('${x.id||x.ref}','en_attente')"><i class="fa-solid fa-rotate-left"></i>Réinitialiser</button>`;
+
+    return `<div style="display:flex;gap:.4rem;flex-wrap:wrap">${voirPdf}${actions}</div>`;
+  };
+
+  function toast(m,ok=true){
+    $('toastMsg').textContent=m;
+    const i=$('toast').querySelector('i');
+    i.className=ok?'fa-solid fa-circle-check':'fa-solid fa-circle-exclamation';
+    i.style.color=ok?'var(--ok)':'var(--er)';
+    $('toast').classList.add('on');
+    clearTimeout(toast._t);
+    toast._t=setTimeout(()=>$('toast').classList.remove('on'),2200);
+  }
+
+  function stats(){
+    $('sSW').textContent=S.filter(x=>x.status==='en_attente').length;
+    $('sRW').textContent=R.filter(x=>x.status==='en_attente').length;
+    $('sOk').textContent=S.filter(x=>x.status==='actif').length+R.filter(x=>x.status==='approuve').length;
+    $('sKo').textContent=S.filter(x=>x.status==='rejete').length+R.filter(x=>x.status==='rejete').length;
+  }
+
+  function renderS(target){
+    const rows=S.filter(x=>fS==='all'||x.status===fS);
+    const tb=$(target||'tbS');if(!tb)return;
+    if(!rows.length){tb.innerHTML=`<tr><td colspan="8" class="empty"><i class="fa-solid fa-inbox"></i>Aucun abonnement.</td></tr>`;return}
+    tb.innerHTML=rows.map(x=>`<tr>
+      <td style="font-weight:600">${x.name||'—'}</td>
+      <td>${x.plan||'—'}<div style="font-size:.7rem;color:var(--mu)">${x.cycle==='monthly'||x.cycle==='m'?'Mensuel':'Annuel'}</div></td>
+      <td style="font-weight:600">${fmt(x.amount||0)} FCFA</td>
+      <td>${x.gateway==='WAVE'?'<i class="fa-solid fa-bolt" style="color:#1dc3f1"></i> Wave':'<i class="fa-solid fa-mobile-screen" style="color:#ff6600"></i> Orange'}</td>
+      <td style="font-family:monospace;font-size:.75rem">${x.ref||'—'}</td>
+      <td style="font-size:.75rem;color:var(--mu)">${x.createdAt?dstr(x.createdAt):'—'}</td>
+      <td>${bd(x.status)}</td><td>${actS(x)}</td></tr>`).join('');
+  }
+
+  function renderR(target){
+    const rows=R.filter(x=>fR==='all'||x.status===fR);
+    const tb=$(target||'tbR');if(!tb)return;
+    if(!rows.length){tb.innerHTML=`<tr><td colspan="7" class="empty"><i class="fa-solid fa-inbox"></i>Aucun dossier RCCM.</td></tr>`;return}
+    tb.innerHTML=rows.map(x=>`<tr>
+      <td style="font-family:monospace;font-size:.75rem">${x.ref||'—'}</td>
+      <td style="font-weight:600">${x.company||'—'}</td>
+      <td style="font-family:monospace;font-size:.75rem">${x.rccm||'—'}</td>
+      <td style="font-family:monospace;font-size:.75rem">${x.cc||'—'}</td>
+      <td style="font-size:.75rem;color:var(--mu)">${x.createdAt?dstr(x.createdAt):'—'}</td>
+      <td>${bd(x.status)}</td><td>${actR(x)}</td></tr>`).join('');
+  }
+
+  async function load(){
+    try{[S,R]=await Promise.all([DB.getSubscriptions(),DB.getRccm()])}catch(e){S=[];R=[]}
+  }
+
+  async function renderStats(){
+    const {daily,revenue,topCities,topSkills}=await DB.getAdminStats();
+    const isDark=document.documentElement.classList.contains('dark');
+    const textColor=isDark?'#e6edf7':'#0f172a';
+    const gridColor=isDark?'rgba(148,163,184,0.1)':'rgba(15,23,42,0.08)';
+
+    if(chartDaily)chartDaily.destroy();
+    const ctxD=$('chartDaily');
+    if(ctxD){
+      chartDaily=new Chart(ctxD,{
+        type:'line',
+        data:{
+          labels:daily.map(d=>new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),
+          datasets:[
+            {label:'Particuliers',data:daily.map(d=>d.particuliers),borderColor:'#0b5fff',backgroundColor:'rgba(11,95,255,.1)',tension:.35,fill:true},
+            {label:'Entreprises',data:daily.map(d=>d.entreprises),borderColor:'#b8860b',backgroundColor:'rgba(184,134,11,.1)',tension:.35,fill:true}
+          ]
+        },
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{labels:{color:textColor,font:{size:11}}}},
+          scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor},beginAtZero:true}}
+        }
+      });
+    }
+
+    if(chartRevenue)chartRevenue.destroy();
+    const ctxR=$('chartRevenue');
+    if(ctxR){
+      chartRevenue=new Chart(ctxR,{
+        type:'bar',
+        data:{
+          labels:revenue.map(r=>new Date(r.mois+'-01').toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})),
+          datasets:[{label:'Revenus FCFA',data:revenue.map(r=>r.total),backgroundColor:'#10b981',borderRadius:6}]
+        },
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)+' FCFA'}}},
+          scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{display:false}},y:{ticks:{color:textColor,font:{size:10},callback:v=>fmt(v)},grid:{color:gridColor},beginAtZero:true}}
+        }
+      });
+    }
+
+    const cCities=$('topCities');
+    if(cCities){
+      const maxC=topCities[0]?.count||1;
+      cCities.innerHTML=topCities.length?topCities.map((c,i)=>`
+        <div class="flex items-center gap-3">
+          <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-semibold truncate" style="color:var(--ink)">${c.name}</span>
+              <span style="color:var(--mu)">${c.count}</span>
+            </div>
+            <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
+              <div style="height:100%;width:${(c.count/maxC*100)}%;background:linear-gradient(90deg,var(--ac),var(--gd))"></div>
+            </div>
+          </div>
+        </div>`).join(''):'<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
+    }
+
+    const cSkills=$('topSkills');
+    if(cSkills){
+      const maxS=topSkills[0]?.count||1;
+      cSkills.innerHTML=topSkills.length?topSkills.map((s,i)=>`
+        <div class="flex items-center gap-3">
+          <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-semibold truncate" style="color:var(--ink)">${s.name}</span>
+              <span style="color:var(--mu)">${s.count}</span>
+            </div>
+            <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
+              <div style="height:100%;width:${(s.count/maxS*100)}%;background:linear-gradient(90deg,var(--ok),var(--ac))"></div>
+            </div>
+          </div>
+        </div>`).join(''):'<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
+    }
+  }
+
+  return{
+    async reload(){
+      await load();
+      stats();
+      renderS('tbS');renderS('tbS2');
+      renderR('tbR');renderR('tbR2');
+      renderStats();
+    },
+    logout(){sessionStorage.removeItem('ap-admin');location.href='index.html'},
+    async setS(id,s){await DB.updateSubscriptionStatus(id,s);await this.reload();toast(s==='actif'?'Abonnement activé':s==='rejete'?'Abonnement rejeté':'Statut réinitialisé',s!=='rejete')},
+    async setR(id,s){await DB.updateRccmStatus(id,s);await this.reload();toast(s==='approuve'?'Dossier RCCM approuvé':s==='rejete'?'Dossier rejeté':'Statut réinitialisé',s!=='rejete')},
+    async seed(){
+      const n=Date.now();
+      for(const s of [
+        {ref:'TX-90812903',plan:'Entreprise Pro',cycle:'monthly',amount:15000,gateway:'WAVE',name:'Maya Studio SARL',status:'en_attente',createdAt:new Date(n-7200e3).toISOString()},
+        {ref:'TX-90812904',plan:'Jeune & Pro',cycle:'yearly',amount:21600,gateway:'ORANGE',name:'Aïcha Koné',status:'en_attente',createdAt:new Date(n-21600e3).toISOString()},
+        {ref:'TX-90812905',plan:'Entreprise VIP',cycle:'monthly',amount:35000,gateway:'WAVE',name:'SolarBox CI',status:'actif',createdAt:new Date(n-172800e3).toISOString()},
+        {ref:'TX-90812906',plan:'Jeune & Pro',cycle:'monthly',amount:2000,gateway:'ORANGE',name:'Idriss Traoré',status:'actif',createdAt:new Date(n-259200e3).toISOString()}
+      ]){try{await DB.saveSubscription(s)}catch(e){}}
+      for(const r of [
+        {ref:'AP-RCCM-A1B2C3',company:'Fintech CI',rccm:'CI-ABJ-2024-B-12345',cc:'1234567 A',fileName:'rccm-fintech.pdf',status:'en_attente',createdAt:new Date(n-10800e3).toISOString()},
+        {ref:'AP-RCCM-D4E5F6',company:'AfroCosmetics',rccm:'CI-ABJ-2023-A-98765',cc:'7654321 B',fileName:'attestation-afro.pdf',status:'en_attente',createdAt:new Date(n-36000e3).toISOString()},
+        {ref:'AP-RCCM-G7H8I9',company:'DevHub Africa',rccm:'SN-DKR-2024-A-45678',cc:'1111111 C',fileName:'rccm-devhub.pdf',status:'approuve',createdAt:new Date(n-345600e3).toISOString()},
+        {ref:'AP-RCCM-J1K2L3',company:'Faux Business',rccm:'XX-FAKE-2024-X-00000',cc:'0000000 X',fileName:'faux.pdf',status:'rejete',createdAt:new Date(n-432000e3).toISOString()}
+      ]){try{await DB.saveRccm(r)}catch(e){}}
+      await this.reload();
+      toast('Jeu de démonstration chargé');
+    },
+    async clear(){
+      if(!confirm('Effacer TOUTES les données ? Cette action est définitive.'))return;
+      try{
+        await DB.clearAllSubscriptions();
+        await DB.clearAllRccm();
+        await this.reload();
+        toast('Toutes les données ont été effacées');
+      }catch(e){console.error(e);toast('Erreur lors de la suppression',false)}
+    }
+  };
+})();
+
+document.querySelectorAll('[data-t]').forEach(w=>{
+  w.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-f]');if(!b)return;
+    w.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    if(w.dataset.t==='sub')fS=b.dataset.f;else fR=b.dataset.f;
+    Admin.reload();
+  });
+});
+
+document.querySelectorAll('#navAdmin button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#navAdmin button').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));
+    document.getElementById('tab-'+b.dataset.tab).classList.remove('hidden');
+  });
+});
+
+addEventListener('DOMContentLoaded',()=>{
+  Theme.init();
+  Lock.init();
+  if(sessionStorage.getItem('ap-admin')==='1')Admin.reload();
+});
+</script>
+</body>
+</html>

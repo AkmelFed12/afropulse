@@ -1,0 +1,9 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   AfroPulse — Point d'entrée Tailwind (source)
+   Le build génère assets/tailwind.css à partir de ce fichier.
+   NE PAS ÉDITER assets/tailwind.css directement.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

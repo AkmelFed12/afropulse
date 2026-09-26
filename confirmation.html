@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confirmation — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+@keyframes scaleIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes checkDraw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+
+.confirm-icon{width:96px;height:96px;border-radius:1.75rem;display:grid;place-items:center;margin:0 auto 1.5rem;background:color-mix(in srgb,var(--ok) 12%,transparent);border:2px solid color-mix(in srgb,var(--ok) 30%,transparent);animation:scaleIn .5s cubic-bezier(.2,.8,.2,1);position:relative}
+.confirm-icon::before{content:'';position:absolute;inset:-12px;border-radius:2rem;border:2px solid var(--ok);animation:pulseRing 2s ease-out infinite}
+.confirm-icon svg{width:52px;height:52px}
+.confirm-icon svg path{stroke-dasharray:100;stroke-dashoffset:100;animation:checkDraw .7s ease-out .3s forwards}
+
+.redirect-bar{height:3px;background:var(--bd);border-radius:2px;overflow:hidden;max-width:240px;margin:1.25rem auto 0}
+.redirect-bar-fill{height:100%;background:linear-gradient(90deg,var(--ok),var(--ac));width:0;animation:progress 5s linear forwards}
+@keyframes progress{to{width:100%}}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative min-h-screen grid place-items-center px-4 py-12">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+
+<div class="relative max-w-md w-full text-center" id="content">
+
+  <!-- État : Chargement -->
+  <div id="stateLoading">
+    <div class="w-20 h-20 mx-auto mb-6 rounded-2xl grid place-items-center" style="background:var(--sf);border:1px solid var(--bd)">
+      <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color:var(--ac)"></i>
+    </div>
+    <h1 class="text-xl font-bold mb-2">Vérification en cours…</h1>
+    <p class="text-sm" style="color:var(--mu)">Un instant, nous validons votre adresse email.</p>
+  </div>
+
+  <!-- État : Succès -->
+  <div id="stateSuccess" class="hidden">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 12.5L9.5 18L20 7" stroke="var(--ok)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h1 class="text-2xl font-bold mb-3">Email confirmé !</h1>
+    <p class="text-sm mb-2 leading-relaxed" style="color:var(--mu)">
+      Votre adresse a été vérifiée avec succès.
+    </p>
+    <p class="text-sm leading-relaxed" style="color:var(--mu)">
+      Vous allez être redirigé vers la page de connexion.
+    </p>
+
+    <div class="redirect-bar"><div class="redirect-bar-fill"></div></div>
+
+    <div class="mt-8">
+      <a href="login.html?confirmed=1" class="btn bp">
+        <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+        Se connecter maintenant
+      </a>
+    </div>
+  </div>
+
+  <!-- État : Erreur -->
+  <div id="stateError" class="hidden">
+    <div class="w-24 h-24 mx-auto mb-6 rounded-3xl grid place-items-center" style="background:color-mix(in srgb,var(--er) 12%,transparent);border:2px solid color-mix(in srgb,var(--er) 30%,transparent)">
+      <i class="fa-solid fa-triangle-exclamation text-4xl" style="color:var(--er)"></i>
+    </div>
+    <h1 class="text-xl font-bold mb-3">Lien invalide ou expiré</h1>
+    <p class="text-sm mb-6 leading-relaxed" style="color:var(--mu)" id="errorMsg">
+      Ce lien de confirmation n'est plus valide.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="signup.html" class="btn bp">
+        <i class="fa-solid fa-user-plus text-xs"></i>Se réinscrire
+      </a>
+      <a href="contact.html" class="btn bo">
+        <i class="fa-solid fa-headset text-xs"></i>Support
+      </a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/env.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   Confirmation email — Supabase envoie la session
+   dans le hash de l'URL après vérification
+   Clés lues depuis window.ENV (généré au build)
+═══════════════════════════════════════════════ */
+const SUPABASE_URL = (window.ENV && window.ENV.SUPABASE_URL) || '';
+const SUPABASE_KEY = (window.ENV && window.ENV.SUPABASE_KEY) || '';
+
+(async()=>{
+  const show=id=>{
+    document.querySelectorAll('[id^="state"]').forEach(el=>el.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  };
+
+  // Vérifie que les clés sont bien chargées
+  if(!SUPABASE_URL || !SUPABASE_KEY){
+    document.getElementById('errorMsg').textContent='Configuration manquante. Contactez le support.';
+    show('stateError');
+    return;
+  }
+
+  try{
+    const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const params=new URLSearchParams(location.search);
+    const hash=location.hash.substring(1);
+    const hashParams=new URLSearchParams(hash);
+
+    // Supabase peut renvoyer une erreur dans le hash
+    const errDesc=hashParams.get('error_description') || params.get('error_description');
+    if(errDesc){
+      document.getElementById('errorMsg').textContent=decodeURIComponent(errDesc.replace(/\+/g,' '));
+      show('stateError');
+      return;
+    }
+
+    // Récupère la session (si Supabase l'a déjà stockée dans le localStorage)
+    const {data,error}=await sb.auth.getSession();
+
+    if(error || !data?.session){
+      // Peut-être que Supabase n'a pas encore traité le hash → on attend
+      await new Promise(r=>setTimeout(r,800));
+      const retry=await sb.auth.getSession();
+      if(retry.error || !retry.data?.session){
+        document.getElementById('errorMsg').textContent='Ce lien est peut-être expiré ou déjà utilisé.';
+        show('stateError');
+        return;
+      }
+    }
+
+    // Succès
+    show('stateSuccess');
+    setTimeout(()=>{location.href='login.html?confirmed=1'},5000);
+
+  }catch(e){
+    console.error(e);
+    document.getElementById('errorMsg').textContent='Une erreur est survenue : '+e.message;
+    show('stateError');
+  }
+})();
+</script>
+</body>
+</html>

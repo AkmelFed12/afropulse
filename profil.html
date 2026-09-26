@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mon profil — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.avatar-upload{position:relative;display:inline-block;cursor:pointer}
+.avatar-upload .avatar{width:88px;height:88px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:1.75rem;font-weight:800}
+.avatar-upload .overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.5);display:grid;place-items:center;opacity:0;transition:.25s;color:#fff;font-size:.7rem;font-weight:600}
+.avatar-upload:hover .overlay{opacity:1}
+.file-drop{border:2px dashed var(--bd);border-radius:.75rem;padding:1.25rem;text-align:center;cursor:pointer;transition:.2s;background:var(--bg)}
+.file-drop:hover{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 4%,transparent)}
+.file-drop.has{border-color:var(--ok);border-style:solid;background:color-mix(in srgb,var(--ok) 6%,transparent)}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-2xl mx-auto px-4 py-12">
+
+  <div class="mb-8">
+    <span class="chip mb-4">Mon profil</span>
+    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Votre espace personnel.</h1>
+    <p class="text-sm" style="color:var(--mu)">Ces informations sont visibles par les autres membres du réseau.</p>
+  </div>
+
+  <form id="profileForm" class="card-static p-6 sm:p-8">
+
+    <div class="flex flex-col items-center pb-6 mb-6" style="border-bottom:1px solid var(--bd)">
+      <label class="avatar-upload">
+        <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" class="hidden">
+        <div id="avatarPreview" class="avatar" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:2px solid color-mix(in srgb,var(--ac) 25%,transparent)">?</div>
+        <div class="overlay"><i class="fa-solid fa-camera"></i></div>
+      </label>
+      <div class="text-xs mt-3 text-center" style="color:var(--mu)">Cliquez pour changer votre photo</div>
+      <div id="avatarMsg" class="text-[11px] mt-1 hidden"></div>
+    </div>
+
+    <div class="mb-6 text-center">
+      <div class="font-bold text-lg" id="displayName" style="color:var(--ink)">—</div>
+      <div class="text-xs" style="color:var(--mu)" id="displayEmail">—</div>
+      <div class="text-[10px] mt-1 px-2 py-0.5 rounded-full inline-block" style="background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac)" id="displayRole">—</div>
+    </div>
+
+    <div id="companyBlock" class="hidden p-4 rounded-xl mb-5" style="background:color-mix(in srgb,var(--gd) 5%,transparent);border:1px solid color-mix(in srgb,var(--gd) 20%,transparent)">
+      <div class="text-xs font-bold mb-1" style="color:var(--gd)"><i class="fa-solid fa-building mr-1"></i>Compte entreprise</div>
+      <p class="text-[11px]" style="color:var(--mu)">Ces informations seront vérifiées pour obtenir votre badge RCCM.</p>
+    </div>
+
+    <div class="space-y-5">
+      <div>
+        <label for="fullName" class="lbl" id="nameLabel">Nom complet</label>
+        <input id="fullName" class="input" type="text">
+      </div>
+
+      <div id="companyFields2" class="hidden space-y-5">
+        <div>
+          <label for="companyName" class="lbl">Raison sociale</label>
+          <input id="companyName" class="input" type="text">
+        </div>
+        <div>
+          <label for="companyRccm" class="lbl">Numéro RCCM</label>
+          <input id="companyRccm" class="input" type="text">
+        </div>
+      </div>
+
+      <div>
+        <label for="phone" class="lbl">Téléphone</label>
+        <input id="phone" class="input" type="tel">
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="country" class="lbl">Pays</label>
+          <select id="country" class="input"></select>
+        </div>
+        <div>
+          <label for="city" class="lbl">Ville</label>
+          <select id="city" class="input" disabled></select>
+        </div>
+      </div>
+
+      <div>
+        <label for="role" class="lbl">Type de compte</label>
+        <select id="role" class="input">
+          <option value="particulier">Particulier / Talent</option>
+          <option value="entreprise">Entreprise</option>
+        </select>
+      </div>
+
+      <div style="border-top:1px solid var(--bd);padding-top:1.25rem">
+        <div class="text-xs font-bold uppercase tracking-wider mb-4" style="color:var(--mu)">Informations professionnelles</div>
+        <div class="space-y-4">
+          <div>
+            <label for="jobTitle" class="lbl">Poste / Métier</label>
+            <input id="jobTitle" class="input" type="text" placeholder="Ex : UI/UX Designer">
+          </div>
+          <div>
+            <label for="experience" class="lbl">Expérience</label>
+            <input id="experience" class="input" type="text" placeholder="Ex : 5 ans">
+          </div>
+          <div>
+            <label for="skills" class="lbl">Compétences <span class="text-xs" style="color:var(--mu)">(séparées par des virgules)</span></label>
+            <input id="skills" class="input" type="text" placeholder="Ex : Figma, React, UI Design">
+          </div>
+          <div>
+            <label for="bio" class="lbl">Bio courte</label>
+            <textarea id="bio" class="input" rows="3" placeholder="En quelques lignes, qui êtes-vous ?"></textarea>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="linkedin" class="lbl">LinkedIn</label>
+              <input id="linkedin" class="input" type="url" placeholder="https://linkedin.com/in/...">
+            </div>
+            <div>
+              <label for="portfolio" class="lbl">Portfolio / Site web</label>
+              <input id="portfolio" class="input" type="url" placeholder="https://...">
+            </div>
+          </div>
+          <div>
+            <label for="availability" class="lbl">Disponibilité</label>
+            <select id="availability" class="input">
+              <option value="">— Choisir —</option>
+              <option value="immediate">Immédiate</option>
+              <option value="1-2 semaines">Dans 1-2 semaines</option>
+              <option value="1 mois">Dans 1 mois</option>
+              <option value="mission">Disponible pour missions ponctuelles</option>
+              <option value="non">Pas disponible</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--bd);padding-top:1.25rem">
+        <label class="lbl">CV (PDF) <span class="text-xs" style="color:var(--mu)">optionnel · 5 Mo max</span></label>
+        <div id="cvDrop" class="file-drop">
+          <input type="file" id="cvInput" accept="application/pdf" class="hidden">
+          <i id="cvIcon" class="fa-solid fa-cloud-arrow-up text-xl mb-2" style="color:var(--ac)"></i>
+          <p id="cvTitle" class="text-sm font-semibold" style="color:var(--ink)">Cliquez ou glissez votre CV ici</p>
+          <p id="cvHint" class="text-xs mt-1" style="color:var(--mu)">PDF uniquement · 5 Mo maximum</p>
+        </div>
+        <p id="cvExisting" class="text-xs mt-2 hidden" style="color:var(--ok)">
+          <i class="fa-solid fa-circle-check mr-1"></i>CV déjà au dossier : <a href="#" id="cvExistingLink" target="_blank" class="underline">Voir</a>
+        </p>
+      </div>
+
+    </div>
+
+    <p id="msg" class="hidden text-xs mt-4"></p>
+
+    <div class="flex flex-wrap gap-3 mt-6">
+      <button type="submit" id="btn" class="btn bp flex-1 sm:flex-none">Enregistrer</button>
+      <button type="button" onclick="Auth.logout()" class="btn bo">Déconnexion</button>
+    </div>
+  </form>
+
+</div>
+</main>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let avatarFile=null;
+let cvFile=null;
+
+function toggleCompanyFields(isEnt){
+  $('companyBlock').classList.toggle('hidden',!isEnt);
+  $('companyFields2').classList.toggle('hidden',!isEnt);
+  $('nameLabel').textContent=isEnt?'Nom du responsable':'Nom complet';
+}
+
+async function fill(profile,user){
+  if(!profile&&!user)return;
+  const name=profile?.full_name||user?.email||'';
+  const ini=name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
+
+  const prev=$('avatarPreview');
+  if(profile?.avatar_url){
+    prev.outerHTML=`<img id="avatarPreview" class="avatar" src="${profile.avatar_url}" alt="${name}">`;
+  }else{
+    prev.outerHTML=`<div id="avatarPreview" class="avatar" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:2px solid color-mix(in srgb,var(--ac) 25%,transparent)">${ini}</div>`;
+  }
+
+  $('displayName').textContent=name;
+  $('displayEmail').textContent=profile?.email||user?.email||'';
+  $('displayRole').textContent=profile?.role==='entreprise'?'Entreprise':'Particulier';
+
+  $('fullName').value=profile?.full_name||'';
+  $('phone').value=profile?.phone||'';
+  $('role').value=profile?.role||'particulier';
+  $('jobTitle').value=profile?.job_title||'';
+  $('experience').value=profile?.experience||'';
+  $('skills').value=profile?.skills||'';
+  $('bio').value=profile?.bio||'';
+  $('linkedin').value=profile?.linkedin||'';
+  $('portfolio').value=profile?.portfolio||'';
+  $('availability').value=profile?.availability||'';
+
+  // Parse ville + pays
+  const {country,city}=Locations.parse(profile?.city||'');
+  if(country){
+    await Locations.fillCountries($('country'),country);
+    await Locations.fillCities($('city'),country,city);
+  }else{
+    await Locations.fillCountries($('country'),"Côte d'Ivoire");
+    await Locations.fillCities($('city'),"Côte d'Ivoire");
+  }
+
+  const isEnt=profile?.role==='entreprise';
+  toggleCompanyFields(isEnt);
+  $('companyName').value=profile?.company_name||'';
+  $('companyRccm').value=profile?.company_rccm||'';
+
+  if(profile?.cv_url){
+    $('cvExisting').classList.remove('hidden');
+    $('cvExistingLink').href=profile.cv_url;
+  }
+}
+
+addEventListener('DOMContentLoaded',async()=>{
+  await Locations.fillCountries($('country'),"Côte d'Ivoire");
+  await Locations.fillCities($('city'),"Côte d'Ivoire");
+
+  $('country').addEventListener('change',async ()=>{
+    const c=$('country').value;
+    if(c){
+      await Locations.fillCities($('city'),c);
+    }else{
+      await Locations.clearCities($('city'));
+    }
+  });
+
+  await new Promise(r=>setTimeout(r,500));
+  if(!Auth.requireLogin())return;
+  Auth.onChange((u,p)=>fill(p,u));
+
+  /* Avatar */
+  $('avatarInput').addEventListener('change',async e=>{
+    const f=e.target.files[0];
+    if(!f)return;
+    if(f.size>2*1024*1024){alert('Image trop lourde (2 Mo max)');return}
+    avatarFile=f;
+    const msg=$('avatarMsg');
+    msg.className='text-[11px] mt-1';
+    msg.style.color='var(--mu)';
+    msg.textContent='Envoi en cours…';
+    msg.classList.remove('hidden');
+    try{
+      const {url}=await Auth.uploadFile(f,'avatar');
+      await Auth.updateProfile({avatar_url:url});
+      msg.style.color='var(--ok)';
+      msg.textContent='Photo mise à jour';
+      setTimeout(()=>msg.classList.add('hidden'),3000);
+    }catch(err){
+      msg.style.color='var(--er)';
+      msg.textContent='Erreur : '+err.message;
+    }
+  });
+
+  /* CV */
+  $('cvDrop').addEventListener('click',()=>$('cvInput').click());
+  ['dragenter','dragover'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor='var(--ac)'}));
+  ['dragleave','drop'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor=''}));
+  $('cvDrop').addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)setCv(f)});
+  $('cvInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)setCv(f)});
+
+  function setCv(f){
+    if(f.type!=='application/pdf'||f.size>5*1024*1024){alert('PDF uniquement · 5 Mo max');return}
+    cvFile=f;
+    $('cvDrop').classList.add('has');
+    $('cvIcon').className='fa-solid fa-file-pdf text-xl mb-2';
+    $('cvIcon').style.color='var(--ok)';
+    $('cvTitle').textContent=f.name.length>40?f.name.slice(0,37)+'…':f.name;
+    $('cvHint').textContent=(f.size/1024).toFixed(0)+' Ko · Prêt à enregistrer';
+  }
+
+  /* Submit */
+  $('profileForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const btn=$('btn'),msg=$('msg');
+    msg.classList.add('hidden');
+
+    const country=$('country').value;
+    const city=$('city').value;
+    if(!country||!city){
+      msg.textContent='Choisissez un pays et une ville.';
+      msg.style.color='var(--er)';
+      msg.classList.remove('hidden');
+      return;
+    }
+
+    btn.disabled=true;
+    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Enregistrement…';
+
+    try{
+      let cv_url,cv_filename;
+      if(cvFile){
+        const r=await Auth.uploadFile(cvFile,'cv');
+        cv_url=r.url;
+        cv_filename=r.filename;
+      }
+
+      const isEnt=$('role').value==='entreprise';
+      const fields={
+        full_name:$('fullName').value.trim(),
+        phone:$('phone').value.trim(),
+        city:Locations.format(country,city),
+        role:$('role').value,
+        job_title:$('jobTitle').value.trim(),
+        experience:$('experience').value.trim(),
+        skills:$('skills').value.trim(),
+        bio:$('bio').value.trim(),
+        linkedin:$('linkedin').value.trim(),
+        portfolio:$('portfolio').value.trim(),
+        availability:$('availability').value,
+        company_name: isEnt ? $('companyName').value.trim() : null,
+        company_rccm: isEnt ? $('companyRccm').value.trim() : null
+      };
+      if(cv_url){fields.cv_url=cv_url;fields.cv_filename=cv_filename}
+
+      await Auth.updateProfile(fields);
+      msg.textContent='Profil mis à jour.';
+      msg.style.color='var(--ok)';
+      msg.classList.remove('hidden');
+      if(cv_url){
+        $('cvExisting').classList.remove('hidden');
+        $('cvExistingLink').href=cv_url;
+      }
+    }catch(ex){
+      msg.textContent=ex.message;
+      msg.style.color='var(--er)';
+      msg.classList.remove('hidden');
+    }
+    btn.disabled=false;
+    btn.textContent='Enregistrer';
+  });
+
+  $('role').addEventListener('change',()=>{
+    toggleCompanyFields($('role').value==='entreprise');
+  });
+});
+</script>
+</body>
+</html>

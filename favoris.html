@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mes favoris — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.tabs-bar{display:inline-flex;gap:.25rem;padding:.25rem;border-radius:.75rem;background:var(--sf);border:1px solid var(--bd)}
+.tabs-bar button{padding:.5rem 1rem;border-radius:.5rem;font-size:.75rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;transition:.2s}
+.tabs-bar button.on{background:var(--ac);color:#fff}
+.fav-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem;transition:.2s;display:flex;flex-direction:column}
+.fav-card:hover{border-color:var(--ac);transform:translateY(-3px);box-shadow:0 12px 28px -14px rgba(0,0,0,.15)}
+.skill-tag{font-size:.65rem;padding:.2rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);white-space:nowrap}
+.cat-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.6rem;font-weight:700;padding:.2rem .55rem;border-radius:.5rem;text-transform:uppercase;background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac)}
+.remove-btn{width:32px;height:32px;border-radius:.5rem;border:1px solid color-mix(in srgb,var(--er) 40%,transparent);background:color-mix(in srgb,var(--er) 6%,transparent);color:var(--er);cursor:pointer;display:grid;place-items:center;transition:.15s;flex-shrink:0}
+.remove-btn:hover{background:color-mix(in srgb,var(--er) 12%,transparent)}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-5xl mx-auto px-4 py-12">
+
+  <div class="mb-8">
+    <span class="chip mb-4"><i class="fa-solid fa-heart text-[10px]"></i>Favoris</span>
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Mes favoris.</h1>
+    <p class="text-sm max-w-2xl" style="color:var(--mu)">Retrouvez ici les profils et missions que vous avez mis de côté.</p>
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-3 items-center">
+    <div class="tabs-bar" id="tabsBar">
+      <button data-tab="all" class="on">Tout</button>
+      <button data-tab="mission">Missions</button>
+      <button data-tab="profile">Profils</button>
+    </div>
+    <button onclick="Page.load()" class="btn bo text-xs"><i class="fa-solid fa-rotate"></i>Rafraîchir</button>
+    <span class="text-xs ml-auto" style="color:var(--mu)"><span id="count">—</span> favori(s)</span>
+  </div>
+
+  <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+</div>
+</main>
+
+<script src="assets/ui.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/realtime.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
+
+let all=[], tab='all';
+
+const CAT_LABEL={
+  design:'Design', dev:'Développement', marketing:'Marketing',
+  redaction:'Rédaction', autre:'Autre'
+};
+
+async function load(){
+  const grid=$('grid');
+  await UI.load({
+    container:grid,
+    skeletonHtml:UI.skeleton.cards(6),
+    loader:()=>UI.withTimeout(DB.getFavorites(), 12000),
+    onRender:(list)=>{
+      all=list;
+      render();
+    }
+  });
+}
+
+function render(){
+  const grid=$('grid');
+  const filtered=tab==='all'?all:all.filter(f=>f.type===tab);
+  $('count').textContent=filtered.length;
+
+  if(!filtered.length){
+    grid.innerHTML=UI.empty(
+      'fa-heart-crack',
+      'Aucun favori pour le moment',
+      'Ajoutez des profils ou missions à vos favoris avec le bouton ❤️.',
+      `<a href="particulier.html#missions" class="btn bp text-xs">Explorer les missions</a>
+       <a href="talents.html" class="btn bo text-xs">Voir les talents</a>`
+    );
+    return;
+  }
+
+  grid.innerHTML=filtered.map(f=>{
+    if(f.type==='mission') return renderMission(f);
+    if(f.type==='profile') return renderProfile(f);
+    return '';
+  }).join('');
+
+  grid.querySelectorAll('[data-remove]').forEach(b=>{
+    b.addEventListener('click',()=>remove(b.dataset.remove));
+  });
+}
+
+function renderMission(f){
+  const d=f.data||{};
+  const cat=CAT_LABEL[d.category]||d.category||'Mission';
+  return `<article class="fav-card" data-id="${esc(f.id)}">
+    <div class="flex items-start justify-between gap-2 mb-3">
+      <span class="cat-badge"><i class="fa-solid fa-briefcase"></i>${esc(cat)}</span>
+      <button class="remove-btn" data-remove="${esc(f.id)}" title="Retirer des favoris">
+        <i class="fa-solid fa-heart-crack text-xs"></i>
+      </button>
+    </div>
+    <h3 class="font-semibold text-sm mb-2 leading-snug" style="color:var(--ink)">${esc(d.title||'Mission')}</h3>
+    ${d.business_name?`<div class="text-xs mb-3 flex items-center gap-1" style="color:var(--mu)">
+      <i class="fa-solid fa-building text-[10px]"></i>${esc(d.business_name)}
+      ${d.location?` · ${esc(d.location)}`:''}
+    </div>`:''}
+    <div class="flex items-center justify-between text-xs pt-3 mb-4" style="border-top:1px solid var(--bd)">
+      ${d.budget?`<span class="font-semibold" style="color:var(--ok)">${esc(d.budget)} FCFA</span>`:'<span></span>'}
+      ${d.duration?`<span style="color:var(--mu)"><i class="fa-regular fa-clock mr-1"></i>${esc(d.duration)}</span>`:''}
+    </div>
+    <a href="particulier.html#missions" class="btn bo w-full text-xs mt-auto">
+      <i class="fa-solid fa-arrow-right text-[10px]"></i>Voir la mission
+    </a>
+  </article>`;
+}
+
+function renderProfile(f){
+  const d=f.data||{};
+  const skills=(d.skills||'').split(',').map(s=>s.trim()).filter(Boolean).slice(0,3);
+  const avatar=d.avatar_url
+    ?`<img src="${esc(d.avatar_url)}" alt="${esc(d.full_name)}" class="w-12 h-12 rounded-full object-cover shrink-0" style="border:1px solid var(--bd)">`
+    :`<div class="w-12 h-12 rounded-full grid place-items-center font-bold text-sm shrink-0" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent)">${initials(d.full_name)}</div>`;
+
+  return `<article class="fav-card" data-id="${esc(f.id)}">
+    <div class="flex items-start gap-3 mb-3">
+      ${avatar}
+      <div class="min-w-0 flex-1">
+        <div class="font-semibold text-sm truncate" style="color:var(--ink)">${esc(d.full_name||'Profil')}</div>
+        ${d.job_title?`<div class="text-xs truncate" style="color:var(--ac)">${esc(d.job_title)}</div>`:''}
+        ${d.city?`<div class="text-[10px] flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot"></i>${esc(d.city)}</div>`:''}
+      </div>
+      <button class="remove-btn" data-remove="${esc(f.id)}" title="Retirer des favoris">
+        <i class="fa-solid fa-heart-crack text-xs"></i>
+      </button>
+    </div>
+    ${skills.length?`<div class="flex flex-wrap gap-1 mb-3">${skills.map(s=>`<span class="skill-tag">${esc(s)}</span>`).join('')}</div>`:''}
+    <a href="profil-public.html?id=${encodeURIComponent(f.targetId)}" class="btn bp w-full text-xs mt-auto">
+      <i class="fa-solid fa-user text-[10px]"></i>Voir le profil
+    </a>
+  </article>`;
+}
+
+async function remove(id){
+  if(!confirm('Retirer ce favori ?'))return;
+  try{
+    await DB.deleteFavorite(id);
+    all=all.filter(x=>x.id!==id);
+    render();
+    UI.toast('Favori retiré','ok');
+  }catch(e){
+    console.error(e);
+    UI.toast('Erreur : '+e.message,'error');
+  }
+}
+
+const Page={load};
+
+$('tabsBar').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-tab]');if(!b)return;
+  $('tabsBar').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  tab=b.dataset.tab;
+  render();
+});
+
+addEventListener('DOMContentLoaded',async()=>{
+  await new Promise(r=>setTimeout(r,600));
+  if(!Auth.requireLogin())return;
+  load();
+});
+</script>
+</body>
+</html>

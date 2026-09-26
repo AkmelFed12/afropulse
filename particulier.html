@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Particulier — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+
+<div class="relative max-w-6xl mx-auto px-4 pt-16 sm:pt-20 pb-14">
+  <span class="chip mb-6">Espace particulier</span>
+  <h1 class="text-4xl sm:text-5xl font-bold leading-[1.05] mb-6 max-w-3xl">
+    Apprenez, échangez, <span class="serif" style="color:var(--ac)">avancez</span>.
+  </h1>
+  <p class="text-base sm:text-lg leading-relaxed max-w-2xl" style="color:var(--mu)">
+    Troc de compétences, mentorat diaspora et micro-missions rémunérées. Choisissez votre pilier.
+  </p>
+</div>
+
+<section id="troc" class="relative max-w-6xl mx-auto px-4 pb-20 scroll-mt-24">
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+    <div class="max-w-2xl">
+      <span class="eyebrow" style="color:var(--ac)">01 — Troc de compétences</span>
+      <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Vous savez faire quelque chose. Quelqu'un sait faire autre chose.</h2>
+      <p class="text-sm" style="color:var(--mu)">Pas de facture — juste un échange équitable.</p>
+    </div>
+    <button class="btn bo shrink-0 self-start sm:self-auto" data-soon><i class="fa-solid fa-plus text-xs"></i>Publier mon offre</button>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="gBarter"></div>
+</section>
+
+<section id="mentorat" class="relative max-w-6xl mx-auto px-4 pb-20 scroll-mt-24">
+  <div class="max-w-2xl mb-10">
+    <span class="eyebrow" style="color:var(--gd)">02 — Mentorat diaspora</span>
+    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Un professionnel confirmé. Un appel par mois.</h2>
+    <p class="text-sm" style="color:var(--mu)">Des cadres africains de la diaspora accompagnent gratuitement les talents du continent.</p>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="gMentor"></div>
+</section>
+
+<section id="missions" class="relative max-w-6xl mx-auto px-4 pb-20 scroll-mt-24">
+  <div class="max-w-2xl mb-8">
+    <span class="eyebrow" style="color:var(--ok)">03 — Micro-missions</span>
+    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Des missions courtes, publiées par des entreprises légales.</h2>
+    <p class="text-sm" style="color:var(--mu)">Chaque annonce vient d'une société au RCCM vérifié.</p>
+  </div>
+  <div class="flex flex-wrap gap-2 mb-6" id="gFilters">
+    <button data-cat="all" class="chip" style="cursor:pointer">Toutes</button>
+    <button data-cat="design" class="chip" style="cursor:pointer">Design</button>
+    <button data-cat="dev" class="chip" style="cursor:pointer">Développement</button>
+    <button data-cat="marketing" class="chip" style="cursor:pointer">Marketing</button>
+    <button data-cat="redaction" class="chip" style="cursor:pointer">Rédaction</button>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="gMission"></div>
+</section>
+
+<section class="relative max-w-6xl mx-auto px-4 pb-24">
+  <div class="mb-10 max-w-2xl">
+    <span class="eyebrow" style="color:var(--ac)">Ils l'utilisent</span>
+    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Ce que ça change, concrètement.</h2>
+  </div>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5" id="gTesti"></div>
+</section>
+
+</main>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/particulier.js"></script>
+<script src="assets/realtime.js"></script>
+<script>addEventListener('DOMContentLoaded',Render.init);</script>
+</body>
+</html>

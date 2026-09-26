@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entreprise vérifiée — AfroPulse</title>
+<meta name="description" content="Obtenez votre badge RCCM officiel AfroPulse et publiez vos micro-missions auprès de talents africains vérifiés.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="font-sans">
+
+<main class="relative max-w-3xl mx-auto px-4 py-10">
+
+  <!-- En-tête -->
+  <div class="text-center mb-10">
+    <span class="eyebrow" style="color:var(--ac)">Entreprise</span>
+    <h1 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Obtenez votre badge RCCM</h1>
+    <p class="text-sm max-w-xl mx-auto" style="color:var(--mu)">
+      Le badge <strong style="color:var(--ink)">Entreprise vérifiée</strong> vous permet de publier des micro-missions, de contacter les talents sans limite et de rassurer vos partenaires.
+    </p>
+  </div>
+
+  <!-- Formulaire -->
+  <form id="rccmForm" class="card-static p-6 sm:p-8 space-y-5" novalidate>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs font-semibold mb-1.5 block" style="color:var(--ink)">Raison sociale *</label>
+        <input type="text" id="company" required placeholder="Ex : Maya Studio SARL"
+          class="w-full px-3 py-2 rounded-lg text-sm" style="background:var(--bg);border:1px solid var(--bd);color:var(--ink)">
+      </div>
+      <div>
+        <label class="text-xs font-semibold mb-1.5 block" style="color:var(--ink)">N° RCCM *</label>
+        <input type="text" id="rccmNumber" required placeholder="Ex : CI-ABJ-2023-B-12345"
+          class="w-full px-3 py-2 rounded-lg text-sm" style="background:var(--bg);border:1px solid var(--bd);color:var(--ink)">
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold mb-1.5 block" style="color:var(--ink)">N° Compte Contribuable (CC)</label>
+      <input type="text" id="ccNumber" placeholder="Ex : 1234567 A"
+        class="w-full px-3 py-2 rounded-lg text-sm" style="background:var(--bg);border:1px solid var(--bd);color:var(--ink)">
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold mb-1.5 block" style="color:var(--ink)">Document RCCM (PDF) *</label>
+      <div class="relative">
+        <input type="file" id="rccmFile" accept="application/pdf" required
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+        <div id="fileDrop" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors"
+          style="background:var(--bg);border:1.5px dashed var(--bd)">
+          <i class="fa-solid fa-file-pdf text-lg" style="color:var(--ac)"></i>
+          <div class="flex-1 min-w-0">
+            <div id="fileLabel" class="font-semibold truncate" style="color:var(--ink)">Cliquez ou déposez votre PDF ici</div>
+            <div class="text-[11px]" style="color:var(--mu)">Format PDF uniquement · Max 5 Mo</div>
+          </div>
+        </div>
+      </div>
+      <p id="fileError" class="text-[11px] mt-1.5 hidden" style="color:var(--er)"></p>
+    </div>
+
+    <div class="flex items-start gap-2.5 pt-1">
+      <input type="checkbox" id="accept" required class="mt-0.5">
+      <label for="accept" class="text-[11px] leading-relaxed" style="color:var(--mu)">
+        Je certifie l'exactitude des informations fournies et j'accepte que le document soit vérifié par l'équipe AfroPulse. Délai de traitement : sous 48h ouvrées.
+      </label>
+    </div>
+
+    <button type="submit" id="submitBtn" class="btn bp btn-shine w-full">
+      <span id="submitText">Envoyer pour vérification</span>
+      <i class="fa-solid fa-arrow-right text-xs arrow ml-1.5"></i>
+    </button>
+
+    <p id="globalMsg" class="text-xs text-center hidden"></p>
+  </form>
+
+  <!-- Info -->
+  <div class="card-static mt-6 p-5 flex gap-3">
+    <i class="fa-solid fa-shield-halved text-sm mt-0.5" style="color:var(--ac)"></i>
+    <div class="text-xs leading-relaxed" style="color:var(--mu)">
+      <strong style="color:var(--ink)">Confidentialité :</strong> votre document RCCM est stocké dans un bucket privé. Seuls les administrateurs AfroPulse y ont accès, via des liens signés à durée limitée (1h).
+    </div>
+  </div>
+
+</main>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const MAX_SIZE = 5 * 1024 * 1024;
+
+/* ── Affichage du nom de fichier ── */
+$('rccmFile')?.addEventListener('change', e => {
+  const f = e.target.files?.[0];
+  $('fileError').classList.add('hidden');
+  if(!f){
+    $('fileLabel').textContent = 'Cliquez ou déposez votre PDF ici';
+    return;
+  }
+  if(f.type !== 'application/pdf'){
+    $('fileError').textContent = 'Seul le format PDF est accepté.';
+    $('fileError').classList.remove('hidden');
+    e.target.value = '';
+    $('fileLabel').textContent = 'Cliquez ou déposez votre PDF ici';
+    return;
+  }
+  if(f.size > MAX_SIZE){
+    $('fileError').textContent = 'Fichier trop volumineux (max 5 Mo).';
+    $('fileError').classList.remove('hidden');
+    e.target.value = '';
+    $('fileLabel').textContent = 'Cliquez ou déposez votre PDF ici';
+    return;
+  }
+  $('fileLabel').textContent = f.name;
+});
+
+/* ── Drag & drop visuel ── */
+const drop = $('fileDrop');
+['dragover','dragenter'].forEach(ev => drop?.addEventListener(ev, e => {
+  e.preventDefault();
+  drop.style.borderColor = 'var(--ac)';
+  drop.style.background = 'color-mix(in srgb, var(--ac) 6%, transparent)';
+}));
+['dragleave','drop'].forEach(ev => drop?.addEventListener(ev, e => {
+  e.preventDefault();
+  drop.style.borderColor = 'var(--bd)';
+  drop.style.background = 'var(--bg)';
+}));
+
+/* ── Utilitaires UI ── */
+function setError(msg){
+  const el = $('globalMsg');
+  el.textContent = msg;
+  el.className = 'text-xs text-center';
+  el.style.color = 'var(--er)';
+  el.classList.remove('hidden');
+}
+function setSuccess(msg){
+  const el = $('globalMsg');
+  el.textContent = msg;
+  el.className = 'text-xs text-center';
+  el.style.color = 'var(--ok)';
+  el.classList.remove('hidden');
+}
+function setLoading(on){
+  const btn = $('submitBtn');
+  const txt = $('submitText');
+  btn.disabled = on;
+  btn.style.opacity = on ? '.7' : '1';
+  txt.textContent = on ? 'Envoi en cours…' : 'Envoyer pour vérification';
+}
+
+/* ── Soumission ── */
+$('rccmForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  $('globalMsg').classList.add('hidden');
+
+  const company = $('company').value.trim();
+  const rccm = $('rccmNumber').value.trim();
+  const cc = $('ccNumber').value.trim();
+  const file = $('rccmFile').files?.[0];
+  const accept = $('accept').checked;
+
+  if(!company || !rccm){ setError('Raison sociale et N° RCCM obligatoires.'); return; }
+  if(!file){ setError('Le PDF RCCM est obligatoire.'); return; }
+  if(!accept){ setError('Vous devez accepter les conditions.'); return; }
+
+  setLoading(true);
+  try{
+    await DB.saveRccm({
+      company,
+      rccm,
+      cc,
+      fileName: file.name,
+      file
+    });
+    setSuccess('✅ Dossier envoyé — vérification sous 48h ouvrées.');
+    $('rccmForm').reset();
+    $('fileLabel').textContent = 'Cliquez ou déposez votre PDF ici';
+  }catch(err){
+    console.error(err);
+    setError(err.message || 'Erreur lors de l\'envoi. Réessayez.');
+  }finally{
+    setLoading(false);
+  }
+});
+</script>
+</body>
+</html>

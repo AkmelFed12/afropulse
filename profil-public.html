@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profil — AfroPulse</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.stars-row{color:var(--gd);display:inline-flex;gap:2px}
+.rating-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;border-radius:999px;background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd);font-size:.8rem;font-weight:700}
+.review-card{background:var(--sf);border:1px solid var(--bd);border-radius:.85rem;padding:1rem}
+.mission-mini{background:var(--bg);border:1px solid var(--bd);border-radius:.65rem;padding:.75rem}
+.stat-box{background:var(--sf);border:1px solid var(--bd);border-radius:.75rem;padding:.85rem;text-align:center}
+.stat-box .v{font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1}
+.stat-box .l{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--mu);margin-top:.3rem}
+.modal-bg{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+.modal-bg.on{display:flex}
+.rate-input{display:flex;gap:.4rem;font-size:1.75rem;color:var(--mu);cursor:pointer}
+.rate-input i{transition:.15s}
+.rate-input i.active{color:var(--gd);transform:scale(1.1)}
+.rate-input i:hover{transform:scale(1.2)}
+</style>
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-3xl mx-auto px-4 py-12" id="container">
+  <div class="text-center py-16" id="loading">
+    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color:var(--ac)"></i>
+    <p class="text-sm mt-3" style="color:var(--mu)">Chargement du profil…</p>
+  </div>
+</div>
+</main>
+
+<!-- Modal avis -->
+<div id="reviewModal" class="modal-bg">
+  <div class="w-full max-w-md p-6 rounded-2xl" style="background:var(--sf);border:1px solid var(--bd)">
+    <div class="flex items-center justify-between mb-4">
+      <div class="font-bold" style="color:var(--ink)">Laisser un avis</div>
+      <button id="closeReview" class="w-8 h-8 rounded-lg grid place-items-center" style="color:var(--mu);background:none;border:none;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="text-center mb-4">
+      <div class="text-sm mb-2" style="color:var(--mu)">Votre note</div>
+      <div class="rate-input justify-center" id="rateInput">
+        <i class="fa-solid fa-star" data-v="1"></i>
+        <i class="fa-solid fa-star" data-v="2"></i>
+        <i class="fa-solid fa-star" data-v="3"></i>
+        <i class="fa-solid fa-star" data-v="4"></i>
+        <i class="fa-solid fa-star" data-v="5"></i>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label for="reviewComment" class="lbl">Commentaire (optionnel)</label>
+      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience…" maxlength="500"></textarea>
+    </div>
+    <p id="reviewError" class="hidden text-xs mb-3" style="color:var(--er)"></p>
+    <div class="flex gap-2">
+      <button id="cancelReview" class="btn bo flex-1">Annuler</button>
+      <button id="submitReview" class="btn bp flex-1">Publier</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+
+const starsHTML=(avg)=>{
+  let h='';
+  for(let i=1;i<=5;i++){
+    if(i<=Math.floor(avg))h+='<i class="fa-solid fa-star"></i>';
+    else if(i-0.5<=avg)h+='<i class="fa-solid fa-star-half-stroke"></i>';
+    else h+='<i class="fa-regular fa-star"></i>';
+  }
+  return h;
+};
+
+const fmtDate=iso=>{
+  const d=new Date(iso);
+  const diff=(Date.now()-d)/1000;
+  if(diff<60)return 'à l\'instant';
+  if(diff<3600)return `il y a ${Math.floor(diff/60)} min`;
+  if(diff<86400)return `il y a ${Math.floor(diff/3600)} h`;
+  if(diff<604800)return `il y a ${Math.floor(diff/86400)} j`;
+  return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+};
+
+let currentProfile=null;
+let selectedRating=0;
+
+/* Ouvre la modale d'avis */
+async function openReview(targetId,targetName,targetRole){
+  if(!Auth.requireLogin())return;
+  const me=Auth.getUser();
+  if(me.id===targetId){alert('Vous ne pouvez pas vous noter vous-même.');return}
+  const already=await DB.hasReviewed(me.id,targetId);
+  if(already){alert('Vous avez déjà laissé un avis sur ce profil.');return}
+  currentProfile={targetId,targetName,targetRole};
+  selectedRating=0;
+  $('reviewComment').value='';
+  $('reviewError').classList.add('hidden');
+  document.querySelectorAll('#rateInput i').forEach(i=>i.classList.remove('active'));
+  $('reviewModal').classList.add('on');
+}
+
+/* Étoiles interactives */
+document.querySelectorAll('#rateInput i').forEach(star=>{
+  star.addEventListener('click',()=>{
+    selectedRating=parseInt(star.dataset.v);
+    document.querySelectorAll('#rateInput i').forEach(s=>{
+      s.classList.toggle('active',parseInt(s.dataset.v)<=selectedRating);
+    });
+  });
+  star.addEventListener('mouseenter',()=>{
+    const v=parseInt(star.dataset.v);
+    document.querySelectorAll('#rateInput i').forEach(s=>{
+      s.style.color=parseInt(s.dataset.v)<=v?'var(--gd)':'';
+    });
+  });
+  star.addEventListener('mouseleave',()=>{
+    document.querySelectorAll('#rateInput i').forEach(s=>{s.style.color=''});
+  });
+});
+
+$('closeReview').onclick=()=>$('reviewModal').classList.remove('on');
+$('cancelReview').onclick=()=>$('reviewModal').classList.remove('on');
+$('reviewModal').addEventListener('click',e=>{if(e.target.id==='reviewModal')$('reviewModal').classList.remove('on')});
+
+$('submitReview').onclick=async()=>{
+  const err=$('reviewError');
+  err.classList.add('hidden');
+  if(!selectedRating){err.textContent='Choisissez une note.';err.classList.remove('hidden');return}
+  const btn=$('submitReview');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  try{
+    const p=Auth.getProfile(),u=Auth.getUser();
+    await DB.saveReview({
+      authorId:u.id,
+      authorName:p?.full_name||u.email,
+      authorRole:p?.role||'particulier',
+      targetId:currentProfile.targetId,
+      targetRole:currentProfile.targetRole,
+      rating:selectedRating,
+      comment:$('reviewComment').value.trim()||null
+    });
+    $('reviewModal').classList.remove('on');
+    // Recharge la page
+    location.reload();
+  }catch(e){
+    err.textContent=e.message;
+    err.classList.remove('hidden');
+    btn.disabled=false;
+    btn.textContent='Publier';
+  }
+};
+
+/* Envoie un message */
+async function contactProfile(id,name){
+  if(!Auth.requireLogin())return;
+  const me=Auth.getUser();
+  if(me.id===id){alert('Vous ne pouvez pas vous contacter vous-même.');return}
+  const prefill=`Bonjour ${name.split(' ')[0]}, j'ai vu votre profil sur AfroPulse et j'aimerais échanger.`;
+  try{
+    const p=Auth.getProfile();
+    await DB.sendMessage({
+      senderId:me.id,
+      senderName:p?.full_name||me.email,
+      recipientId:id,
+      recipientName:name,
+      conversationId:DB._convIdPublic(me.id,id),
+      content:prefill
+    });
+    location.href=`messages.html?with=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`;
+  }catch(e){alert('Erreur : '+e.message)}
+}
+
+/* Construction section avis */
+function renderReviewsSection(reviews,rating,isMe,profile){
+  const me=Auth.getUser();
+  const canReview=!isMe && !!me;
+  return `
+    <div class="card-static p-5 mb-6">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="text-sm font-bold" style="color:var(--ink)">Avis reçus</div>
+          ${rating.count?`<div class="rating-badge">
+            <span class="stars-row" style="font-size:.75rem">${starsHTML(rating.average)}</span>
+            <span>${rating.average.toFixed(1)}</span>
+            <span style="opacity:.7">(${rating.count})</span>
+          </div>`:''}
+        </div>
+        ${canReview?`<button id="btnReview" class="btn bp text-xs"><i class="fa-solid fa-star text-xs"></i>Laisser un avis</button>`:''}
+      </div>
+      ${reviews.length?`
+        <div class="space-y-3">
+          ${reviews.slice(0,5).map(r=>`
+            <div class="review-card">
+              <div class="flex items-start justify-between gap-2 mb-2 flex-wrap">
+                <div class="min-w-0">
+                  <div class="font-semibold text-sm" style="color:var(--ink)">${esc(r.authorName)}</div>
+                  <div class="text-[10px]" style="color:var(--mu)">
+                    ${r.authorRole==='entreprise'?'Entreprise':'Particulier'}
+                    ${r.missionTitle?` · ${esc(r.missionTitle)}`:''}
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  <div class="stars-row" style="font-size:.7rem">${starsHTML(r.rating)}</div>
+                  <div class="text-[10px]" style="color:var(--mu)">${fmtDate(r.createdAt)}</div>
+                </div>
+              </div>
+              ${r.comment?`<p class="text-xs leading-relaxed" style="color:var(--mu)">« ${esc(r.comment)} »</p>`:''}
+            </div>
+          `).join('')}
+        </div>
+      `:`<div class="text-center py-6 text-xs" style="color:var(--mu)">Aucun avis pour le moment.</div>`}
+    </div>
+  `;
+}
+
+/* Rendu du profil */
+async function renderProfile(p){
+  const me=Auth.getUser();
+  const isMe=me&&me.id===p.id;
+  const isEntreprise=p.role==='entreprise';
+  const [rating,reviews]=await Promise.all([DB.getRating(p.id),DB.getReviews(p.id)]);
+
+  const skills=(p.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+
+  const avatar=p.avatar_url
+    ? `<img src="${esc(p.avatar_url)}" alt="${esc(p.full_name)}" class="w-24 h-24 rounded-full object-cover mx-auto" style="border:2px solid var(--bd)">`
+    : `<div class="w-24 h-24 rounded-full grid place-items-center font-bold text-3xl mx-auto" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:2px solid color-mix(in srgb,var(--ac) 25%,transparent)">${initials(p.full_name)}</div>`;
+
+  const typeBadge=isEntreprise
+    ?`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-building"></i>Entreprise</span>`
+    :`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac)"><i class="fa-solid fa-user"></i>Particulier</span>`;
+
+  const rccmBadge=(isEntreprise && p.company_rccm && p.company_rccm.length>3)
+    ?`<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-shield-halved"></i>RCCM vérifié</span>`
+    :'';
+
+  // Bloc stats spécifique au rôle
+  let statsHTML='';
+  let missionsHTML='';
+  if(isEntreprise){
+    const [missions,businessApps]=await Promise.all([
+      DB.getCompanyMissions(p.id),
+      DB.getBusinessApplications?Promise.resolve([]):Promise.resolve([])
+    ]);
+    const acceptedCount=0; // à remplir si on veut afficher le nombre de missions réussies
+
+    statsHTML=`
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="stat-box"><div class="v">${missions.length}</div><div class="l">Missions</div></div>
+        <div class="stat-box"><div class="v">${rating.count}</div><div class="l">Avis</div></div>
+        <div class="stat-box"><div class="v">${rating.count?rating.average.toFixed(1):'—'}</div><div class="l">Note</div></div>
+      </div>
+    `;
+
+    if(missions.length){
+      missionsHTML=`
+        <div class="card-static p-5 mb-6">
+          <div class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--mu)">Missions publiées</div>
+          <div class="space-y-2">
+            ${missions.map(m=>`
+              <div class="mission-mini">
+                <div class="flex items-start justify-between gap-2 mb-1 flex-wrap">
+                  <div class="font-semibold text-sm" style="color:var(--ink)">${esc(m.title)}</div>
+                  ${m.budget?`<span class="text-xs font-bold" style="color:var(--ok)">${esc(m.budget)} FCFA</span>`:''}
+                </div>
+                <div class="text-[10px]" style="color:var(--mu)">
+                  ${m.duration?`<i class="fa-regular fa-clock mr-1"></i>${esc(m.duration)}`:''}
+                  ${m.location?` · <i class="fa-solid fa-location-dot mr-1"></i>${esc(m.location)}`:''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  }else{
+    statsHTML=`
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="stat-box"><div class="v">${rating.count}</div><div class="l">Avis reçus</div></div>
+        <div class="stat-box"><div class="v">${rating.count?rating.average.toFixed(1):'—'}</div><div class="l">Note moyenne</div></div>
+      </div>
+    `;
+  }
+
+  const ctaHtml=isMe
+    ?`<a href="profil.html" class="btn bp"><i class="fa-solid fa-pen"></i>Modifier mon profil</a>`
+    :`<button id="btnContact" class="btn bp"><i class="fa-solid fa-comment"></i>Envoyer un message</button>`;
+
+  $('container').innerHTML=`
+    <div class="text-center mb-6">
+      ${avatar}
+      <h1 class="text-2xl sm:text-3xl font-bold mt-4 mb-2" style="color:var(--ink)">${esc(p.full_name)}</h1>
+      <div class="flex items-center justify-center gap-2 flex-wrap mb-2">
+        ${typeBadge}
+        ${rccmBadge}
+        ${rating.count?`<div class="rating-badge"><span class="stars-row" style="font-size:.75rem">${starsHTML(rating.average)}</span><span>${rating.average.toFixed(1)}</span></div>`:''}
+      </div>
+      ${p.job_title?`<div class="text-sm font-semibold mb-1" style="color:var(--ac)">${esc(p.job_title)}</div>`:''}
+      ${isEntreprise && p.company_name?`<div class="text-xs mb-2" style="color:var(--mu)"><i class="fa-solid fa-building mr-1"></i>${esc(p.company_name)}</div>`:''}
+      <div class="text-xs flex items-center justify-center gap-3 flex-wrap" style="color:var(--mu)">
+        ${p.city?`<span><i class="fa-solid fa-location-dot mr-1"></i>${esc(p.city)}</span>`:''}
+        ${p.experience?`<span><i class="fa-solid fa-briefcase mr-1"></i>${esc(p.experience)}</span>`:''}
+      </div>
+    </div>
+
+    ${statsHTML}
+
+    ${p.bio?`<div class="card-static p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:var(--mu)">${isEntreprise?'À propos de l\'entreprise':'À propos'}</div>
+      <p class="text-sm leading-relaxed" style="color:var(--ink)">${esc(p.bio)}</p>
+    </div>`:''}
+
+    ${skills.length?`<div class="card-static p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--mu)">Compétences</div>
+      <div class="flex flex-wrap gap-2">
+        ${skills.map(s=>`<span class="text-xs px-3 py-1 rounded-full" style="background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok)">${esc(s)}</span>`).join('')}
+      </div>
+    </div>`:''}
+
+    ${!isEntreprise && p.availability?`<div class="card-static p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:var(--mu)">Disponibilité</div>
+      <div class="text-sm" style="color:var(--ink)">${esc(p.availability)}</div>
+    </div>`:''}
+
+    ${missionsHTML}
+
+    ${p.linkedin||p.portfolio||p.cv_url?`<div class="card-static p-5 mb-6">
+      <div class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--mu)">Liens</div>
+      <div class="flex flex-wrap gap-3 text-xs">
+        ${p.linkedin?`<a href="${esc(p.linkedin)}" target="_blank" rel="noopener" class="btn bo"><i class="fa-brands fa-linkedin"></i>LinkedIn</a>`:''}
+        ${p.portfolio?`<a href="${esc(p.portfolio)}" target="_blank" rel="noopener" class="btn bo"><i class="fa-solid fa-globe"></i>Portfolio</a>`:''}
+        ${p.cv_url?`<a href="${esc(p.cv_url)}" target="_blank" rel="noopener" class="btn bo"><i class="fa-solid fa-file-pdf"></i>CV</a>`:''}
+      </div>
+    </div>`:''}
+
+    ${renderReviewsSection(reviews,rating,isMe,p)}
+
+    <div class="flex flex-wrap gap-3 justify-center">
+      ${ctaHtml}
+      <a href="${isEntreprise?'talents.html':'particulier.html'}" class="btn bo">Retour</a>
+    </div>
+  `;
+
+  // Bind contact
+  const btnC=document.getElementById('btnContact');
+  if(btnC)btnC.addEventListener('click',()=>contactProfile(p.id,p.full_name));
+
+  // Bind avis
+  const btnR=document.getElementById('btnReview');
+  if(btnR)btnR.addEventListener('click',()=>openReview(p.id,p.full_name,p.role));
+}
+
+addEventListener('DOMContentLoaded',async()=>{
+  const params=new URLSearchParams(location.search);
+  const id=params.get('id');
+  if(!id){
+    $('container').innerHTML=`<div class="text-center py-16"><p class="text-sm" style="color:var(--er)">Profil introuvable.</p><a href="index.html" class="btn bp mt-4 inline-flex">Retour</a></div>`;
+    return;
+  }
+  await new Promise(r=>setTimeout(r,500));
+  const p=await DB.getProfileById(id);
+  if(!p){
+    $('container').innerHTML=`<div class="text-center py-16">
+      <i class="fa-solid fa-user-slash text-3xl mb-3" style="color:var(--mu);opacity:.5"></i>
+      <p class="text-sm mb-4" style="color:var(--mu)">Ce profil n'existe pas ou a été supprimé.</p>
+      <a href="index.html" class="btn bp inline-flex">Retour à l'accueil</a>
+    </div>`;
+    return;
+  }
+  await renderProfile(p);
+});
+</script>
+</body>
+</html>

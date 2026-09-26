@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /12ad.html
+Disallow: /dashboard.html
+Disallow: /profil.html
+Disallow: /messages.html
+Disallow: /candidatures.html
+Disallow: /mes-activites.html
+Disallow: /favoris.html
+Disallow: /publier-mission.html
+Disallow: /confirmation.html
+Disallow: /reset-password.html
+Disallow: /forgot-password.html
+
+Sitemap: https://afro-pulse.netlify.app/sitemap.xml

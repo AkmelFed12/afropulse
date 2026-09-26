@@ -1,0 +1,17 @@
+{
+  "name": "afropulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AfroPulse — Le réseau du talent africain",
+  "scripts": {
+    "build:env": "node scripts/build-env.js",
+    "build:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --minify",
+    "build": "npm run build:env && npm run build:css",
+    "dev:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --watch",
+    "migrate": "node scripts/migrate-html.js",
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
