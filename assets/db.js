@@ -1,6 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Clés Supabase — lues depuis window.ENV (généré au build par Netlify)
+   En local : exécuter `npm run build:env` avec un fichier .env rempli
+   ═══════════════════════════════════════════════════════════════════════ */
 const ENV = (typeof window !== 'undefined' && window.ENV) || {};
 const SUPABASE_URL = ENV.SUPABASE_URL || '';
 const SUPABASE_KEY = ENV.SUPABASE_KEY || '';
+
 const DB=(()=>{
   const ready=!!SUPABASE_URL&&!!SUPABASE_KEY;
   let client=null;
@@ -51,7 +56,6 @@ const DB=(()=>{
       }
       await wait();
 
-      // 1. Upload du fichier si présent
       let documentPath = d.fileName || null;
 
       if(d.file){
@@ -77,7 +81,6 @@ const DB=(()=>{
         documentPath = path;
       }
 
-      // 2. Insertion en base
       const { data, error } = await client.from('businesses').insert({
         company_name: d.company,
         rccm_number: d.rccm,
@@ -116,10 +119,7 @@ const DB=(()=>{
       const { data, error } = await client.storage
         .from('rccm')
         .createSignedUrl(pathOrUrl, expiresIn);
-      if(error){
-        console.warn('Signed URL RCCM échouée :', error.message);
-        return null;
-      }
+      if(error) return null;
       return data?.signedUrl || null;
     },
 
@@ -154,7 +154,7 @@ const DB=(()=>{
       }catch(e){return {profiles:0,businesses:0,missions:0,countries:0}}
     },
 
-    /* ─── Activité récente (ticker) ─── */
+    /* ─── Activité récente (ticker + flux live) ─── */
     async getRecentActivity(limit=5){
       if(!ready)return [];
       await wait();
@@ -175,7 +175,6 @@ const DB=(()=>{
         }
         return [];
       }catch(e){
-        console.warn('getRecentActivity:',e);
         return [];
       }
     },
@@ -508,7 +507,7 @@ const DB=(()=>{
         await client.from('user_notifications').insert({
           user_id:userId,type,title,body:body||null,link:link||null,icon:icon||null
         });
-      }catch(e){console.warn('Notif in-app échouée',e)}
+      }catch(e){}
     },
     async getNotifications(limit=15){
       if(!ready)return [];
@@ -640,7 +639,7 @@ const DB=(()=>{
           body:JSON.stringify({recipientId,to,toName,subject,htmlBody,type,metadata})
         });
         return await resp.json();
-      }catch(e){console.warn('Échec notification',e)}
+      }catch(e){}
     },
 
     _emailWrapper(content){
@@ -660,10 +659,9 @@ const DB=(()=>{
       `)};
     },
     templateCandidatureAcceptee({candidat,mission,company}){
-      return {subject:`✅ Candidature acceptée — ${mission}`,html:this._emailWrapper(`
-        <div style="text-align:center;margin-bottom:16px"><div style="font-size:48px">🎉</div></div>
+      return {subject:`Candidature acceptée — ${mission}`,html:this._emailWrapper(`
         <h2 style="margin:0 0 12px;color:#059669;font-size:20px;text-align:center">Félicitations ${candidat} !</h2>
-        <p style="color:#475569;font-size:14px;line-height:1.6">Votre candidature pour <strong>${mission}</strong> chez <strong>${company}</strong> a été <strong style="color:#059669">acceptée</strong>.</p>
+        <p style="color:#475569;font-size:14px;line-height:1.6">Votre candidature pour <strong>${mission}</strong> chez <strong>${company}</strong> a été acceptée.</p>
         <div style="text-align:center;margin-top:20px">
           <a href="${location.origin}/messages.html" style="display:inline-block;padding:12px 24px;background:#059669;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px">Ouvrir la messagerie</a>
         </div>
@@ -672,7 +670,7 @@ const DB=(()=>{
     templateCandidatureRefusee({candidat,mission,company}){
       return {subject:`Candidature pour ${mission} — Réponse`,html:this._emailWrapper(`
         <h2 style="margin:0 0 12px;color:#0f172a;font-size:18px">Bonjour ${candidat},</h2>
-        <p style="color:#475569;font-size:14px;line-height:1.6">Votre candidature pour <strong>${mission}</strong> chez <strong>${company}</strong> n'a pas été retenue pour cette fois.</p>
+        <p style="color:#475569;font-size:14px;line-height:1.6">Votre candidature pour <strong>${mission}</strong> chez <strong>${company}</strong> n'a pas été retenue cette fois.</p>
         <a href="${location.origin}/particulier.html#missions" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#0b5fff;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px">Voir d'autres missions</a>
       `)};
     },
@@ -683,6 +681,58 @@ const DB=(()=>{
         <blockquote style="margin:16px 0;padding:12px 16px;background:#f1f5f9;border-left:3px solid #0b5fff;color:#475569;font-size:13px;font-style:italic">« ${preview} »</blockquote>
         <a href="${location.origin}/messages.html" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#0b5fff;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px">Répondre</a>
       `)};
+    },
+
+    /* ─── Contenu dynamique (témoignages, formules, FAQ) ─── */
+    async getTestimonials(limit = 6){
+      if(!ready) return [];
+      await wait();
+      const {data, error} = await client.from('testimonials')
+        .select('*')
+        .eq('published', true)
+        .order('display_order', {ascending:true})
+        .limit(limit);
+      if(error) return [];
+      return data.map(x => ({
+        id: x.id,
+        name: x.author_name,
+        role: x.author_role,
+        city: x.author_city,
+        initials: x.author_initials,
+        color: x.author_color,
+        quote: x.quote,
+        rating: x.rating
+      }));
+    },
+
+    async getPlans(){
+      if(!ready) return [];
+      await wait();
+      const {data, error} = await client.from('plans')
+        .select('*')
+        .eq('active', true)
+        .order('display_order', {ascending:true});
+      if(error) return [];
+      return data.map(x => ({
+        slug: x.slug,
+        name: x.name,
+        description: x.description,
+        monthly: x.monthly_price,
+        yearly: x.yearly_price,
+        features: x.features || [],
+        recommended: x.recommended
+      }));
+    },
+
+    async getFaqs(){
+      if(!ready) return [];
+      await wait();
+      const {data, error} = await client.from('faqs')
+        .select('*')
+        .eq('active', true)
+        .order('display_order', {ascending:true});
+      if(error) return [];
+      return data.map(x => ({ id: x.id, question: x.question, answer: x.answer }));
     },
 
     /* ─── Nettoyage admin ─── */

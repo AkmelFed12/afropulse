@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Candidatures reçues — AfroPulse</title>
+<title>Candidatures reçues, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -78,7 +78,7 @@
     </div>
     <div class="mb-4">
       <label for="reviewComment" class="lbl">Commentaire (optionnel)</label>
-      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience…" maxlength="500"></textarea>
+      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience" maxlength="500"></textarea>
     </div>
     <p id="reviewError" class="hidden text-xs mb-3" style="color:var(--er)"></p>
     <div class="flex gap-2">
@@ -136,7 +136,7 @@ $('submitReview').onclick=async()=>{
   const err=$('reviewError');err.classList.add('hidden');
   if(!selectedRating){err.textContent='Choisissez une note.';err.classList.remove('hidden');return}
   const btn=$('submitReview');btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication';
   try{
     const p=Auth.getProfile(),u=Auth.getUser();
     await DB.saveReview({
@@ -153,7 +153,7 @@ $('submitReview').onclick=async()=>{
       icon:'fa-star'
     });
     $('reviewModal').classList.remove('on');resetModal();
-    alert('Avis publié avec succès.');
+    alert('Avis publié.');
     Page.load();
   }catch(e){
     err.textContent=e.message;err.classList.remove('hidden');
@@ -186,7 +186,7 @@ const Page=(()=>{
       list.innerHTML=`<div class="empty">
         <i class="fa-solid fa-inbox"></i>
         <div class="font-semibold mb-1" style="color:var(--ink)">Aucune candidature</div>
-        <div class="text-xs mb-5">Publiez une mission pour commencer à recevoir des candidatures.</div>
+        <div class="text-xs mb-5">Publiez une mission pour en recevoir.</div>
         <a href="publier-mission.html" class="btn bp text-xs">Publier une mission</a>
       </div>`;
       return;
@@ -258,8 +258,8 @@ const Page=(()=>{
         DB.createNotification({
           userId:data.user,
           type:'candidature',
-          title:status==='acceptee'?`✅ Candidature acceptée — ${data.title}`:`Candidature refusée — ${data.title}`,
-          body:status==='acceptee'?'Félicitations ! Consultez la messagerie.' : "Ne vous découragez pas, d'autres missions vous attendent.",
+          title:status==='acceptee'?`Candidature acceptée pour ${data.title}`:`Candidature refusée pour ${data.title}`,
+          body:status==='acceptee'?'Vous pouvez consulter la messagerie.' : "D'autres missions vous attendent.",
           link:status==='acceptee'?'messages.html':'particulier.html#missions',
           icon:status==='acceptee'?'fa-check-circle':'fa-times-circle'
         });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mon espace — AfroPulse</title>
+<title>Mon espace, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -35,7 +35,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold mb-1" style="color:var(--ink)">
           Bonjour, <span id="userFirstName" style="color:var(--ac)">—</span>
         </h1>
-        <p class="text-sm" id="userSubtitle" style="color:var(--mu)">Votre espace personnel AfroPulse.</p>
+        <p class="text-sm" id="userSubtitle" style="color:var(--mu)">Votre compte AfroPulse.</p>
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="statsGrid">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="stat-card"><div class="w-9 h-9 rounded-lg grid place-items-center mb-2" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-paper-plane text-sm"></i></div><div class="stat-num" style="color:var(--ink)" id="statCandidatures">—</div><div class="stat-lbl" id="statCandidaturesLabel">Candidatures envoyées</div></div>
     <div class="stat-card"><div class="w-9 h-9 rounded-lg grid place-items-center mb-2" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-arrows-rotate text-sm"></i></div><div class="stat-num" style="color:var(--ink)" id="statTroc">—</div><div class="stat-lbl">Troc en cours</div></div>
     <div class="stat-card"><div class="w-9 h-9 rounded-lg grid place-items-center mb-2" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-user-graduate text-sm"></i></div><div class="stat-num" style="color:var(--ink)" id="statMentors">—</div><div class="stat-lbl">Mentors</div></div>
@@ -63,22 +63,22 @@
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <a href="talents.html" class="quick-link">
         <div class="ql-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-users"></i></div>
-        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Rechercher un talent</div><div class="text-xs truncate" style="color:var(--mu)">Annuaire des membres</div></div>
+        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Rechercher un talent</div><div class="text-xs truncate" style="color:var(--mu)">Parcourir les profils</div></div>
         <i class="fa-solid fa-chevron-right text-xs" style="color:var(--mu)"></i>
       </a>
       <a href="particulier.html#missions" class="quick-link">
         <div class="ql-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-briefcase"></i></div>
-        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Explorer les missions</div><div class="text-xs truncate" style="color:var(--mu)">Micro-missions disponibles</div></div>
+        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Voir les missions</div><div class="text-xs truncate" style="color:var(--mu)">Micro-missions ouvertes</div></div>
         <i class="fa-solid fa-chevron-right text-xs" style="color:var(--mu)"></i>
       </a>
       <a href="particulier.html#mentorat" class="quick-link">
         <div class="ql-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-globe"></i></div>
-        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Trouver un mentor</div><div class="text-xs truncate" style="color:var(--mu)">Rencontrer la diaspora</div></div>
+        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Trouver un mentor</div><div class="text-xs truncate" style="color:var(--mu)">Contacter la diaspora</div></div>
         <i class="fa-solid fa-chevron-right text-xs" style="color:var(--mu)"></i>
       </a>
       <a href="messages.html" class="quick-link">
         <div class="ql-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-comments"></i><span id="msgBadge" class="msg-badge hidden">0</span></div>
-        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Messagerie</div><div class="text-xs truncate" style="color:var(--mu)">Échanger avec les membres</div></div>
+        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Messages</div><div class="text-xs truncate" style="color:var(--mu)">Échanger avec les membres</div></div>
         <i class="fa-solid fa-chevron-right text-xs" style="color:var(--mu)"></i>
       </a>
       <a href="candidatures.html" class="quick-link hidden" id="linkCandidaturesRecues">
@@ -93,7 +93,7 @@
       </a>
       <a href="entreprise.html" class="quick-link hidden" id="linkEntreprise">
         <div class="ql-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-shield-halved"></i></div>
-        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Vérification RCCM</div><div class="text-xs truncate" style="color:var(--mu)">Obtenir votre badge entreprise</div></div>
+        <div class="flex-1 min-w-0"><div class="font-semibold text-sm" style="color:var(--ink)">Vérification RCCM</div><div class="text-xs truncate" style="color:var(--mu)">Obtenir le badge entreprise</div></div>
         <i class="fa-solid fa-chevron-right text-xs" style="color:var(--mu)"></i>
       </a>
       <a href="favoris.html" class="quick-link">
@@ -121,7 +121,7 @@
 
   <div class="p-4 rounded-xl flex items-start gap-3 text-xs" style="background:color-mix(in srgb,var(--ac) 5%,transparent);border:1px solid var(--bd);color:var(--mu)">
     <i class="fa-solid fa-circle-info mt-0.5" style="color:var(--ac)"></i>
-    <div><strong style="color:var(--ink)">Astuce :</strong> complétez votre profil (photo, CV, compétences) pour apparaître plus haut dans les recherches.</div>
+    <div><strong style="color:var(--ink)">Conseil :</strong> complétez votre profil (photo, CV, compétences) pour apparaître plus haut dans les recherches.</div>
   </div>
 
 </div>
@@ -137,7 +137,6 @@
 const $=id=>document.getElementById(id);
 
 addEventListener('DOMContentLoaded',async()=>{
-  // Skeleton initial des stats
   $('statCandidatures').textContent='—';
   $('activityContainer').innerHTML=UI.skeleton.list(3);
 
@@ -215,7 +214,6 @@ async function loadStats(){
       <a href="${isEntreprise?'candidatures.html':'mes-activites.html'}" class="inline-flex items-center gap-1 text-xs font-semibold mt-3" style="color:var(--ac);text-decoration:none">Voir tout <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
     `;
   }catch(e){
-    console.error('[Dashboard stats]', e);
     const container=$('activityContainer');
     container.innerHTML=UI.error(e.message, ()=>loadStats());
   }
@@ -240,7 +238,7 @@ function render(profile,user){
   $('todayDate').textContent=dateStr.charAt(0).toUpperCase()+dateStr.slice(1);
 
   const isEntreprise=profile?.role==='entreprise';
-  $('userSubtitle').textContent=isEntreprise?'Votre tableau de bord entreprise.':'Votre espace personnel AfroPulse.';
+  $('userSubtitle').textContent=isEntreprise?'Votre compte entreprise.':'Votre compte AfroPulse.';
   $('companyBanner').classList.toggle('hidden',!isEntreprise);
   $('linkEntreprise').classList.toggle('hidden',!isEntreprise);
   $('linkPublier').classList.toggle('hidden',!isEntreprise);

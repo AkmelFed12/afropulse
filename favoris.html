@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mes favoris — AfroPulse</title>
+<title>Mes favoris, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -30,8 +30,8 @@
 
   <div class="mb-8">
     <span class="chip mb-4"><i class="fa-solid fa-heart text-[10px]"></i>Favoris</span>
-    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Mes favoris.</h1>
-    <p class="text-sm max-w-2xl" style="color:var(--mu)">Retrouvez ici les profils et missions que vous avez mis de côté.</p>
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Mes favoris</h1>
+    <p class="text-sm max-w-2xl" style="color:var(--mu)">Retrouvez ici les profils et missions que vous avez sauvegardés.</p>
   </div>
 
   <div class="mb-6 flex flex-wrap gap-3 items-center">
@@ -88,9 +88,9 @@ function render(){
   if(!filtered.length){
     grid.innerHTML=UI.empty(
       'fa-heart-crack',
-      'Aucun favori pour le moment',
-      'Ajoutez des profils ou missions à vos favoris avec le bouton ❤️.',
-      `<a href="particulier.html#missions" class="btn bp text-xs">Explorer les missions</a>
+      'Aucun favori',
+      'Ajoutez des profils ou missions à vos favoris avec le bouton cœur.',
+      `<a href="particulier.html#missions" class="btn bp text-xs">Voir les missions</a>
        <a href="talents.html" class="btn bo text-xs">Voir les talents</a>`
     );
     return;
@@ -166,7 +166,6 @@ async function remove(id){
     render();
     UI.toast('Favori retiré','ok');
   }catch(e){
-    console.error(e);
     UI.toast('Erreur : '+e.message,'error');
   }
 }

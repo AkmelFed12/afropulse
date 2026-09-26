@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mon profil — AfroPulse</title>
+<title>Mon profil, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,7 +28,7 @@
 
   <div class="mb-8">
     <span class="chip mb-4">Mon profil</span>
-    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Votre espace personnel.</h1>
+    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Compléter mes informations</h1>
     <p class="text-sm" style="color:var(--mu)">Ces informations sont visibles par les autres membres du réseau.</p>
   </div>
 
@@ -52,7 +52,7 @@
 
     <div id="companyBlock" class="hidden p-4 rounded-xl mb-5" style="background:color-mix(in srgb,var(--gd) 5%,transparent);border:1px solid color-mix(in srgb,var(--gd) 20%,transparent)">
       <div class="text-xs font-bold mb-1" style="color:var(--gd)"><i class="fa-solid fa-building mr-1"></i>Compte entreprise</div>
-      <p class="text-[11px]" style="color:var(--mu)">Ces informations seront vérifiées pour obtenir votre badge RCCM.</p>
+      <p class="text-[11px]" style="color:var(--mu)">Ces informations seront vérifiées pour obtenir le badge RCCM.</p>
     </div>
 
     <div class="space-y-5">
@@ -100,7 +100,7 @@
         <div class="text-xs font-bold uppercase tracking-wider mb-4" style="color:var(--mu)">Informations professionnelles</div>
         <div class="space-y-4">
           <div>
-            <label for="jobTitle" class="lbl">Poste / Métier</label>
+            <label for="jobTitle" class="lbl">Poste ou métier</label>
             <input id="jobTitle" class="input" type="text" placeholder="Ex : UI/UX Designer">
           </div>
           <div>
@@ -112,7 +112,7 @@
             <input id="skills" class="input" type="text" placeholder="Ex : Figma, React, UI Design">
           </div>
           <div>
-            <label for="bio" class="lbl">Bio courte</label>
+            <label for="bio" class="lbl">Présentation courte</label>
             <textarea id="bio" class="input" rows="3" placeholder="En quelques lignes, qui êtes-vous ?"></textarea>
           </div>
           <div class="grid sm:grid-cols-2 gap-4">
@@ -121,18 +121,18 @@
               <input id="linkedin" class="input" type="url" placeholder="https://linkedin.com/in/...">
             </div>
             <div>
-              <label for="portfolio" class="lbl">Portfolio / Site web</label>
+              <label for="portfolio" class="lbl">Portfolio ou site web</label>
               <input id="portfolio" class="input" type="url" placeholder="https://...">
             </div>
           </div>
           <div>
             <label for="availability" class="lbl">Disponibilité</label>
             <select id="availability" class="input">
-              <option value="">— Choisir —</option>
+              <option value="">Choisir</option>
               <option value="immediate">Immédiate</option>
-              <option value="1-2 semaines">Dans 1-2 semaines</option>
+              <option value="1-2 semaines">Dans 1 à 2 semaines</option>
               <option value="1 mois">Dans 1 mois</option>
-              <option value="mission">Disponible pour missions ponctuelles</option>
+              <option value="mission">Pour des missions ponctuelles</option>
               <option value="non">Pas disponible</option>
             </select>
           </div>
@@ -140,12 +140,12 @@
       </div>
 
       <div style="border-top:1px solid var(--bd);padding-top:1.25rem">
-        <label class="lbl">CV (PDF) <span class="text-xs" style="color:var(--mu)">optionnel · 5 Mo max</span></label>
+        <label class="lbl">CV au format PDF <span class="text-xs" style="color:var(--mu)">optionnel, 5 Mo maximum</span></label>
         <div id="cvDrop" class="file-drop">
           <input type="file" id="cvInput" accept="application/pdf" class="hidden">
           <i id="cvIcon" class="fa-solid fa-cloud-arrow-up text-xl mb-2" style="color:var(--ac)"></i>
           <p id="cvTitle" class="text-sm font-semibold" style="color:var(--ink)">Cliquez ou glissez votre CV ici</p>
-          <p id="cvHint" class="text-xs mt-1" style="color:var(--mu)">PDF uniquement · 5 Mo maximum</p>
+          <p id="cvHint" class="text-xs mt-1" style="color:var(--mu)">PDF uniquement, 5 Mo maximum</p>
         </div>
         <p id="cvExisting" class="text-xs mt-2 hidden" style="color:var(--ok)">
           <i class="fa-solid fa-circle-check mr-1"></i>CV déjà au dossier : <a href="#" id="cvExistingLink" target="_blank" class="underline">Voir</a>
@@ -209,7 +209,6 @@ async function fill(profile,user){
   $('portfolio').value=profile?.portfolio||'';
   $('availability').value=profile?.availability||'';
 
-  // Parse ville + pays
   const {country,city}=Locations.parse(profile?.city||'');
   if(country){
     await Locations.fillCountries($('country'),country);
@@ -247,11 +246,10 @@ addEventListener('DOMContentLoaded',async()=>{
   if(!Auth.requireLogin())return;
   Auth.onChange((u,p)=>fill(p,u));
 
-  /* Avatar */
   $('avatarInput').addEventListener('change',async e=>{
     const f=e.target.files[0];
     if(!f)return;
-    if(f.size>2*1024*1024){alert('Image trop lourde (2 Mo max)');return}
+    if(f.size>2*1024*1024){alert('Image trop lourde (2 Mo maximum)');return}
     avatarFile=f;
     const msg=$('avatarMsg');
     msg.className='text-[11px] mt-1';
@@ -270,7 +268,6 @@ addEventListener('DOMContentLoaded',async()=>{
     }
   });
 
-  /* CV */
   $('cvDrop').addEventListener('click',()=>$('cvInput').click());
   ['dragenter','dragover'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor='var(--ac)'}));
   ['dragleave','drop'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor=''}));
@@ -278,16 +275,15 @@ addEventListener('DOMContentLoaded',async()=>{
   $('cvInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)setCv(f)});
 
   function setCv(f){
-    if(f.type!=='application/pdf'||f.size>5*1024*1024){alert('PDF uniquement · 5 Mo max');return}
+    if(f.type!=='application/pdf'||f.size>5*1024*1024){alert('PDF uniquement, 5 Mo maximum');return}
     cvFile=f;
     $('cvDrop').classList.add('has');
     $('cvIcon').className='fa-solid fa-file-pdf text-xl mb-2';
     $('cvIcon').style.color='var(--ok)';
     $('cvTitle').textContent=f.name.length>40?f.name.slice(0,37)+'…':f.name;
-    $('cvHint').textContent=(f.size/1024).toFixed(0)+' Ko · Prêt à enregistrer';
+    $('cvHint').textContent=(f.size/1024).toFixed(0)+' Ko, prêt à enregistrer';
   }
 
-  /* Submit */
   $('profileForm').addEventListener('submit',async e=>{
     e.preventDefault();
     const btn=$('btn'),msg=$('msg');
@@ -296,7 +292,7 @@ addEventListener('DOMContentLoaded',async()=>{
     const country=$('country').value;
     const city=$('city').value;
     if(!country||!city){
-      msg.textContent='Choisissez un pays et une ville.';
+      msg.textContent='Sélectionnez un pays et une ville.';
       msg.style.color='var(--er)';
       msg.classList.remove('hidden');
       return;

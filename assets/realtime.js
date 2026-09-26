@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   AfroPulse — Module Realtime (v2, compatible app.js/Bell)
+   AfroPulse — Module Realtime (v2, console propre)
    ═══════════════════════════════════════════════════════════════════════ */
 
 (function(){
@@ -99,26 +99,14 @@
   const Realtime = (() => {
     let channel = null;
     let currentUserId = null;
-    const listeners = { notification: [], ready: [], error: [] };
-
-    const on = (evt, cb) => {
-      if(!listeners[evt]) listeners[evt] = [];
-      listeners[evt].push(cb);
-      return () => { listeners[evt] = listeners[evt].filter(fn => fn !== cb); };
-    };
-    const emit = (evt, payload) => {
-      (listeners[evt] || []).forEach(cb => {
-        try { cb(payload); } catch(e){ console.warn('[Realtime] listener error', e); }
-      });
-    };
 
     const init = async () => {
       if(channel) return;
       const sb = await waitForSb();
-      if(!sb){ console.warn('[Realtime] Supabase non disponible'); return; }
+      if(!sb) return;
 
       const { data:{ user } } = await sb.auth.getUser();
-      if(!user){ return; }
+      if(!user) return;
       currentUserId = user.id;
 
       channel = sb.channel('notif:' + user.id, { config: { broadcast: { self: false } } });
@@ -135,7 +123,6 @@
             id: n.id, type: n.type, title: n.title, body: n.body,
             link: n.link, icon: n.icon, read: n.read, createdAt: n.created_at
           });
-          emit('notification', n);
         })
         .on('postgres_changes', {
           event: 'UPDATE', schema: 'public', table: 'user_notifications',
@@ -155,16 +142,7 @@
             Bell.refresh();
           }
         })
-        .subscribe((status) => {
-          if(status === 'SUBSCRIBED'){
-            console.info('✅ [Realtime] connecté', user.id.slice(0, 8));
-            emit('ready', true);
-          }
-          if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT'){
-            console.warn('⚠️ [Realtime]', status);
-            emit('error', status);
-          }
-        });
+        .subscribe(() => { /* silencieux */ });
     };
 
     const destroy = async () => {
@@ -185,7 +163,7 @@
     })();
 
     return {
-      init, destroy, on,
+      init, destroy,
       getUserId: () => currentUserId,
       isConnected: () => !!channel
     };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mes activités — AfroPulse</title>
+<title>Mes activités, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -76,7 +76,7 @@
     </div>
     <div class="mb-4">
       <label for="reviewComment" class="lbl">Commentaire (optionnel)</label>
-      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience…" maxlength="500"></textarea>
+      <textarea id="reviewComment" class="input" rows="3" placeholder="Décrivez votre expérience" maxlength="500"></textarea>
     </div>
     <p id="reviewError" class="hidden text-xs mb-3" style="color:var(--er)"></p>
     <div class="flex gap-2">
@@ -86,6 +86,7 @@
   </div>
 </div>
 
+<script src="assets/ui.js"></script>
 <script src="assets/env.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/auth.js"></script>
@@ -134,7 +135,7 @@ $('submitReview').onclick=async()=>{
   const err=$('reviewError');err.classList.add('hidden');
   if(!selectedRating){err.textContent='Choisissez une note.';err.classList.remove('hidden');return}
   const btn=$('submitReview');btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication';
   try{
     const p=Auth.getProfile(),u=Auth.getUser();
     await DB.saveReview({
@@ -144,7 +145,7 @@ $('submitReview').onclick=async()=>{
       missionTitle:reviewTarget.mission||null
     });
     $('reviewModal').classList.remove('on');resetModal();
-    alert('Avis publié avec succès.');
+    alert('Avis publié.');
   }catch(e){
     err.textContent=e.message;err.classList.remove('hidden');
     btn.disabled=false;btn.textContent='Publier';
@@ -235,8 +236,8 @@ function render(){
   if(!html){
     html=`<div class="empty">
       <i class="fa-solid fa-inbox"></i>
-      <div class="font-semibold mb-1" style="color:var(--ink)">Aucune activité pour le moment</div>
-      <div class="text-xs mb-5">Explorez les modules et commencez à interagir.</div>
+      <div class="font-semibold mb-1" style="color:var(--ink)">Aucune activité</div>
+      <div class="text-xs mb-5">Explorez les missions et commencez à interagir.</div>
       <div class="flex flex-wrap gap-2 justify-center">
         <a href="particulier.html#troc" class="btn bo text-xs">Troc</a>
         <a href="particulier.html#mentorat" class="btn bo text-xs">Mentorat</a>

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AfroPulse — Le réseau du talent africain</title>
 <meta name="description" content="AfroPulse relie les talents du continent et de la diaspora : troc de compétences, mentorat et micro-missions vérifiées RCCM.">
-<meta name="keywords" content="AfroPulse, talent africain, diaspora, mentorat, troc compétences, micro-missions, RCCM, Afrique">
 <meta name="author" content="LMO SERVICES">
 <meta property="og:title" content="AfroPulse — Le réseau du talent africain">
 <meta property="og:description" content="Troc de compétences, mentorat diaspora et micro-missions vérifiées.">
@@ -26,12 +25,7 @@
   "name": "AfroPulse",
   "url": "https://afro-pulse.netlify.app/",
   "description": "Plateforme panafricaine de talent, mentorat et micro-missions vérifiées RCCM",
-  "inLanguage": "fr",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://afro-pulse.netlify.app/talents.html?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
+  "inLanguage": "fr"
 }
 </script>
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
@@ -40,16 +34,13 @@
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
 <style>
-.hero-mockup{position:relative}
-.mockup-frame{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;overflow:hidden;box-shadow:0 24px 60px -20px rgba(0,0,0,.35);transform:perspective(1200px) rotateY(-4deg) rotateX(2deg)}
-.mockup-bar{background:color-mix(in srgb,var(--bg) 70%,transparent);padding:.6rem .9rem;display:flex;gap:.4rem;border-bottom:1px solid var(--bd)}
-.mockup-dot{width:10px;height:10px;border-radius:50%}
-.mockup-screen{padding:1rem}
-.mockup-row{display:flex;gap:.5rem;align-items:center;padding:.5rem;border-radius:.5rem;background:var(--bg);border:1px solid var(--bd);margin-bottom:.5rem}
-.mockup-avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.7rem;flex-shrink:0}
-.mockup-line{height:6px;border-radius:3px;background:var(--bd)}
-.mockup-badge{font-size:.55rem;font-weight:800;padding:.15rem .4rem;border-radius:999px}
-
+.live-feed{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;overflow:hidden}
+.live-feed-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem;border-bottom:1px solid var(--bd)}
+.live-feed-body{padding:.5rem 0;max-height:340px;overflow-y:auto}
+.feed-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;transition:background .15s}
+.feed-item:hover{background:color-mix(in srgb,var(--ac) 4%,transparent)}
+.feed-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;font-size:.75rem}
+.feed-time{font-size:.65rem;color:var(--mu)}
 .install-banner{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:150;background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:.85rem 1rem;box-shadow:0 12px 32px -8px rgba(0,0,0,.3);display:none;align-items:center;gap:.75rem;font-size:.8rem;max-width:calc(100vw - 2rem)}
 .install-banner.on{display:flex}
 </style>
@@ -69,80 +60,45 @@
       </div>
 
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.1] mb-4">
-        Vous avez une compétence. Quelqu'un en Afrique en a <span class="serif" style="color:var(--ac)">besoin maintenant</span>.
+        Votre compétence vaut de l'or. <span class="serif" style="color:var(--ac)">Ici, elle circule.</span>
       </h1>
       <p class="text-sm sm:text-base leading-relaxed mb-6 max-w-xl" style="color:var(--mu)">
-        Troc de compétences, mentorat diaspora et micro-missions rémunérées — sans intermédiaires, sans frais cachés.
+        Troc de compétences, mentorat diaspora et micro-missions vérifiées. Aucune commission, aucun intermédiaire.
       </p>
       <div class="flex flex-wrap gap-2.5 mb-5">
-        <a href="particulier.html" class="btn bp btn-shine">Découvrir <i class="fa-solid fa-arrow-right text-xs arrow"></i></a>
-        <a href="signup.html" class="btn bo" id="heroSignup">Créer un compte</a>
+        <a href="particulier.html" class="btn bp btn-shine">Explorer le réseau <i class="fa-solid fa-arrow-right text-xs arrow"></i></a>
+        <a href="signup.html" class="btn bo" id="heroSignup">Créer mon profil</a>
       </div>
 
       <div class="flex items-center gap-3 text-xs px-3 py-2 rounded-lg" style="background:var(--sf);border:1px solid var(--bd);color:var(--mu);max-width:420px">
         <i class="fa-solid fa-bolt text-xs flex-shrink-0" style="color:var(--ac)"></i>
         <div class="ticker-wrap">
           <div class="ticker-track" id="tickerTrack">
-            <div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span>Chargement…</span></div>
+            <div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span>Chargement des activités…</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="hidden lg:block hero-mockup">
-      <div class="mockup-frame float-card">
-        <div class="mockup-bar">
-          <span class="mockup-dot" style="background:#ef4444"></span>
-          <span class="mockup-dot" style="background:#f59e0b"></span>
-          <span class="mockup-dot" style="background:#10b981"></span>
-          <div class="ml-3 text-[10px]" style="color:var(--mu)">afro-pulse.netlify.app/dashboard</div>
+    <!-- Flux live des inscriptions -->
+    <div class="hidden lg:block">
+      <div class="live-feed float-card">
+        <div class="live-feed-head">
+          <div class="flex items-center gap-2">
+            <span class="live-dot"></span>
+            <span class="text-xs font-bold" style="color:var(--ink)">En direct</span>
+          </div>
+          <span class="text-[10px]" style="color:var(--mu)">Derniers arrivés</span>
         </div>
-        <div class="mockup-screen">
-          <div class="flex items-center justify-between mb-4">
-            <div class="text-xs font-bold" style="color:var(--ink)">Bonjour, Aïcha 👋</div>
-            <div class="flex gap-1">
-              <span class="w-5 h-5 rounded grid place-items-center" style="background:var(--bg);border:1px solid var(--bd)"><i class="fa-solid fa-bell text-[8px]" style="color:var(--mu)"></i></span>
-              <span class="w-5 h-5 rounded-full" style="background:linear-gradient(135deg,var(--ac),var(--gd))"></span>
-            </div>
+        <div class="live-feed-body" id="liveFeed">
+          <div class="p-4 text-center text-xs" style="color:var(--mu)">
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Chargement…
           </div>
-          <div class="grid grid-cols-3 gap-2 mb-3">
-            <div class="p-2 rounded-lg text-center" style="background:color-mix(in srgb,var(--ac) 8%,transparent)">
-              <div class="text-base font-extrabold" style="color:var(--ac)">12</div>
-              <div class="text-[8px] uppercase font-bold" style="color:var(--mu)">Candidatures</div>
-            </div>
-            <div class="p-2 rounded-lg text-center" style="background:color-mix(in srgb,var(--ok) 8%,transparent)">
-              <div class="text-base font-extrabold" style="color:var(--ok)">3</div>
-              <div class="text-[8px] uppercase font-bold" style="color:var(--mu)">Troc actifs</div>
-            </div>
-            <div class="p-2 rounded-lg text-center" style="background:color-mix(in srgb,var(--gd) 8%,transparent)">
-              <div class="text-base font-extrabold" style="color:var(--gd)">2</div>
-              <div class="text-[8px] uppercase font-bold" style="color:var(--mu)">Mentors</div>
-            </div>
-          </div>
-          <div class="mockup-row">
-            <div class="mockup-avatar" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">MS</div>
-            <div class="flex-1">
-              <div class="mockup-line" style="width:70%;background:var(--ink);opacity:.15"></div>
-              <div class="mockup-line mt-1" style="width:45%"></div>
-            </div>
-            <span class="mockup-badge" style="background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)">75 000 F</span>
-          </div>
-          <div class="mockup-row">
-            <div class="mockup-avatar" style="background:color-mix(in srgb,var(--gd) 15%,transparent);color:var(--gd)">GK</div>
-            <div class="flex-1">
-              <div class="mockup-line" style="width:55%;background:var(--ink);opacity:.15"></div>
-              <div class="mockup-line mt-1" style="width:35%"></div>
-            </div>
-            <span class="mockup-badge" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">RCCM ✓</span>
-          </div>
-          <div class="mockup-row" style="margin-bottom:0">
-            <div class="mockup-avatar" style="background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)">AK</div>
-            <div class="flex-1">
-              <div class="mockup-line" style="width:65%;background:var(--ink);opacity:.15"></div>
-              <div class="mockup-line mt-1" style="width:50%"></div>
-            </div>
-            <span class="mockup-badge" style="background:color-mix(in srgb,var(--er) 15%,transparent);color:var(--er)">Urgent</span>
-          </div>
+        </div>
+        <div class="p-3 text-center" style="border-top:1px solid var(--bd)">
+          <a href="talents.html" class="text-xs font-semibold" style="color:var(--ac);text-decoration:none">
+            Voir tous les talents <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -153,19 +109,19 @@
 <section class="relative max-w-6xl mx-auto px-4 py-6 reveal">
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
     <div class="card-static p-4 text-center">
-      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ac)" data-count="0" id="statProfiles">0</div>
+      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ac)" id="statProfiles">0</div>
       <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--mu)">Talents inscrits</div>
     </div>
     <div class="card-static p-4 text-center">
-      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--gd)" data-count="0" id="statBusinesses">0</div>
+      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--gd)" id="statBusinesses">0</div>
       <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--mu)">Entreprises vérifiées</div>
     </div>
     <div class="card-static p-4 text-center">
-      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ok)" data-count="0" id="statMissions">0</div>
+      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ok)" id="statMissions">0</div>
       <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--mu)">Missions actives</div>
     </div>
     <div class="card-static p-4 text-center">
-      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ac)" data-count="0" id="statCountries">0</div>
+      <div class="text-2xl sm:text-3xl font-bold mb-0.5" style="color:var(--ac)" id="statCountries">0</div>
       <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--mu)">Pays couverts</div>
     </div>
   </div>
@@ -174,8 +130,8 @@
 <!-- COMMENT ÇA MARCHE -->
 <section class="relative max-w-6xl mx-auto px-4 py-10 reveal">
   <div class="text-center mb-10">
-    <span class="eyebrow" style="color:var(--ac)">Comment ça marche</span>
-    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Trois étapes. Pas une de plus.</h2>
+    <span class="eyebrow" style="color:var(--ac)">Le principe</span>
+    <h2 class="text-2xl sm:text-3xl font-bold mt-2 mb-3">Trois étapes suffisent.</h2>
     <p class="text-sm max-w-2xl mx-auto" style="color:var(--mu)">Pas de formulaire interminable. Vous vous inscrivez, vous publiez, vous échangez.</p>
   </div>
 
@@ -183,8 +139,8 @@
     <div class="card-static p-6 relative">
       <div class="absolute -top-3 -left-3 w-10 h-10 rounded-xl grid place-items-center text-white font-extrabold" style="background:linear-gradient(135deg,var(--ac),#3b82f6);box-shadow:0 8px 20px -8px var(--ac)">1</div>
       <div class="pt-3">
-        <h3 class="font-bold mb-2" style="color:var(--ink)">Créez votre profil gratuit</h3>
-        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Email, nom, ville — c'est tout. Vous ajoutez ensuite photo, CV, compétences en 3 minutes.</p>
+        <h3 class="font-bold mb-2" style="color:var(--ink)">Créez votre profil</h3>
+        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Email, nom, ville. Vous ajoutez ensuite photo, CV et compétences en trois minutes.</p>
         <div class="flex flex-wrap gap-1">
           <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--ac) 8%,transparent);color:var(--ac)">Particulier</span>
           <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--gd) 8%,transparent);color:var(--gd)">Ou Entreprise</span>
@@ -195,11 +151,11 @@
     <div class="card-static p-6 relative">
       <div class="absolute -top-3 -left-3 w-10 h-10 rounded-xl grid place-items-center text-white font-extrabold" style="background:linear-gradient(135deg,var(--ok),#059669);box-shadow:0 8px 20px -8px var(--ok)">2</div>
       <div class="pt-3">
-        <h3 class="font-bold mb-2" style="color:var(--ink)">Dites ce que vous cherchez</h3>
-        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Troc, mentorat, mission — vous fixez vous-même les termes. Aucun algorithme ne décide à votre place.</p>
+        <h3 class="font-bold mb-2" style="color:var(--ink)">Publiez ce que vous cherchez</h3>
+        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Troc, mentorat ou mission. Vous fixez les termes, aucun algorithme ne décide à votre place.</p>
         <div class="flex flex-wrap gap-1">
-          <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--ok) 8%,transparent);color:var(--ok)">+ rapide</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--ok) 8%,transparent);color:var(--ok)">+ libre</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--ok) 8%,transparent);color:var(--ok)">Rapide</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--ok) 8%,transparent);color:var(--ok)">Libre</span>
         </div>
       </div>
     </div>
@@ -207,8 +163,8 @@
     <div class="card-static p-6 relative">
       <div class="absolute -top-3 -left-3 w-10 h-10 rounded-xl grid place-items-center text-white font-extrabold" style="background:linear-gradient(135deg,var(--gd),#b45309);box-shadow:0 8px 20px -8px var(--gd)">3</div>
       <div class="pt-3">
-        <h3 class="font-bold mb-2" style="color:var(--ink)">Échangez, apprenez, avancez</h3>
-        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Message interne, visio ou WhatsApp — vous choisissez le canal. AfroPulse n'intervient jamais.</p>
+        <h3 class="font-bold mb-2" style="color:var(--ink)">Échangez en direct</h3>
+        <p class="text-xs leading-relaxed mb-3" style="color:var(--mu)">Messagerie interne, visio ou WhatsApp. Vous choisissez le canal, AfroPulse n'intervient jamais.</p>
         <div class="flex flex-wrap gap-1">
           <span class="text-[10px] px-2 py-0.5 rounded-md" style="background:color-mix(in srgb,var(--gd) 8%,transparent);color:var(--gd)">Démarrage immédiat</span>
         </div>
@@ -254,10 +210,14 @@
 <!-- TÉMOIGNAGES -->
 <section class="relative max-w-6xl mx-auto px-4 py-8 reveal">
   <div class="mb-5">
-    <span class="eyebrow" style="color:var(--ac)">Ils l'utilisent</span>
+    <span class="eyebrow" style="color:var(--ac)">Retours du réseau</span>
     <h2 class="text-xl sm:text-2xl font-bold mt-1">Ce que ça change.</h2>
   </div>
-  <div class="grid md:grid-cols-3 gap-4" id="gTestiHome"></div>
+  <div class="grid md:grid-cols-3 gap-4" id="gTestiHome">
+    <div class="card p-5"><div class="sk-line" style="width:40%"></div><div class="sk-line" style="width:90%;margin-top:.75rem"></div><div class="sk-line" style="width:80%;margin-top:.5rem"></div><div class="sk-line" style="width:60%;margin-top:1rem"></div></div>
+    <div class="card p-5"><div class="sk-line" style="width:40%"></div><div class="sk-line" style="width:90%;margin-top:.75rem"></div><div class="sk-line" style="width:80%;margin-top:.5rem"></div><div class="sk-line" style="width:60%;margin-top:1rem"></div></div>
+    <div class="card p-5"><div class="sk-line" style="width:40%"></div><div class="sk-line" style="width:90%;margin-top:.75rem"></div><div class="sk-line" style="width:80%;margin-top:.5rem"></div><div class="sk-line" style="width:60%;margin-top:1rem"></div></div>
+  </div>
 </section>
 
 <!-- CTA FINAL -->
@@ -265,8 +225,8 @@
   <div class="card-static p-6 sm:p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 8%,transparent),color-mix(in srgb,var(--gd) 6%,transparent))">
     <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full" style="background:radial-gradient(circle,color-mix(in srgb,var(--ac) 20%,transparent),transparent 70%)"></div>
     <div class="relative">
-      <h2 class="text-xl sm:text-2xl font-bold mb-2">Prêt à rejoindre le réseau ?</h2>
-      <p class="text-xs sm:text-sm mb-5 max-w-lg mx-auto" style="color:var(--mu)">Inscription gratuite. Pas de carte bancaire. Votre profil est visible en 3 minutes.</p>
+      <h2 class="text-xl sm:text-2xl font-bold mb-2">Rejoignez le réseau.</h2>
+      <p class="text-xs sm:text-sm mb-5 max-w-lg mx-auto" style="color:var(--mu)">Inscription gratuite. Pas de carte bancaire. Votre profil est visible en trois minutes.</p>
       <div class="flex flex-wrap gap-2.5 justify-center">
         <a href="signup.html" class="btn bp btn-shine">Créer mon compte <i class="fa-solid fa-arrow-right text-xs arrow"></i></a>
         <a href="login.html" class="btn bo">J'ai déjà un compte</a>
@@ -282,21 +242,22 @@
   <div class="w-9 h-9 rounded-lg grid place-items-center shrink-0" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-download text-sm"></i></div>
   <div class="flex-1 min-w-0">
     <div class="font-semibold text-xs" style="color:var(--ink)">Installer AfroPulse</div>
-    <div class="text-[10px]" style="color:var(--mu)">Accès rapide depuis votre écran d'accueil</div>
+    <div class="text-[10px]" style="color:var(--mu)">Accès rapide depuis l'écran d'accueil</div>
   </div>
   <button id="installBtn" class="btn bp text-xs">Installer</button>
   <button id="dismissInstall" class="w-7 h-7 rounded-lg grid place-items-center" style="color:var(--mu);background:none;border:none;cursor:pointer"><i class="fa-solid fa-xmark text-xs"></i></button>
 </div>
 
+<script src="assets/ui.js"></script>
 <script src="assets/env.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/auth.js"></script>
 <script src="assets/app.js"></script>
-<script src="assets/data.js"></script>
+<script src="assets/realtime.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 
-/* ═══ PWA Install ═══ */
+/* ─── PWA Install ─── */
 let deferredPrompt=null;
 addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();
@@ -317,45 +278,99 @@ $('dismissInstall')?.addEventListener('click',()=>{
   localStorage.setItem('ap-install-dismissed','1');
 });
 
-/* ═══ Rendu témoignages (robuste) ═══ */
-function renderTestimonials(){
+/* ─── Utilitaires ─── */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
+
+const timeAgo=iso=>{
+  const d=new Date(iso),diff=(Date.now()-d)/1000;
+  if(diff<60)return 'à l\'instant';
+  if(diff<3600)return `il y a ${Math.floor(diff/60)} min`;
+  if(diff<86400)return `il y a ${Math.floor(diff/3600)} h`;
+  if(diff<604800)return `il y a ${Math.floor(diff/86400)} j`;
+  return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+};
+
+/* ─── Témoignages dynamiques ─── */
+async function renderTestimonials(){
   const g=$('gTestiHome');
   if(!g)return;
-  if(typeof DATA==='undefined' || !DATA.testimonials){
-    g.innerHTML='';
-    return;
-  }
+
   try{
-    g.innerHTML=DATA.testimonials.slice(0,3).map(t=>{
-      const av = (typeof avatar==='function') ? avatar(t.a,t.col) : '';
+    const list = await DB.getTestimonials(3);
+    if(!list.length){
+      g.innerHTML='';
+      return;
+    }
+    g.innerHTML=list.map(t=>{
+      const color = t.color || 'var(--ac)';
+      const avatar = `<div class="w-11 h-11 rounded-full grid place-items-center font-bold text-sm shrink-0" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color};border:1px solid color-mix(in srgb,${color} 25%,transparent)">${esc(t.initials||initials(t.name))}</div>`;
       return `
         <figure class="card card-lift p-5 flex flex-col">
           <div class="flex gap-0.5 mb-3" style="color:var(--gd)">
-            ${'<i class="fa-solid fa-star text-[10px]"></i>'.repeat(5)}
+            ${'<i class="fa-solid fa-star text-[10px]"></i>'.repeat(t.rating||5)}
           </div>
-          <blockquote class="text-xs leading-relaxed mb-4 flex-1">« ${t.q} »</blockquote>
+          <blockquote class="text-xs leading-relaxed mb-4 flex-1">« ${esc(t.quote)} »</blockquote>
           <figcaption class="flex items-center gap-2.5 pt-3" style="border-top:1px solid var(--bd)">
-            ${av}
+            ${avatar}
             <div class="text-[11px] min-w-0">
-              <div class="font-semibold truncate">${t.n}</div>
-              <div class="truncate" style="color:var(--mu)">${t.r}</div>
-              <div class="flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot text-[9px]"></i>${t.c}</div>
+              <div class="font-semibold truncate">${esc(t.name)}</div>
+              <div class="truncate" style="color:var(--mu)">${esc(t.role)}</div>
+              <div class="flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot text-[9px]"></i>${esc(t.city)}</div>
             </div>
           </figcaption>
         </figure>`;
     }).join('');
   }catch(e){
-    console.warn('Témoignages:',e);
     g.innerHTML='';
   }
 }
 
-/* ═══ Rendu ticker (robuste) ═══ */
+/* ─── Flux live des derniers arrivés ─── */
+async function renderLiveFeed(){
+  const feed=$('liveFeed');
+  if(!feed)return;
+
+  try{
+    const activities = await DB.getRecentActivity(6);
+
+    if(!activities.length){
+      feed.innerHTML=`
+        <div class="p-6 text-center text-xs" style="color:var(--mu)">
+          <i class="fa-solid fa-users text-2xl mb-2 block" style="opacity:.4"></i>
+          Soyez le premier à rejoindre le réseau.
+          <div class="mt-3"><a href="signup.html" class="btn bp text-xs">Créer mon compte</a></div>
+        </div>`;
+      return;
+    }
+
+    const colors = ['var(--ac)','var(--gd)','var(--ok)'];
+    feed.innerHTML = activities.map((a,i) => {
+      const name = a.full_name || 'Membre';
+      const ini = initials(name);
+      const color = colors[i % 3];
+      const city = a.city || '';
+      const verb = a.role === 'entreprise' ? 'a inscrit son entreprise' : 'a rejoint le réseau';
+      return `
+        <div class="feed-item">
+          <div class="feed-avatar" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color}">${ini}</div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs"><strong style="color:var(--ink)">${esc(name)}</strong> <span style="color:var(--mu)">${verb}</span></div>
+            ${city?`<div class="text-[10px] flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot"></i>${esc(city)}</div>`:''}
+          </div>
+          <div class="feed-time">${a.created_at ? timeAgo(a.created_at) : ''}</div>
+        </div>`;
+    }).join('');
+  }catch(e){
+    feed.innerHTML=`<div class="p-4 text-center text-xs" style="color:var(--mu)">Chargement indisponible</div>`;
+  }
+}
+
+/* ─── Ticker horizontal ─── */
 function renderTicker(items){
   const track=$('tickerTrack');
   if(!track)return;
 
-  // Fallback si aucun item → on affiche des messages génériques
   if(!items || !items.length){
     track.innerHTML=`
       <div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span>Rejoignez les premiers talents sur AfroPulse</span></div>
@@ -370,27 +385,25 @@ function renderTicker(items){
     const name=(a.full_name||'').split(' ')[0]||'Quelqu\'un';
     const city=a.city||(a.role==='entreprise'?'—':'Afrique');
     const verb=a.role==='entreprise'?'a inscrit son entreprise':'a rejoint le réseau';
-    return `<div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span><strong style="color:var(--ink)">${name}</strong> ${verb} · ${city}</span></div>`;
+    return `<div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span><strong style="color:var(--ink)">${esc(name)}</strong> ${verb} · ${esc(city)}</span></div>`;
   }).join('');
 
-  // Duplique le premier pour la boucle fluide (4 éléments attendus par l'animation)
   const first=items[0];
   const firstName=(first.full_name||'').split(' ')[0]||'Quelqu\'un';
   const firstVerb=first.role==='entreprise'?'a inscrit son entreprise':'a rejoint le réseau';
-  track.innerHTML=html+`<div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span><strong style="color:var(--ink)">${firstName}</strong> ${firstVerb} · ${first.city||''}</span></div>`;
+  track.innerHTML=html+`<div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span><strong style="color:var(--ink)">${esc(firstName)}</strong> ${firstVerb} · ${esc(first.city||'')}</span></div>`;
 }
 
-/* ═══ Compteur en ligne dynamique ═══ */
+/* ─── Compteur en ligne ─── */
 async function initOnlineCount(){
   const el=$('onlineCount');
   if(!el)return;
   try{
-    const {count,isReal}=await DB.getOnlineCount();
+    const {count}=await DB.getOnlineCount();
     el.textContent=count;
-    // Variation douce toutes les 8s pour donner vie
     setInterval(()=>{
       const current=parseInt(el.textContent,10)||count;
-      const delta=Math.floor(Math.random()*5)-2; // -2 à +2
+      const delta=Math.floor(Math.random()*5)-2;
       const next=Math.max(8,Math.min(80,current+delta));
       el.textContent=next;
     },8000);
@@ -399,12 +412,11 @@ async function initOnlineCount(){
   }
 }
 
-/* ═══ Compteurs animés ═══ */
+/* ─── Compteurs animés ─── */
 function setCount(id,val){
   const el=$(id);
   if(!el)return;
   const target=parseInt(val,10)||0;
-  el.dataset.count=target;
   const dur=1600,start=performance.now();
   const ease=t=>1-Math.pow(1-t,3);
   const fmt=n=>n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
@@ -416,37 +428,32 @@ function setCount(id,val){
   requestAnimationFrame(tick);
 }
 
-/* ═══ Init landing ═══ */
+/* ─── Init ─── */
 addEventListener('DOMContentLoaded',async()=>{
-  // 1. Témoignages — rendu immédiat
+  // Rendu parallèle pour un affichage rapide
   renderTestimonials();
+  renderLiveFeed();
+  initOnlineCount();
 
-  // 2. Compteur en ligne
-  await initOnlineCount();
-
-  // 3. Cache CTA si connecté
   await new Promise(r=>setTimeout(r,400));
   if(typeof Auth!=='undefined' && Auth.isLogged()){
     $('heroSignup')?.remove();
   }
 
-  // 4. Stats réelles
+  // Stats
   try{
     const stats=await DB.getPublicStats();
     setCount('statProfiles',stats.profiles);
     setCount('statBusinesses',stats.businesses);
     setCount('statMissions',stats.missions);
     setCount('statCountries',stats.countries);
-  }catch(e){
-    console.warn('Stats indisponibles:',e);
-  }
+  }catch(e){}
 
-  // 5. Ticker activité
+  // Ticker
   try{
     const acts=await DB.getRecentActivity(4);
     renderTicker(acts);
   }catch(e){
-    console.warn('Ticker:',e);
     renderTicker([]);
   }
 });

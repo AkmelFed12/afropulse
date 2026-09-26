@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Contact — AfroPulse</title>
+<title>Contact, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,10 +18,10 @@
 <div class="relative max-w-3xl mx-auto px-4 pt-16 sm:pt-20 pb-10">
   <span class="chip mb-6"><i class="fa-solid fa-headset text-[10px]"></i>Contact</span>
   <h1 class="text-4xl sm:text-5xl font-bold leading-[1.05] mb-6">
-    Une question ? <span class="serif" style="color:var(--ac)">Parlons-en</span>.
+    Nous <span class="serif" style="color:var(--ac)">écrire</span>.
   </h1>
   <p class="text-base leading-relaxed" style="color:var(--mu)">
-    Notre équipe répond en moins de 24 heures par WhatsApp.
+    L'équipe répond en moins de 24 heures par WhatsApp.
   </p>
 </div>
 
@@ -31,13 +31,13 @@
       <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:color-mix(in srgb,var(--ok) 12%,transparent);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent)"><i class="fa-brands fa-whatsapp text-lg" style="color:var(--ok)"></i></div>
       <h3 class="font-bold mb-1">Support 1</h3>
       <p class="text-sm font-mono" style="color:var(--ac)">+225 01 50 07 00 83</p>
-      <p class="text-xs mt-2" style="color:var(--mu)">Réponse en moins de 2h</p>
+      <p class="text-xs mt-2" style="color:var(--mu)">Réponse sous 2 heures</p>
     </a>
     <a href="https://wa.me/2250574724233" target="_blank" rel="noopener" class="card p-6" style="text-decoration:none;color:inherit">
       <div class="w-11 h-11 rounded-xl grid place-items-center mb-4" style="background:color-mix(in srgb,var(--ok) 12%,transparent);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent)"><i class="fa-brands fa-whatsapp text-lg" style="color:var(--ok)"></i></div>
       <h3 class="font-bold mb-1">Support 2</h3>
       <p class="text-sm font-mono" style="color:var(--ac)">+225 05 74 72 42 33</p>
-      <p class="text-xs mt-2" style="color:var(--mu)">Réponse en moins de 2h</p>
+      <p class="text-xs mt-2" style="color:var(--mu)">Réponse sous 2 heures</p>
     </a>
   </div>
 
@@ -45,35 +45,56 @@
     <h2 class="font-bold mb-6">Ou envoyez-nous un message</h2>
     <div class="space-y-4">
       <div><label for="cName" class="lbl">Nom complet <span class="req">*</span></label><input id="cName" class="input" type="text" placeholder="Votre nom" required></div>
-      <div><label for="cEmail" class="lbl">Email <span class="req">*</span></label><input id="cEmail" class="input" type="email" placeholder="vous@exemple.com" required></div>
+      <div><label for="cEmail" class="lbl">Adresse email <span class="req">*</span></label><input id="cEmail" class="input" type="email" placeholder="vous@exemple.com" required></div>
       <div>
         <label for="cSubject" class="lbl">Sujet</label>
         <select id="cSubject" class="input">
           <option>Question générale</option>
           <option>Problème technique</option>
           <option>Vérification RCCM</option>
-          <option>Facturation / abonnement</option>
+          <option>Facturation et abonnement</option>
           <option>Partenariat</option>
         </select>
       </div>
-      <div><label for="cMessage" class="lbl">Message <span class="req">*</span></label><textarea id="cMessage" class="input" rows="5" placeholder="Décrivez votre demande…" required></textarea></div>
+      <div><label for="cMessage" class="lbl">Message <span class="req">*</span></label><textarea id="cMessage" class="input" rows="5" placeholder="Décrivez votre demande" required></textarea></div>
     </div>
     <button type="submit" class="btn bp w-full mt-6"><i class="fa-solid fa-paper-plane text-xs"></i>Envoyer le message</button>
   </form>
 </div>
 </main>
 
+<script src="assets/ui.js"></script>
 <script src="assets/env.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
-document.getElementById('contactForm')?.addEventListener('submit',e=>{
+const $=id=>document.getElementById(id);
+
+$('contactForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
   const btn=e.target.querySelector('button[type="submit"]');
   const original=btn.innerHTML;
+  const name=$('cName').value.trim();
+  const email=$('cEmail').value.trim();
+  const subject=$('cSubject').value;
+  const message=$('cMessage').value.trim();
+
+  if(!name||!email||!message){
+    if(typeof UI!=='undefined') UI.toast('Remplissez tous les champs.','warn');
+    return;
+  }
+
   btn.disabled=true;
   btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Envoi…';
-  setTimeout(()=>{
+
+  try{
+    await DB.saveContact({
+      userId:null,
+      userName:name,
+      type:subject,
+      target:'afropulse',
+      message:`${email}\n\n${message}`
+    });
     btn.innerHTML='<i class="fa-solid fa-circle-check"></i>Message envoyé';
     btn.style.background='var(--ok)';
     setTimeout(()=>{
@@ -82,7 +103,12 @@ document.getElementById('contactForm')?.addEventListener('submit',e=>{
       btn.disabled=false;
       e.target.reset();
     },2500);
-  },1200);
+    if(typeof UI!=='undefined') UI.toast('Message reçu. Réponse sous 24 heures.','ok');
+  }catch(err){
+    btn.innerHTML=original;
+    btn.disabled=false;
+    if(typeof UI!=='undefined') UI.toast('Erreur d\'envoi. Réessayez.','error');
+  }
 });
 </script>
 </body>

@@ -17,7 +17,7 @@ const Auth=(()=>{
     try{
       const {data}=await window.__sb.from('profiles').select('*').eq('id',user.id).single();
       profile=data;
-    }catch(e){console.error('Profil introuvable',e);profile=null}
+    }catch(e){profile=null}
   }
 
   return{

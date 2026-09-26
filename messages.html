@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Messages — AfroPulse</title>
+<title>Messages, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -39,19 +39,19 @@
   <div class="mb-6">
     <span class="chip mb-3"><i class="fa-solid fa-comments text-[10px]"></i>Messagerie</span>
     <h1 class="text-2xl sm:text-3xl font-bold" style="color:var(--ink)">Mes messages</h1>
-    <p class="text-sm mt-1" style="color:var(--mu)">Échangez directement avec les autres membres du réseau.</p>
+    <p class="text-sm mt-1" style="color:var(--mu)">Échangez avec les autres membres du réseau.</p>
   </div>
 
   <div class="msg-layout">
     <aside class="conv-list" id="convList">
-      <div class="p-4 text-center text-xs" style="color:var(--mu)"><i class="fa-solid fa-circle-notch fa-spin"></i> Chargement…</div>
+      <div class="p-4 text-center text-xs" style="color:var(--mu)"><i class="fa-solid fa-circle-notch fa-spin"></i> Chargement</div>
     </aside>
 
     <section class="chat-panel" id="chatPanel">
       <div class="empty-chat" id="emptyChat">
         <i class="fa-solid fa-comments text-3xl mb-3" style="color:var(--ac);opacity:.4"></i>
         <div class="font-semibold mb-1" style="color:var(--ink)">Sélectionnez une conversation</div>
-        <div class="text-xs">Ou démarrez-en une depuis une candidature, un profil ou une mission.</div>
+        <div class="text-xs">Ou démarrez-en une depuis un profil, une mission ou une candidature.</div>
       </div>
 
       <div id="chatContent" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
@@ -65,7 +65,7 @@
         </div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
-          <textarea id="msgInput" class="input" rows="1" placeholder="Écrivez un message…"></textarea>
+          <textarea id="msgInput" class="input" rows="1" placeholder="Écrivez un message"></textarea>
           <button onclick="Chat.send()" class="btn bp" style="padding:.7rem .9rem" id="sendBtn"><i class="fa-solid fa-paper-plane text-xs"></i></button>
         </div>
       </div>
@@ -96,8 +96,8 @@ const Chat=(()=>{
       if(!convs.length){
         list.innerHTML=`<div class="p-6 text-center text-xs" style="color:var(--mu)">
           <i class="fa-solid fa-inbox text-2xl mb-2 block" style="opacity:.4"></i>
-          Aucune conversation pour le moment.
-          <div class="mt-3"><a href="particulier.html" class="text-xs font-semibold" style="color:var(--ac)">Explorer les missions</a></div>
+          Aucune conversation pour le moment
+          <div class="mt-3"><a href="particulier.html" class="text-xs font-semibold" style="color:var(--ac)">Voir les missions</a></div>
         </div>`;
         return;
       }
@@ -118,7 +118,6 @@ const Chat=(()=>{
         </div>`;
       }).join('');
     }catch(e){
-      console.error(e);
       list.innerHTML=`<div class="p-6 text-center text-xs" style="color:var(--er)">Erreur de chargement</div>`;
     }
   }
@@ -153,7 +152,7 @@ const Chat=(()=>{
         return `<div class="msg ${mine?'me':'them'}">${esc(m.content)}<div class="msg-time">${time}</div></div>`;
       }).join('');
       if(wasAtBottom)container.scrollTop=container.scrollHeight;
-    }catch(e){console.error(e)}
+    }catch(e){}
   }
 
   async function send(){
@@ -191,7 +190,6 @@ const Chat=(()=>{
       const container=$('chatMessages');
       container.scrollTop=container.scrollHeight;
     }catch(e){
-      console.error(e);
       alert('Erreur : '+e.message);
     }
     btn.disabled=false;

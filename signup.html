@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Créer un compte — AfroPulse</title>
+<title>Créer un compte, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -62,25 +62,25 @@
       <div class="w-12 h-12 mx-auto rounded-xl grid place-items-center mb-4" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
         <i class="fa-solid fa-user-plus" style="color:var(--ac)"></i>
       </div>
-      <h1 class="text-2xl font-bold mb-2">Quel type de compte ?</h1>
-      <p class="text-sm" style="color:var(--mu)">Choisissez selon votre profil. Vous pourrez toujours changer plus tard.</p>
+      <h1 class="text-2xl font-bold mb-2">Créer un compte</h1>
+      <p class="text-sm" style="color:var(--mu)">Sélectionnez le type de compte qui vous correspond.</p>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-4 mb-6">
       <div class="choice-card" data-role="particulier" onclick="Signup.choose('particulier')">
         <i class="fa-solid fa-user" style="color:var(--ac)"></i>
         <h3>Particulier</h3>
-        <p>Je suis un talent, un indépendant ou un membre de la diaspora.</p>
+        <p>Vous êtes un talent indépendant ou un membre de la diaspora.</p>
       </div>
       <div class="choice-card" data-role="entreprise" onclick="Signup.choose('entreprise')">
         <i class="fa-solid fa-building" style="color:var(--gd)"></i>
         <h3>Entreprise</h3>
-        <p>Je représente une société et souhaite recruter ou publier des missions.</p>
+        <p>Vous représentez une société et souhaitez recruter.</p>
       </div>
     </div>
 
     <p class="text-xs text-center" style="color:var(--mu)">
-      Déjà inscrit ? <a href="login.html" class="font-semibold" style="color:var(--ac)">Se connecter</a>
+      Vous avez déjà un compte ? <a href="login.html" class="font-semibold" style="color:var(--ac)">Se connecter</a>
     </p>
   </section>
 
@@ -92,8 +92,8 @@
       <div id="formIcon" class="w-12 h-12 mx-auto rounded-xl grid place-items-center mb-3" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
         <i class="fa-solid fa-user" style="color:var(--ac)"></i>
       </div>
-      <h1 class="text-2xl font-bold mb-2" id="formTitle">Créer un compte particulier.</h1>
-      <p class="text-sm" style="color:var(--mu)" id="formSubtitle">Vos informations restent privées et sécurisées.</p>
+      <h1 class="text-2xl font-bold mb-2" id="formTitle">Vos informations</h1>
+      <p class="text-sm" style="color:var(--mu)" id="formSubtitle">Elles ne sont visibles que par les membres du réseau.</p>
     </div>
 
     <form id="signupForm" class="card-static p-6">
@@ -115,7 +115,7 @@
         </div>
 
         <div>
-          <label for="email" class="lbl">Email <span class="req">*</span></label>
+          <label for="email" class="lbl">Adresse email <span class="req">*</span></label>
           <input id="email" class="input" type="email" placeholder="vous@exemple.com" autocomplete="email">
         </div>
 
@@ -137,10 +137,10 @@
 
         <div>
           <label for="password" class="lbl">Mot de passe <span class="req">*</span></label>
-          <input id="password" class="input" type="password" placeholder="Ex: AfroPulse2026!" autocomplete="new-password" minlength="6">
+          <input id="password" class="input" type="password" placeholder="6 caractères minimum" autocomplete="new-password" minlength="6">
           <div class="pwd-hint" id="pwdHint">
             <span data-req="lower" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>minuscule</span>
-            <span data-req="upper" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>MAJUSCULE</span>
+            <span data-req="upper" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>majuscule</span>
             <span data-req="digit" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>chiffre</span>
             <span data-req="special" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>caractère spécial</span>
             <span data-req="length" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>6 caractères</span>
@@ -163,9 +163,9 @@
       <div class="success-icon">
         <i class="fa-solid fa-envelope-circle-check mail-anim"></i>
       </div>
-      <h1 class="text-xl font-bold mb-2">Confirmez votre email</h1>
+      <h1 class="text-xl font-bold mb-2">Confirmez votre adresse email</h1>
       <p class="text-sm mb-6 max-w-sm mx-auto leading-relaxed" style="color:var(--mu)">
-        Nous avons envoyé un lien de confirmation à <strong id="sentEmail" style="color:var(--ink)">—</strong>. Cliquez dessus pour activer votre compte.
+        Nous avons envoyé un lien à <strong id="sentEmail" style="color:var(--ink)">—</strong>. Cliquez dessus pour activer votre compte.
       </p>
 
       <div class="p-4 rounded-xl mb-6 text-left text-xs space-y-2" style="background:color-mix(in srgb,var(--ac) 5%,transparent);border:1px solid var(--bd)">
@@ -175,7 +175,7 @@
         </div>
         <div class="flex items-start gap-2">
           <i class="fa-solid fa-triangle-exclamation mt-0.5" style="color:var(--gd)"></i>
-          <span>Pensez à regarder dans <strong style="color:var(--ink)">les spams</strong> ou courriers indésirables</span>
+          <span>Regardez aussi dans les spams</span>
         </div>
         <div class="flex items-start gap-2">
           <i class="fa-solid fa-clock mt-0.5" style="color:var(--mu)"></i>
@@ -185,11 +185,11 @@
 
       <div class="flex flex-wrap gap-3 justify-center">
         <a href="login.html" class="btn bp"><i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>Aller à la connexion</a>
-        <button onclick="Signup.resend()" id="resendBtn" class="btn bo text-xs"><i class="fa-solid fa-rotate"></i>Renvoyer l'email</button>
+        <button onclick="Signup.resend()" id="resendBtn" class="btn bo text-xs"><i class="fa-solid fa-rotate"></i>Renvoyer le lien</button>
       </div>
 
       <p class="text-[11px] mt-6" style="color:var(--mu)">
-        Une question ? <a href="contact.html" class="font-semibold" style="color:var(--ac)">Contactez-nous</a>
+        Un problème ? <a href="contact.html" class="font-semibold" style="color:var(--ac)">Contactez-nous</a>
       </p>
     </div>
   </section>
@@ -237,8 +237,8 @@ const Signup=(()=>{
       $('formIcon').innerHTML='<i class="fa-solid fa-building" style="color:var(--gd)"></i>';
       $('formIcon').style.background='color-mix(in srgb,var(--gd) 12%,transparent)';
       $('formIcon').style.borderColor='color-mix(in srgb,var(--gd) 25%,transparent)';
-      $('formTitle').textContent='Créer un compte entreprise.';
-      $('formSubtitle').textContent='Nous vérifierons votre RCCM après validation.';
+      $('formTitle').textContent='Vos informations entreprise';
+      $('formSubtitle').textContent='Le badge RCCM sera vérifié après validation.';
       $('fullNameLabel').innerHTML='Nom du responsable <span class="req">*</span>';
       $('fullName').placeholder='Ex : Aïcha Koné';
       $('cityLabel').innerHTML='Ville du siège <span class="req">*</span>';
@@ -247,15 +247,14 @@ const Signup=(()=>{
       $('formIcon').innerHTML='<i class="fa-solid fa-user" style="color:var(--ac)"></i>';
       $('formIcon').style.background='color-mix(in srgb,var(--ac) 10%,transparent)';
       $('formIcon').style.borderColor='color-mix(in srgb,var(--ac) 20%,transparent)';
-      $('formTitle').textContent='Créer un compte particulier.';
-      $('formSubtitle').textContent='Vos informations restent privées et sécurisées.';
+      $('formTitle').textContent='Vos informations';
+      $('formSubtitle').textContent='Elles ne sont visibles que par les membres du réseau.';
       $('fullNameLabel').innerHTML='Nom complet <span class="req">*</span>';
       $('fullName').placeholder='Ex : Aïcha Koné';
       $('cityLabel').innerHTML='Ville <span class="req">*</span>';
       $('companyFields').classList.add('hidden');
     }
 
-    // Pré-remplit le pays par défaut
     if(!$('country').value) $('country').value="Côte d'Ivoire";
     if($('country').value){
       await Locations.fillCities($('city'),$('country').value);
@@ -286,17 +285,17 @@ const Signup=(()=>{
     const cityFull=Locations.format(country,city);
 
     if(fullName.length<2){showErr('Entrez votre nom complet.');return}
-    if(!/^\S+@\S+\.\S+$/.test(email)){showErr('Email invalide.');return}
-    if(!country){showErr('Choisissez un pays.');return}
-    if(!city){showErr('Choisissez une ville.');return}
+    if(!/^\S+@\S+\.\S+$/.test(email)){showErr('Adresse email invalide.');return}
+    if(!country){showErr('Sélectionnez un pays.');return}
+    if(!city){showErr('Sélectionnez une ville.');return}
 
     const pwdOK=/[a-z]/.test(password)&&/[A-Z]/.test(password)&&/\d/.test(password)&&/[!@#$%^&*()+\-=\[\]{};':"|<>?,./`~]/.test(password)&&password.length>=6;
-    if(!pwdOK){showErr('Mot de passe : 6 caractères minimum, avec minuscule, majuscule, chiffre et caractère spécial.');return}
+    if(!pwdOK){showErr('Le mot de passe doit contenir au moins 6 caractères, une minuscule, une majuscule, un chiffre et un caractère spécial.');return}
 
     if(role==='entreprise'&&companyName.length<2){showErr('Renseignez la raison sociale.');return}
 
     btn.disabled=true;
-    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Création…';
+    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Création du compte…';
 
     try{
       const result=await Auth.signup({
@@ -316,9 +315,9 @@ const Signup=(()=>{
         location.href='index.html';
       }
     }catch(ex){
-      if(ex.message.includes('already registered'))showErr('Cet email est déjà utilisé.');
-      else if(ex.message.includes('Password should contain'))showErr('Mot de passe : incluez une minuscule, une majuscule, un chiffre et un caractère spécial.');
-      else if(ex.message.includes('Unable to validate email'))showErr('Email invalide ou non accepté.');
+      if(ex.message.includes('already registered'))showErr('Cette adresse email est déjà utilisée.');
+      else if(ex.message.includes('Password should contain'))showErr('Le mot de passe ne respecte pas les règles.');
+      else if(ex.message.includes('Unable to validate email'))showErr('Adresse email invalide ou refusée.');
       else showErr(ex.message);
     }
 
@@ -347,14 +346,14 @@ const Signup=(()=>{
         companyCity:lastMeta.companyCity,
         redirectTo:redirectURL
       });
-      btn.innerHTML='<i class="fa-solid fa-check"></i>Email renvoyé';
+      btn.innerHTML='<i class="fa-solid fa-check"></i>Lien renvoyé';
       setTimeout(()=>{
         btn.disabled=false;
-        btn.innerHTML='<i class="fa-solid fa-rotate"></i>Renvoyer l\'email';
+        btn.innerHTML='<i class="fa-solid fa-rotate"></i>Renvoyer le lien';
       },3000);
     }catch(e){
       btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-rotate"></i>Renvoyer l\'email';
+      btn.innerHTML='<i class="fa-solid fa-rotate"></i>Renvoyer le lien';
     }
   }
 

@@ -36,7 +36,7 @@ const Render=(()=>{
         btn.style.color='';
         btn.style.borderColor='';
       }
-    }catch(e){console.error(e)}
+    }catch(e){}
   }
 
   const heartBtn=(isFav,type,id,data)=>`
@@ -213,27 +213,42 @@ const Render=(()=>{
             try{
               const d=JSON.parse(b.dataset.apply.replace(/&#39;/g,"'"));
               Action.apply(d.title,d.company,d.budget,d.companyId,d.missionId);
-            }catch(e){console.error(e)}
+            }catch(e){}
           });
         });
       }
     });
   }
 
-  function testimonials(){
+  async function testimonials(){
     const g=el('gTesti');if(!g)return;
-    g.innerHTML=DATA.testimonials.map(t=>`<figure class="card p-6 flex flex-col">
-      <div class="flex gap-1 mb-4" style="color:var(--gd)">${'<i class="fa-solid fa-star text-xs"></i>'.repeat(5)}</div>
-      <blockquote class="text-sm leading-relaxed mb-5 flex-1">« ${esc(t.q)} »</blockquote>
-      <figcaption class="flex items-center gap-3 pt-4" style="border-top:1px solid var(--bd)">
-        <div class="w-11 h-11 rounded-full grid place-items-center font-bold text-sm shrink-0" style="background:color-mix(in srgb,${t.col} 15%,transparent);color:${t.col};border:1px solid color-mix(in srgb,${t.col} 25%,transparent)">${t.a}</div>
-        <div class="text-xs min-w-0">
-          <div class="font-semibold truncate">${esc(t.n)}</div>
-          <div class="truncate" style="color:var(--mu)">${esc(t.r)}</div>
-          <div class="flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot text-[10px]"></i><span class="truncate">${esc(t.c)}</span></div>
-        </div>
-      </figcaption>
-    </figure>`).join('');
+
+    await UI.load({
+      container:g,
+      skeletonHtml:UI.skeleton.cards(6),
+      loader:()=>DB.getTestimonials(6),
+      onRender:(list)=>{
+        if(!list.length){
+          g.innerHTML=UI.empty('fa-comment','Aucun témoignage','Revenez plus tard.', '');
+          return;
+        }
+        g.innerHTML=list.map(t=>{
+          const color = t.color || 'var(--ac)';
+          return `<figure class="card p-6 flex flex-col">
+            <div class="flex gap-1 mb-4" style="color:var(--gd)">${'<i class="fa-solid fa-star text-xs"></i>'.repeat(t.rating||5)}</div>
+            <blockquote class="text-sm leading-relaxed mb-5 flex-1">« ${esc(t.quote)} »</blockquote>
+            <figcaption class="flex items-center gap-3 pt-4" style="border-top:1px solid var(--bd)">
+              <div class="w-11 h-11 rounded-full grid place-items-center font-bold text-sm shrink-0" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color};border:1px solid color-mix(in srgb,${color} 25%,transparent)">${esc(t.initials||initials(t.name))}</div>
+              <div class="text-xs min-w-0">
+                <div class="font-semibold truncate">${esc(t.name)}</div>
+                <div class="truncate" style="color:var(--mu)">${esc(t.role)}</div>
+                <div class="flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot text-[10px]"></i><span class="truncate">${esc(t.city)}</span></div>
+              </div>
+            </figcaption>
+          </figure>`;
+        }).join('');
+      }
+    });
   }
 
   return{
@@ -258,12 +273,6 @@ const Action=(()=>{
   };
   function toast(msg,ok=true){
     if(typeof UI!=='undefined') return UI.toast(msg, ok?'ok':'error');
-    let t=document.getElementById('actionToast');
-    if(!t){t=document.createElement('div');t.id='actionToast';document.body.appendChild(t)}
-    t.innerHTML=`<i class="fa-solid ${ok?'fa-circle-check':'fa-circle-exclamation'}" style="color:${ok?'var(--ok)':'var(--er)'}"></i><span>${msg}</span>`;
-    t.classList.add('on');
-    clearTimeout(toast._t);
-    toast._t=setTimeout(()=>t.classList.remove('on'),3500);
   }
   function askMessage(title,placeholder,callback){
     const m=document.createElement('div');
@@ -311,7 +320,7 @@ const Action=(()=>{
       }catch(e){}
       toast('Message envoyé. Ouverture…');
       setTimeout(()=>{location.href=`messages.html?with=${encodeURIComponent(targetId)}&name=${encodeURIComponent(targetName)}`},700);
-    }catch(e){console.error(e);toast('Erreur : '+e.message,false)}
+    }catch(e){toast('Erreur : '+e.message,false)}
   }
 
   return{
@@ -354,7 +363,7 @@ const Action=(()=>{
             }catch(e){}
           }
           toast(`Candidature envoyée à ${company}.`);
-        }catch(e){console.error(e);toast('Erreur : '+e.message,false)}
+        }catch(e){toast('Erreur : '+e.message,false)}
       });
     }
   };

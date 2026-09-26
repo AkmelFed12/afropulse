@@ -36,17 +36,25 @@ const PWA=(()=>{
         apple.href='assets/icon-192.png';
         document.head.appendChild(apple);
       }
-      const appleMeta=document.createElement('meta');
-      appleMeta.name='apple-mobile-web-app-capable';
-      appleMeta.content='yes';
-      document.head.appendChild(appleMeta);
 
-      // Enregistre le service worker
+      // Meta PWA — standard moderne + fallback Apple
+      if(!document.querySelector('meta[name="mobile-web-app-capable"]')){
+        const m1=document.createElement('meta');
+        m1.name='mobile-web-app-capable';
+        m1.content='yes';
+        document.head.appendChild(m1);
+      }
+      if(!document.querySelector('meta[name="apple-mobile-web-app-capable"]')){
+        const m2=document.createElement('meta');
+        m2.name='apple-mobile-web-app-capable';
+        m2.content='yes';
+        document.head.appendChild(m2);
+      }
+
+      // Enregistre le service worker (silencieux)
       if('serviceWorker' in navigator){
         window.addEventListener('load',()=>{
-          navigator.serviceWorker.register('/sw.js').catch(err=>{
-            console.warn('SW non enregistré :',err.message);
-          });
+          navigator.serviceWorker.register('/sw.js').catch(()=>{});
         });
       }
     }
@@ -198,7 +206,7 @@ const AuthSlot=(()=>{
           <a href="dashboard.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Tableau de bord</a>
           <a href="profil.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Mon profil</a>
           <a href="messages.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Messages</a>
-          <a href="favoris.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Mes favoris</a>
+          <a href="favoris.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Favoris</a>
           <button onclick="Auth.logout()" class="nav-link" style="display:block;text-align:left;width:100%;background:none;border:none;cursor:pointer;font-family:inherit;color:var(--er)">Déconnexion</button>`
         :`<a href="login.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Connexion</a>
           <a href="signup.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Inscription</a>`;
