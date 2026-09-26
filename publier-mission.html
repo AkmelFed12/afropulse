@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Publier une mission — AfroPulse</title>
+<title>Publier une mission, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -19,8 +19,8 @@
 
   <div class="mb-8">
     <span class="chip mb-4"><i class="fa-solid fa-briefcase text-[10px]"></i>Espace entreprise</span>
-    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Publier une mission.</h1>
-    <p class="text-sm" style="color:var(--mu)">Votre annonce sera visible par tous les talents du réseau.</p>
+    <h1 class="text-3xl font-bold mb-2" style="color:var(--ink)">Publier une mission</h1>
+    <p class="text-sm" style="color:var(--mu)">Votre annonce sera visible par les membres du réseau.</p>
   </div>
 
   <div id="verifyWarning" class="hidden mb-6 p-4 rounded-xl flex items-start gap-3" style="background:color-mix(in srgb,var(--gd) 6%,transparent);border:1px solid color-mix(in srgb,var(--gd) 25%,transparent)">
@@ -28,7 +28,7 @@
     <div class="text-xs flex-1">
       <div class="font-bold" style="color:var(--gd)">RCCM non vérifié</div>
       <div style="color:var(--mu)">
-        Sans badge RCCM vérifié, votre annonce n'aura pas le label de confiance.
+        Sans badge RCCM, votre annonce n'aura pas le label de confiance.
         <a href="entreprise.html" class="font-semibold underline" style="color:var(--ac)">Soumettre votre RCCM</a>
       </div>
     </div>
@@ -38,7 +38,7 @@
     <div class="space-y-5">
       <div>
         <label for="fTitle" class="lbl">Titre de la mission <span class="req">*</span></label>
-        <input id="fTitle" class="input" type="text" placeholder="Ex : Refonte landing page produit" maxlength="120">
+        <input id="fTitle" class="input" type="text" placeholder="Ex : Refonte page d'accueil" maxlength="120">
       </div>
 
       <div>
@@ -54,7 +54,7 @@
 
       <div>
         <label for="fDescription" class="lbl">Description <span class="req">*</span></label>
-        <textarea id="fDescription" class="input" rows="5" placeholder="Décrivez la mission, les livrables attendus et le profil recherché…" maxlength="2000"></textarea>
+        <textarea id="fDescription" class="input" rows="5" placeholder="Décrivez la mission, les livrables attendus et le profil recherché" maxlength="2000"></textarea>
       </div>
 
       <div class="grid sm:grid-cols-3 gap-4">
@@ -113,7 +113,7 @@ async function loadMy(){
   try{
     const list=await DB.getMyMissions();
     if(!list.length){
-      container.innerHTML=`<div class="card-static p-6 text-center text-xs" style="color:var(--mu)">Aucune mission publiée pour le moment.</div>`;
+      container.innerHTML=`<div class="card-static p-6 text-center text-xs" style="color:var(--mu)">Aucune mission publiée pour le moment</div>`;
       return;
     }
     container.innerHTML=list.map(m=>`
@@ -127,7 +127,7 @@ async function loadMy(){
             ${esc(m.category)}${m.budget?` · <strong style="color:var(--ok)">${esc(m.budget)} FCFA</strong>`:''}
           </div>
           <div class="text-[10px] mt-1" style="color:var(--mu)">
-            Publiée ${new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}
+            Publiée le ${new Date(m.createdAt).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}
           </div>
         </div>
         <button onclick="delMission('${m.id}')" class="text-[10px]" style="color:var(--er);background:none;border:none;cursor:pointer">
@@ -135,7 +135,7 @@ async function loadMy(){
         </button>
       </div>
     `).join('');
-  }catch(e){console.error(e)}
+  }catch(e){}
 }
 
 async function delMission(id){
@@ -156,12 +156,12 @@ $('missionForm').addEventListener('submit',async e=>{
   const duration=$('fDuration').value.trim();
   const location=$('fLocation').value.trim();
 
-  if(title.length<5){err.textContent='Le titre doit faire au moins 5 caractères.';err.classList.remove('hidden');return}
-  if(description.length<20){err.textContent='La description doit faire au moins 20 caractères.';err.classList.remove('hidden');return}
+  if(title.length<5){err.textContent='Le titre doit contenir au moins 5 caractères.';err.classList.remove('hidden');return}
+  if(description.length<20){err.textContent='La description doit contenir au moins 20 caractères.';err.classList.remove('hidden');return}
 
   const p=Auth.getProfile(),u=Auth.getUser();
   btn.disabled=true;
-  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication…';
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Publication';
 
   try{
     await DB.saveMission({
@@ -170,7 +170,7 @@ $('missionForm').addEventListener('submit',async e=>{
       businessVerified:!!(p?.company_rccm&&p.company_rccm.length>3),
       title,category,description,budget,duration,location
     });
-    succ.textContent='Mission publiée avec succès.';
+    succ.textContent='Mission publiée.';
     succ.classList.remove('hidden');
     $('missionForm').reset();
     await loadMy();

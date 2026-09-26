@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Talents — AfroPulse</title>
+<title>Talents, AfroPulse</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,14 +28,14 @@
 
   <div class="mb-8">
     <span class="chip mb-4"><i class="fa-solid fa-magnifying-glass text-[10px]"></i>Annuaire</span>
-    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Trouver un talent.</h1>
-    <p class="text-sm max-w-2xl" style="color:var(--mu)">Filtrez par compétence, métier ou ville. Tous les profils sont des membres vérifiés du réseau AfroPulse.</p>
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color:var(--ink)">Trouver un talent</h1>
+    <p class="text-sm max-w-2xl" style="color:var(--mu)">Filtrez par compétence, métier ou ville. Tous les profils sont des membres du réseau AfroPulse.</p>
   </div>
 
   <div class="searchbar mb-8">
     <div>
-      <label for="q" class="text-xs mb-1 block" style="color:var(--mu)">Recherche libre</label>
-      <input id="q" class="filter-input" type="text" placeholder="Nom, métier, compétence…">
+      <label for="q" class="text-xs mb-1 block" style="color:var(--mu)">Recherche</label>
+      <input id="q" class="filter-input" type="text" placeholder="Nom, métier, compétence">
     </div>
     <div>
       <label for="role" class="text-xs mb-1 block" style="color:var(--mu)">Type</label>
@@ -175,7 +175,6 @@ async function contact(id,name){
     });
     location.href=`messages.html?with=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`;
   }catch(e){
-    console.error(e);
     UI.toast('Erreur : '+e.message,'error');
   }
 }
