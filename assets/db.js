@@ -451,6 +451,72 @@ const DB=(()=>{
       await wait();
       await client.from('contacts').delete().eq('id',id);
     },
+    /* ─── Retraits ─── */
+async saveWithdrawal(d){
+  if(!ready) throw new Error('Supabase non disponible');
+  await wait();
+  const {data:{user}}=await client.auth.getUser();
+  if(!user) throw new Error('Non connecté');
+
+  const {data,error}=await client.from('withdrawals').insert({
+    user_id:user.id,
+    user_name:d.userName,
+    user_email:d.userEmail,
+    amount:d.amount,
+    method:d.method,
+    account_details:d.accountDetails||null,
+    status:'en_attente'
+  }).select().single();
+  if(error)throw error;
+  return data;
+},
+
+async getMyWithdrawals(){
+  if(!ready)return [];
+  await wait();
+  const {data:{user}}=await client.auth.getUser();
+  if(!user)return [];
+  const {data,error}=await client.from('withdrawals')
+    .select('*')
+    .eq('user_id',user.id)
+    .order('created_at',{ascending:false});
+  if(error)return [];
+  return data.map(x=>({
+    id:x.id,
+    amount:x.amount,
+    method:x.method,
+    accountDetails:x.account_details,
+    status:x.status,
+    adminNote:x.admin_note,
+    createdAt:x.created_at,
+    updatedAt:x.updated_at
+  }));
+},
+
+async getMyBalance(){
+  if(!ready)return {available:0,pending:0,withdrawn:0};
+  await wait();
+  const {data:{user}}=await client.auth.getUser();
+  if(!user)return {available:0,pending:0,withdrawn:0};
+
+  try{
+    const {data:withdrawals}=await client.from('withdrawals')
+      .select('amount,status')
+      .eq('user_id',user.id);
+
+    const pending=(withdrawals||[]).filter(w=>w.status==='en_attente'||w.status==='valide').reduce((s,w)=>s+Number(w.amount||0),0);
+    const withdrawn=(withdrawals||[]).filter(w=>w.status==='paye').reduce((s,w)=>s+Number(w.amount||0),0);
+    const earned = 0; // À connecter avec les missions complétées plus tard
+
+    return {
+      available: Math.max(0, earned - pending - withdrawn),
+      pending,
+      withdrawn
+    };
+  }catch(e){
+    return {available:0,pending:0,withdrawn:0};
+  }
+},
 
     /* ─── Missions ─── */
     async canPublishMission(){
