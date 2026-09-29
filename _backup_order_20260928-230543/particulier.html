@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Particuliers, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.step-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.75rem;position:relative;height:100%;transition:.25s}
+.step-card:hover{border-color:var(--ac);transform:translateY(-4px);box-shadow:0 20px 48px -20px rgba(15,23,42,.15)}
+.step-num{position:absolute;top:-14px;left:1.5rem;width:34px;height:34px;border-radius:50%;background:var(--ac);color:#fff;font-weight:800;font-size:.85rem;display:grid;place-items:center;box-shadow:0 8px 20px -6px color-mix(in srgb,var(--ac) 50%,transparent)}
+.step-icon{width:48px;height:48px;border-radius:.85rem;display:grid;place-items:center;font-size:1.15rem;margin-bottom:1rem}
+.benefit-row{display:flex;gap:1rem;padding:1.25rem;border-radius:1rem;background:var(--sf);border:1px solid var(--bd);transition:.2s;align-items:flex-start}
+.benefit-row:hover{border-color:var(--ac)}
+.benefit-icon{width:44px;height:44px;border-radius:.75rem;display:grid;place-items:center;flex-shrink:0;font-size:1.05rem}
+.profile-preview{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.5rem;max-width:340px;margin:0 auto}
+.preview-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--gd));display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.1rem;margin:0 auto 1rem}
+@media(max-width:640px){.step-card{padding:1.35rem}.benefit-row{padding:1rem}}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Trouvez des missions, vendez vos services, développez votre réseau. Zéro commission, contrats sécurisés, paiement Wave ou Orange Money.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/particulier.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Vivez de vos compétences — AfroPulse Particuliers">
+<meta property="og:description" content="Missions, freelance, mentorat diaspora. Aucune commission.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/particulier.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vivez de vos compétences — AfroPulse Particuliers">
+<meta name="twitter:description" content="Missions, freelance, mentorat diaspora. Aucune commission.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+  <section class="text-center mb-16 reveal">
+    <span class="chip mb-4"><i class="fa-solid fa-user text-[10px]"></i><span data-i18n="part.chip">Pour les particuliers</span></span>
+    <h1 class="hero-title" style="max-width:900px;margin-left:auto;margin-right:auto">
+      <span data-i18n="part.hero.title.1">Vivez de vos</span><br>
+      <em data-i18n="part.hero.title.2">compétences.</em>
+    </h1>
+    <p class="hero-sub" style="margin-left:auto;margin-right:auto" data-i18n="part.hero.sub">
+      Trouvez des missions, vendez vos services, développez votre réseau professionnel. Zéro commission sur vos premières ventes.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="signup.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-rocket"></i><span data-i18n="part.cta.start">Créer mon profil</span>
+      </a>
+      <a href="talents.html" class="btn bo btn-lg" data-i18n="part.cta.explore">Explorer les talents</a>
+    </div>
+    <p style="font-size:.75rem;color:var(--mu);margin-top:1rem" data-i18n="part.cta.gift">
+      🎁 3 jours Premium offerts · Aucune carte bancaire
+    </p>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="part.how.title">Comment ça marche</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="part.how.sub">
+      Quatre étapes pour transformer votre talent en revenus.
+    </p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" style="margin-top:3rem">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-user-plus"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.how.1.title">Créez votre profil</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.how.1.text">
+          Décrivez vos compétences, ajoutez votre CV et votre portfolio.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.how.2.title">Trouvez des missions</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.how.2.text">
+          Parcourez les missions publiées par les entreprises vérifiées.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-file-signature"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.how.3.title">Signez le contrat</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.how.3.text">
+          Contrat numérique signé par les deux parties, en toute sécurité.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-money-bill-wave"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.how.4.title">Recevez votre paiement</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.how.4.text">
+          Paiement sur votre portefeuille AfroPulse. Retirez par Wave ou Orange Money.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="section-title" data-i18n="part.profile.title">Votre profil, votre vitrine</h2>
+        <p class="section-sub" style="margin-left:0" data-i18n="part.profile.sub">
+          Un profil complet multiplie vos chances par 5. Ajoutez vos compétences, votre portfolio, vos certifications.
+        </p>
+        <div class="flex flex-col gap-3" style="margin-top:2rem">
+          <div class="benefit-row">
+            <div class="benefit-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-star"></i></div>
+            <div>
+              <div style="font-weight:800;color:var(--ink);font-size:.9rem;margin-bottom:.25rem" data-i18n="part.profile.1.title">Badge vérifié</div>
+              <div style="font-size:.8rem;color:var(--mu);line-height:1.5" data-i18n="part.profile.1.text">Un badge de confiance qui rassure les clients.</div>
+            </div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-chart-line"></i></div>
+            <div>
+              <div style="font-weight:800;color:var(--ink);font-size:.9rem;margin-bottom:.25rem" data-i18n="part.profile.2.title">Score de fiabilité</div>
+              <div style="font-size:.8rem;color:var(--mu);line-height:1.5" data-i18n="part.profile.2.text">Un score calculé à partir de vos contrats et avis clients.</div>
+            </div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-globe"></i></div>
+            <div>
+              <div style="font-weight:800;color:var(--ink);font-size:.9rem;margin-bottom:.25rem" data-i18n="part.profile.3.title">Visibilité internationale</div>
+              <div style="font-size:.8rem;color:var(--mu);line-height:1.5" data-i18n="part.profile.3.text">Soyez trouvé par des entreprises d'Afrique et du monde.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="profile-preview">
+          <div class="preview-avatar">LO</div>
+          <div style="text-align:center;margin-bottom:1rem">
+            <div style="font-weight:800;color:var(--ink);font-size:1rem">Ladji Ouattara</div>
+            <div style="font-size:.8rem;color:var(--ac);font-weight:600">Développeur Full Stack</div>
+            <div style="font-size:.72rem;color:var(--mu);margin-top:.35rem"><i class="fa-solid fa-location-dot"></i> Abidjan, Côte d'Ivoire</div>
+          </div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
+            <span style="font-size:.65rem;padding:.25rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-weight:700">JavaScript</span>
+            <span style="font-size:.65rem;padding:.25rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-weight:700">React</span>
+            <span style="font-size:.65rem;padding:.25rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);font-weight:700">Node.js</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding-top:1rem;border-top:1px solid var(--bd)">
+            <i class="fa-solid fa-shield-halved" style="color:var(--ok);font-size:.8rem"></i>
+            <span style="font-size:.72rem;font-weight:700;color:var(--ok)">Profil vérifié · Score 92/100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="part.benefits.title">Pourquoi AfroPulse</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="part.benefits.sub">
+      Une plateforme pensée pour les réalités des talents africains.
+    </p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-percent"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.1.title">Zéro commission cachée</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.1.text">Vous gardez 100% de vos revenus. Pas de frais surprise.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-mobile-screen"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.2.title">Paiements locaux</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.2.text">Wave, Orange Money, virement bancaire. Retraits rapides.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.3.title">Contrats sécurisés</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.3.text">Chaque mission est encadrée par un contrat numérique.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-comments"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.4.title">Messagerie intégrée</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.4.text">Discutez avec vos clients par écrit ou par message vocal.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.5.title">Mentorat diaspora</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.5.text">Connectez-vous avec des experts de la diaspora pour progresser.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-gift"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="part.benefits.6.title">Affiliation rémunérée</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="part.benefits.6.text">Parrainez vos amis et gagnez 25% sur leurs abonnements.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="text-center py-12 rounded-2xl reveal" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd)">
+    <h2 class="section-title" style="margin-bottom:.75rem" data-i18n="part.final.title">Prêt à démarrer ?</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="part.final.sub">
+      3 jours Premium offerts. Aucun engagement, aucune carte bancaire.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center" id="ctaFinal">
+      <a href="signup.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-rocket"></i><span data-i18n="part.cta.start">Créer mon profil</span>
+      </a>
+      <a href="login.html" class="btn bo btn-lg" data-i18n="part.final.have">J'ai déjà un compte</a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/premium.js"></script>
+<script src="assets/premium-gate.js"></script>
+<script src="assets/wallet.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/autosave.js"></script>
+<script src="assets/voice-search.js"></script>
+<script src="assets/presence.js"></script>
+<script src="assets/sound.js"></script>
+<script src="assets/timezone.js"></script>
+<script src="assets/realtime.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+function adaptAuthUI(){
+  const user = (typeof Auth !== 'undefined' && Auth) ? Auth.getUser() : null;
+  const final = document.getElementById('ctaFinal');
+  if(user && final){
+    final.innerHTML = `
+      <a href="dashboard.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-chart-simple"></i><span data-i18n="index.dashboard">Tableau de bord</span>
+      </a>
+      <a href="talents.html" class="btn bo btn-lg" data-i18n="part.cta.explore">Explorer les talents</a>`;
+    if(typeof I18n !== 'undefined' && I18n.applyAll) I18n.applyAll();
+  }
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+addEventListener('DOMContentLoaded', () => {
+  adaptAuthUI();
+  initReveal();
+  if(typeof Auth !== 'undefined') Auth.onChange(() => adaptAuthUI());
+});
+</script>
+</body>
+</html>

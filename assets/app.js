@@ -56,14 +56,16 @@ const PWA=(()=>{
   };
 })();
 
-/* ═══ LAYOUT ═══ */
+/* ═══ LAYOUT (Header + Footer + Drawer) ═══ */
 const Layout=(()=>{
   const NAV=[
-    {id:'particulier',url:'particulier.html',label:'Particulier'},
-    {id:'entreprise',url:'entreprise.html',label:'Entreprise'},
-    {id:'talents',url:'talents.html',label:'Talents'},
-    {id:'tarifs',url:'tarifs.html',label:'Tarifs'},
-    {id:'a-propos',url:'a-propos.html',label:'À propos'}
+    {id:'index',url:'index.html',label:'Accueil',icon:'fa-house'},
+    {id:'particulier',url:'particulier.html',label:'Particulier',icon:'fa-user'},
+    {id:'entreprise',url:'entreprise.html',label:'Entreprise',icon:'fa-building'},
+    {id:'talents',url:'talents.html',label:'Talents',icon:'fa-star'},
+    {id:'tarifs',url:'tarifs.html',label:'Tarifs',icon:'fa-tags'},
+    {id:'a-propos',url:'a-propos.html',label:'À propos',icon:'fa-circle-info'},
+    {id:'contact',url:'contact.html',label:'Contact',icon:'fa-headset'}
   ];
   const page=(location.pathname.split('/').pop()||'index.html').replace('.html','')||'index';
   const active=id=>page===id?'active':'';
@@ -71,8 +73,9 @@ const Layout=(()=>{
   const header=`<header class="sticky top-0 z-50 backdrop-blur-xl" style="background:color-mix(in srgb,var(--bg) 85%,transparent);border-bottom:1px solid var(--bd)">
   <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
     <a href="index.html" id="logoLink" class="flex items-center gap-2.5 shrink-0" style="text-decoration:none;color:inherit">
-      <span class="w-9 h-9 rounded-lg grid place-items-center" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
+      <img id="logoImg" src="assets/logo.svg" alt="AfroPulse" class="h-9 w-auto" onerror="this.style.display='none';var f=document.getElementById('logoFallback');if(f)f.style.display='grid'">
+      <span id="logoFallback" style="display:none;width:2.25rem;height:2.25rem;border-radius:.5rem;place-items:center;background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
       </span>
       <span class="leading-none text-left">
         <span class="block text-lg font-extrabold">Afro<span style="color:var(--ac)">Pulse</span></span>
@@ -95,20 +98,36 @@ const Layout=(()=>{
         <a href="login.html" class="btn bo text-xs">Connexion</a>
         <a href="signup.html" class="btn bp text-xs">Inscription</a>
       </div>
-      <button onclick="Layout.burger()" aria-label="Menu" class="md:hidden w-9 h-9 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--sf);cursor:pointer"><i class="fa-solid fa-bars text-sm"></i></button>
-    </div>
-  </div>
-  <div id="mnav" class="md:hidden hidden px-4 pb-3">
-    <div class="flex flex-col gap-1 p-1 rounded-xl" style="background:var(--bg);border:1px solid var(--bd)">
-      ${NAV.map(n=>`<a href="${n.url}" class="nav-link ${active(n.id)}" onclick="Layout.burger()" style="display:block;text-align:left">${n.label}</a>`).join('')}
-      <a href="contact.html" class="nav-link" onclick="Layout.burger()" style="display:block;text-align:left">Contact</a>
-      <div id="authSlotMobile" class="pt-2 mt-2" style="border-top:1px solid var(--bd)">
-        <a href="login.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Connexion</a>
-        <a href="signup.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Inscription</a>
-      </div>
+      <button onclick="Layout.openDrawer()" aria-label="Ouvrir le menu" aria-controls="apDrawer" class="md:hidden w-9 h-9 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--sf);cursor:pointer"><i class="fa-solid fa-bars text-sm"></i></button>
     </div>
   </div>
 </header>`;
+
+  const drawer=`<div id="apDrawer" class="ap-drawer" aria-hidden="true">
+    <div class="ap-drawer-backdrop" id="apDrawerBackdrop"></div>
+    <aside class="ap-drawer-panel" role="dialog" aria-modal="true" aria-label="Menu principal">
+      <div class="ap-drawer-head">
+        <div class="ap-drawer-brand">
+          <span class="ap-drawer-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
+          </span>
+          <span class="ap-drawer-brand-text">Afro<span>Pulse</span></span>
+        </div>
+        <button id="apDrawerClose" class="ap-drawer-close" type="button" aria-label="Fermer le menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="apDrawerUser" class="ap-drawer-user"></div>
+
+      <nav class="ap-drawer-nav" aria-label="Navigation principale">
+        <div class="ap-drawer-section">Navigation</div>
+        ${NAV.map(n=>`<a href="${n.url}" class="ap-drawer-link ${active(n.id)}" data-nav="${n.id}"><i class="fa-solid ${n.icon}"></i><span>${n.label}</span></a>`).join('')}
+      </nav>
+
+      <div id="apDrawerActions" class="ap-drawer-actions"></div>
+    </aside>
+  </div>`;
 
   const footer=`<footer class="mt-16" style="border-top:1px solid var(--bd)">
   <div class="max-w-6xl mx-auto px-4 py-10">
@@ -152,12 +171,67 @@ const Layout=(()=>{
   const inject=()=>{
     document.body.insertAdjacentHTML('afterbegin',header);
     document.body.insertAdjacentHTML('beforeend',footer);
+    document.body.insertAdjacentHTML('beforeend',drawer);
+    bindDrawer();
   };
-  const burger=()=>document.getElementById('mnav').classList.toggle('hidden');
-  return{inject,burger};
+
+  function bindDrawer(){
+    const d=document.getElementById('apDrawer');
+    const backdrop=document.getElementById('apDrawerBackdrop');
+    const close=document.getElementById('apDrawerClose');
+    if(!d)return;
+
+    backdrop?.addEventListener('click',closeDrawer);
+    close?.addEventListener('click',closeDrawer);
+
+    d.querySelectorAll('.ap-drawer-link, .ap-drawer-cta-primary, .ap-drawer-cta-secondary').forEach(a=>{
+      a.addEventListener('click',()=>setTimeout(closeDrawer,80));
+    });
+
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape' && d.classList.contains('open'))closeDrawer();
+    });
+
+    let startX=null,currentX=null;
+    const panel=d.querySelector('.ap-drawer-panel');
+    panel?.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;currentX=startX},{passive:true});
+    panel?.addEventListener('touchmove',e=>{
+      if(startX===null)return;
+      currentX=e.touches[0].clientX;
+      const dx=currentX-startX;
+      if(dx>0)panel.style.transform=`translateX(${dx}px)`;
+    },{passive:true});
+    panel?.addEventListener('touchend',()=>{
+      if(startX===null)return;
+      const dx=currentX-startX;
+      panel.style.transform='';
+      if(dx>80)closeDrawer();
+      startX=null;currentX=null;
+    });
+  }
+
+  function openDrawer(){
+    const d=document.getElementById('apDrawer');
+    if(!d)return;
+    document.getElementById('authMenu')?.classList.add('hidden');
+    try{Bell?.close?.()}catch(e){}
+    d.classList.add('open');
+    d.setAttribute('aria-hidden','false');
+    document.body.classList.add('ap-drawer-open');
+  }
+
+  function closeDrawer(){
+    const d=document.getElementById('apDrawer');
+    if(!d)return;
+    d.classList.remove('open');
+    d.setAttribute('aria-hidden','true');
+    document.body.classList.remove('ap-drawer-open');
+  }
+
+  return{inject,openDrawer,closeDrawer};
 })();
 
-/* ═══ AUTH SLOT ═══ */
+/* ═══ AUTH SLOT + DRAWER USER ═══ */
 const AuthSlot=(()=>{
   const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
   const loggedOut=`<a href="login.html" class="btn bo text-xs">Connexion</a><a href="signup.html" class="btn bp text-xs">Inscription</a>`;
@@ -189,24 +263,97 @@ const AuthSlot=(()=>{
     </div>`;
   };
 
+  function renderDrawerUser(user,profile){
+    const host=document.getElementById('apDrawerUser');
+    if(!host)return;
+    if(!user){
+      host.innerHTML=`
+        <div class="ap-drawer-guest">
+          <div class="ap-drawer-guest-title">Bienvenue sur AfroPulse</div>
+          <div class="ap-drawer-guest-sub">Rejoignez le réseau du talent africain.</div>
+        </div>`;
+      return;
+    }
+    const name=profile?.full_name||user?.email||'Utilisateur';
+    const ini=initials(name);
+    const role=profile?.role==='entreprise'?'entreprise':'particulier';
+    const roleLabel=role==='entreprise'?'Entreprise':'Particulier';
+    const roleIcon=role==='entreprise'?'fa-building':'fa-user';
+    const avatar=profile?.avatar_url
+      ?`<img src="${profile.avatar_url}" alt="${name}">`
+      :ini;
+    host.innerHTML=`
+      <div class="ap-drawer-user-card">
+        <div class="ap-drawer-user-avatar">${avatar}</div>
+        <div class="ap-drawer-user-info">
+          <div class="ap-drawer-user-name">${name}</div>
+          <div class="ap-drawer-user-role">
+            <span class="ap-drawer-user-role-badge ${role}">
+              <i class="fa-solid ${roleIcon}"></i>${roleLabel}
+            </span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderDrawerActions(user,profile){
+    const host=document.getElementById('apDrawerActions');
+    if(!host)return;
+    if(!user){
+      host.innerHTML=`
+        <div class="ap-drawer-section">Mon compte</div>
+        <a href="login.html" class="ap-drawer-cta-primary"><i class="fa-solid fa-arrow-right-to-bracket"></i>Se connecter</a>
+        <a href="signup.html" class="ap-drawer-cta-secondary"><i class="fa-solid fa-user-plus"></i>Créer un compte</a>`;
+      return;
+    }
+    host.innerHTML=`
+      <div class="ap-drawer-section">Mon espace</div>
+      <a href="dashboard.html" class="ap-drawer-link" data-nav="dashboard"><i class="fa-solid fa-gauge"></i><span>Tableau de bord</span></a>
+      <a href="profil.html" class="ap-drawer-link" data-nav="profil"><i class="fa-solid fa-user"></i><span>Mon profil</span></a>
+      <a href="messages.html" class="ap-drawer-link" data-nav="messages">
+        <i class="fa-solid fa-comments"></i><span>Messages</span>
+        <span class="ap-drawer-badge" data-badge="messages" hidden>0</span>
+      </a>
+      <a href="favoris.html" class="ap-drawer-link" data-nav="favoris"><i class="fa-solid fa-heart"></i><span>Mes favoris</span></a>
+      <a href="mes-activites.html" class="ap-drawer-link" data-nav="mes-activites"><i class="fa-solid fa-list-check"></i><span>Mes activités</span></a>
+      <button onclick="Auth.logout()" class="ap-drawer-logout"><i class="fa-solid fa-right-from-bracket"></i><span>Déconnexion</span></button>`;
+    refreshMessagesBadge();
+  }
+
+  async function refreshMessagesBadge(){
+    const badge=document.querySelector('[data-badge="messages"]');
+    if(!badge)return;
+    try{
+      const count=await DB.getUnreadCount();
+      if(count>0){
+        badge.textContent=count>9?'9+':count;
+        badge.hidden=false;
+      }else{
+        badge.hidden=true;
+      }
+    }catch(e){
+      badge.hidden=true;
+    }
+  }
+
   return{
     update(user,profile){
       const slot=document.getElementById('authSlot');
-      const slotM=document.getElementById('authSlotMobile');
       if(slot)slot.innerHTML=user?loggedIn(profile,user):loggedOut;
+
       const logo=document.getElementById('logoLink');
       if(logo)logo.setAttribute('href',user?'dashboard.html':'index.html');
-      if(slotM)slotM.innerHTML=user
-        ?`<div class="text-xs px-3 py-2" style="color:var(--mu)">Connecté : <strong style="color:var(--ink)">${profile?.full_name||user.email}</strong></div>
-          <a href="dashboard.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Tableau de bord</a>
-          <a href="profil.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Mon profil</a>
-          <a href="messages.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Messages</a>
-          <a href="favoris.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Favoris</a>
-          <button onclick="Auth.logout()" class="nav-link" style="display:block;text-align:left;width:100%;background:none;border:none;cursor:pointer;font-family:inherit;color:var(--er)">Déconnexion</button>`
-        :`<a href="login.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Connexion</a>
-          <a href="signup.html" class="nav-link" style="display:block;text-align:left" onclick="Layout.burger()">Inscription</a>`;
+
+      renderDrawerUser(user,profile);
+      renderDrawerActions(user,profile);
+
+      const page=(location.pathname.split('/').pop()||'index.html').replace('.html','')||'index';
+      document.querySelectorAll('.ap-drawer-link').forEach(a=>{
+        a.classList.toggle('active',a.dataset.nav===page);
+      });
     },
-    toggle(){document.getElementById('authMenu')?.classList.toggle('hidden')}
+    toggle(){document.getElementById('authMenu')?.classList.toggle('hidden')},
+    refreshMessagesBadge
   };
 })();
 
@@ -434,7 +581,6 @@ addEventListener('DOMContentLoaded',async()=>{
     await Auth.init();
   }
 
-  // Tracking analytics (une fois par page)
   if(typeof DB !== 'undefined' && DB.trackPageView){
     DB.trackPageView();
   }

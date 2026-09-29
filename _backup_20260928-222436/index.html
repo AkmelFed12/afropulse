@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AfroPulse — Votre compétence vaut de l'or</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.ticker-wrap{height:22px;overflow:hidden;position:relative;flex:1;min-width:0}
+.ticker-track{display:flex;flex-direction:column;animation:ticker-slide 12s infinite cubic-bezier(.4,0,.2,1)}
+.ticker-item{height:22px;display:flex;align-items:center;gap:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem;flex-shrink:0}
+@keyframes ticker-slide{
+  0%,28%{transform:translateY(0)}
+  33%,61%{transform:translateY(-22px)}
+  66%,94%{transform:translateY(-44px)}
+  100%{transform:translateY(-66px)}
+}
+.float-card{animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.btn-shine{position:relative;overflow:hidden}
+.btn-shine::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:left .6s}
+.btn-shine:hover::after{left:100%}
+.live-feed{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;overflow:hidden}
+.live-feed-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem;border-bottom:1px solid var(--bd)}
+.live-feed-body{padding:.5rem 0;max-height:340px;overflow-y:auto}
+.feed-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;transition:background .15s}
+.feed-item:hover{background:color-mix(in srgb,var(--ac) 4%,transparent)}
+.feed-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;font-size:.75rem}
+.feed-time{font-size:.65rem;color:var(--mu)}
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:4px;height:4px;border-radius:999px;background:var(--ac);opacity:.15;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.3}90%{opacity:.3}100%{transform:translateY(-100px) scale(1);opacity:0}}
+@media(max-width:767px){.live-feed-body{max-height:280px}}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Trouvez des talents africains vérifiés, publiez des missions, signez des contrats sécurisés. 3 jours Premium offerts. Sans commission, sans intermédiaire.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="AfroPulse — Le réseau des talents africains">
+<meta property="og:description" content="Votre compétence vaut de l'or. Rejoignez le réseau des talents et entreprises africaines.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AfroPulse — Le réseau des talents africains">
+<meta name="twitter:description" content="Votre compétence vaut de l'or. Rejoignez le réseau des talents et entreprises africaines.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- SEO — JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AfroPulse",
+  "url": "https://afro-pulse.netlify.app/",
+  "description": "Le réseau des talents et entreprises africaines. Trouvez, connectez, contractez en toute confiance.",
+  "inLanguage": ["fr", "en"],
+  "publisher": {
+    "@type": "Organization",
+    "name": "LMO SERVICES",
+    "url": "https://lmoportfolio.vercel.app",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Abidjan",
+      "addressCountry": "CI"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "lmoservices15@gmail.com",
+      "availableLanguage": ["French", "English"]
+    }
+  }
+}
+</script>
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<div id="particles"></div>
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+  <section class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-20">
+    <div>
+      <div class="flex items-center gap-2 mb-4 text-xs font-bold" style="color:var(--mu)">
+        <span class="live-dot"></span>
+        <span><span id="onlineCount">1</span> <span data-i18n="index.online">personne(s) en ligne</span></span>
+      </div>
+
+      <h1 class="hero-title reveal">
+        <span data-i18n="index.hero.title.1">Votre compétence</span><br>
+        <em data-i18n="index.hero.title.2">vaut de l'or.</em> <span data-i18n="index.hero.title.3">Ici, elle</span><br>
+        <span data-i18n="index.hero.title.4">circule.</span>
+      </h1>
+
+      <p class="hero-sub reveal" data-i18n="index.hero.sub">
+        Troc de compétences, mentorat diaspora et micro-missions vérifiées.
+        Aucune commission, aucun intermédiaire.
+      </p>
+
+      <div class="flex flex-wrap gap-3 reveal">
+        <a href="talents.html" class="btn bp btn-lg btn-shine">
+          <span data-i18n="index.explore">Explorer le réseau</span> <i class="fa-solid fa-arrow-right text-xs arrow"></i>
+        </a>
+        <a href="#" id="heroCta" class="btn bo btn-lg" style="display:none"></a>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs px-3 py-2 rounded-lg reveal" style="background:var(--sf);border:1px solid var(--bd);color:var(--mu);max-width:420px;margin-top:1.5rem">
+        <i class="fa-solid fa-bolt text-xs flex-shrink-0" style="color:var(--ac)"></i>
+        <div class="ticker-wrap">
+          <div class="ticker-track" id="tickerTrack">
+            <div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span data-i18n="common.loading">Chargement…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden lg:block reveal">
+      <div class="live-feed float-card">
+        <div class="live-feed-head">
+          <div class="flex items-center gap-2">
+            <span class="live-dot"></span>
+            <span class="text-xs font-bold" style="color:var(--ink)" data-i18n="index.live.title">En direct</span>
+          </div>
+          <span class="text-[10px]" style="color:var(--mu)" data-i18n="index.live.sub">Derniers arrivés</span>
+        </div>
+        <div class="live-feed-body" id="liveFeed">
+          <div class="p-6 text-center text-xs" style="color:var(--mu)">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <div class="mt-2" data-i18n="common.loading">Chargement…</div>
+          </div>
+        </div>
+        <div class="p-3 text-center" style="border-top:1px solid var(--bd);background:color-mix(in srgb,var(--bg) 40%,transparent)">
+          <a href="talents.html" class="text-xs font-semibold" style="color:var(--ac);text-decoration:none">
+            <span data-i18n="index.live.see">Voir tous les talents</span> <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title" data-i18n="index.how.title">Comment ça marche</h2>
+    <p class="section-sub" data-i18n="index.how.sub">Trois étapes simples pour trouver, échanger et sécuriser vos collaborations.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-user-plus"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="index.how.1.title">1. Créez votre profil</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="index.how.1.text">Décrivez vos compétences, votre ville, votre expérience.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="index.how.2.title">2. Trouvez un talent</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="index.how.2.text">Recherchez par compétence, ville ou pays. Contactez directement.</p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-file-signature"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="index.how.3.title">3. Signez et payez</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0" data-i18n="index.how.3.text">Contrats sécurisés, paiement Wave ou Orange Money.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title" data-i18n="index.testi.title">Ils utilisent AfroPulse</h2>
+    <p class="section-sub" data-i18n="index.testi.sub">Des talents et entreprises de toute l'Afrique et de la diaspora.</p>
+    <div id="testimonialsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </section>
+
+  <section class="text-center py-12 rounded-2xl reveal" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd)">
+    <h2 class="section-title" style="margin-bottom:.75rem" data-i18n="index.cta.title">Rejoignez le réseau</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="index.cta.sub">
+      3 jours Premium offerts. Sans carte bancaire. Sans engagement.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center" id="ctaButtons">
+      <a href="signup.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-rocket"></i><span data-i18n="index.cta.start">Commencer maintenant</span>
+      </a>
+      <a href="login.html" class="btn bo btn-lg" data-i18n="index.cta.have">
+        J'ai déjà un compte
+      </a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/premium.js"></script>
+<script src="assets/premium-gate.js"></script>
+<script src="assets/wallet.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/autosave.js"></script>
+<script src="assets/voice-search.js"></script>
+<script src="assets/presence.js"></script>
+<script src="assets/sound.js"></script>
+<script src="assets/timezone.js"></script>
+<script src="assets/realtime.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = n => (n||'?').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+
+function T(key, fallback){
+  if(typeof I18n !== 'undefined' && I18n.t) return I18n.t(key) || fallback;
+  return fallback;
+}
+
+function timeAgo(iso){
+  if(!iso) return '';
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if(s < 60) return T('time.now', 'à l\'instant');
+  if(s < 3600) return `${Math.floor(s/60)}min`;
+  if(s < 86400) return `${Math.floor(s/3600)}h`;
+  if(s < 604800) return `${Math.floor(s/86400)}j`;
+  return new Date(iso).toLocaleDateString(I18n?.get?.() === 'en' ? 'en-US' : 'fr-FR', { day:'numeric', month:'short' });
+}
+
+function adaptAuthUI(){
+  const user = (typeof Auth !== 'undefined' && Auth) ? Auth.getUser() : null;
+  const cta = $('heroCta');
+  const ctaButtons = $('ctaButtons');
+
+  if(user){
+    if(cta){
+      cta.textContent = T('index.dashboard', 'Tableau de bord');
+      cta.href = 'dashboard.html';
+      cta.className = 'btn bp btn-lg btn-shine';
+      cta.style.display = '';
+    }
+    if(ctaButtons){
+      ctaButtons.innerHTML = `
+        <a href="dashboard.html" class="btn bp btn-lg btn-shine">
+          <i class="fa-solid fa-chart-simple"></i><span data-i18n="index.dashboard">${T('index.dashboard', 'Tableau de bord')}</span>
+        </a>
+        <a href="profil.html" class="btn bo btn-lg">
+          <i class="fa-solid fa-user"></i><span data-i18n="menu.profile">${T('menu.profile', 'Mon profil')}</span>
+        </a>`;
+    }
+  }else{
+    if(cta){
+      cta.textContent = T('index.create', 'Créer mon profil');
+      cta.href = 'signup.html';
+      cta.className = 'btn bo btn-lg';
+      cta.style.display = '';
+    }
+    if(ctaButtons){
+      ctaButtons.innerHTML = `
+        <a href="signup.html" class="btn bp btn-lg btn-shine">
+          <i class="fa-solid fa-rocket"></i><span data-i18n="index.cta.start">${T('index.cta.start', 'Commencer maintenant')}</span>
+        </a>
+        <a href="login.html" class="btn bo btn-lg" data-i18n="index.cta.have">
+          ${T('index.cta.have', "J'ai déjà un compte")}
+        </a>`;
+    }
+  }
+}
+
+async function loadTicker(){
+  const track = $('tickerTrack');
+  if(!track) return;
+
+  let activities = [];
+  try{
+    if(typeof DB !== 'undefined' && DB.isRemote()){
+      const members = await DB.searchTalents({ limit: 5 });
+      activities = members.filter(m => m.full_name).map(m => ({
+        name: m.full_name, city: m.city || null, createdAt: m.created_at
+      }));
+    }
+  }catch(e){}
+
+  if(!activities.length){
+    track.innerHTML = `
+      <div class="ticker-item"><span class="live-dot" style="background:var(--ac)"></span><span>${T('index.ticker.first', 'Soyez le premier à rejoindre le réseau !')}</span></div>
+      <div class="ticker-item"><span class="live-dot" style="background:var(--gd)"></span><span>${T('index.ticker.premium', "3 jours Premium offerts à l'inscription")}</span></div>
+      <div class="ticker-item"><span class="live-dot" style="background:var(--ok)"></span><span>${T('index.ticker.nofee', 'Aucune commission, aucun intermédiaire')}</span></div>
+    `;
+    return;
+  }
+
+  track.innerHTML = activities.map(a => `
+    <div class="ticker-item">
+      <span class="live-dot" style="background:var(--ac)"></span>
+      <span><strong style="color:var(--ink)">${esc(a.name)}</strong> ${T('index.ticker.joined', 'a rejoint le réseau')}${a.city ? ' · ' + esc(a.city) : ''}</span>
+    </div>`).join('');
+}
+
+async function loadLiveFeed(){
+  const list = $('liveFeed');
+  if(!list) return;
+
+  if(typeof DB === 'undefined' || !DB.isRemote()){
+    list.innerHTML = `<div class="p-6 text-center text-xs" style="color:var(--mu)">${T('common.error', 'Indisponible')}</div>`;
+    return;
+  }
+
+  try{
+    const members = await DB.searchTalents({ limit: 10 });
+
+    if(!members.length){
+      list.innerHTML = `
+        <div class="p-6 text-center" style="color:var(--mu)">
+          <i class="fa-solid fa-user-plus text-3xl mb-3 block" style="color:var(--ac);opacity:.4"></i>
+          <div style="font-weight:700;color:var(--ink);font-size:.9rem;margin-bottom:.5rem">${T('index.live.empty.title', 'Soyez parmi les premiers')}</div>
+          <div style="font-size:.78rem;line-height:1.6;margin-bottom:1rem">${T('index.live.empty.text', 'AfroPulse vient de démarrer. Rejoignez la première vague de talents.')}</div>
+          <a href="signup.html" class="btn bp btn-sm" style="display:inline-flex">
+            <i class="fa-solid fa-rocket text-xs"></i>${T('index.create', 'Créer mon profil')}
+          </a>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = members.map((m, i) => {
+      const ini = initials(m.full_name);
+      const meta = m.city || T('index.live.newMember', 'Nouveau membre');
+      const created = m.created_at ? timeAgo(m.created_at) : '';
+      return `
+        <div class="feed-item" style="animation-delay:${i * 0.05}s">
+          <div class="feed-avatar" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">${esc(ini)}</div>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs"><strong style="color:var(--ink)">${esc(m.full_name || 'Membre')}</strong> <span style="color:var(--mu)">${T('index.ticker.joined', 'a rejoint le réseau')}</span></div>
+            <div class="text-[10px] flex items-center gap-1 mt-0.5" style="color:var(--mu)"><i class="fa-solid fa-location-dot"></i>${esc(meta)}</div>
+          </div>
+          <div class="feed-time">${esc(created)}</div>
+        </div>`;
+    }).join('');
+  }catch(e){
+    list.innerHTML = `<div class="p-6 text-center text-xs" style="color:var(--mu)">${T('common.error', 'Erreur de chargement')}</div>`;
+  }
+}
+
+function initOnlineCount(){
+  if(typeof Presence === 'undefined') return;
+  Presence.on('users', users => {
+    const count = users.length || 1;
+    const el = $('onlineCount');
+    if(el) el.textContent = count;
+  });
+}
+
+async function loadTestimonials(){
+  const grid = $('testimonialsGrid');
+  if(!grid) return;
+
+  let testimonials = [];
+  try{
+    if(typeof DB !== 'undefined' && DB.isRemote()){
+      testimonials = await DB.getTestimonialsPublished();
+    }
+  }catch(e){}
+
+  if(!testimonials || !testimonials.length){
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;padding:3rem 1.5rem;text-align:center;color:var(--mu)">
+        <i class="fa-solid fa-quote-left text-3xl mb-3 block" style="opacity:.3"></i>
+        <div style="font-weight:700;color:var(--ink);font-size:.95rem;margin-bottom:.5rem">${T('index.testi.empty.title', 'Votre témoignage sera le premier')}</div>
+        <div style="font-size:.82rem">${T('index.testi.empty.text', 'Rejoignez AfroPulse et partagez votre expérience')}</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = testimonials.slice(0, 6).map(t => {
+    const ini = t.initials || initials(t.name);
+    const color = t.color || 'var(--ac)';
+    return `
+      <div class="testimonial-card card-lift">
+        <div style="color:${color};font-size:.85rem;margin-bottom:1rem">${'★'.repeat(t.rating || 5)}</div>
+        <p class="testimonial-quote">« ${esc(t.quote)} »</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color}">
+            ${esc(ini)}
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:.85rem;font-weight:700;color:var(--ink)">${esc(t.name)}</div>
+            <div style="font-size:.72rem;color:var(--mu)">${esc(t.role || '')}${t.city ? ' · ' + esc(t.city) : ''}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+function initParticles(){
+  const c = $('particles');
+  if(!c) return;
+  for(let i = 0; i < 20; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 15 + 's';
+    p.style.animationDuration = 10 + Math.random() * 15 + 's';
+    p.style.opacity = .05 + Math.random() * .15;
+    c.appendChild(p);
+  }
+}
+
+function initIndex(){
+  adaptAuthUI();
+  initReveal();
+  initParticles();
+
+  setTimeout(() => {
+    loadTicker();
+    loadLiveFeed();
+    initOnlineCount();
+    loadTestimonials();
+  }, 400);
+
+  if(typeof Auth !== 'undefined'){
+    Auth.onChange(() => adaptAuthUI());
+  }
+
+  // Réagir au changement de langue
+  if(typeof I18n !== 'undefined' && I18n.onChange){
+    I18n.onChange(() => {
+      adaptAuthUI();
+      loadTicker();
+      loadLiveFeed();
+      loadTestimonials();
+    });
+  }
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initIndex);
+}else{
+  initIndex();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mon abonnement — AfroPulse</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://afro-pulse.netlify.app/abonnement.html">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5fff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: .5;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .sub-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 5rem;
+      position: relative;
+    }
+
+    .sub-head { text-align: center; margin-bottom: 1.5rem; }
+    .sub-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .35rem;
+      letter-spacing: -.02em;
+    }
+    .sub-sub {
+      font-size: .88rem;
+      color: var(--clr-muted);
+      margin: 0;
+    }
+
+    /* Status banner */
+    .status-banner {
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      border: 1px solid var(--clr-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .status-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .status-banner.active {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--clr-ok) 8%, transparent), color-mix(in srgb, var(--clr-primary) 4%, transparent));
+    }
+    .status-banner.active::before { background: linear-gradient(90deg, var(--clr-ok), var(--clr-primary)); }
+    .status-banner.trial {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--clr-gold) 10%, transparent), color-mix(in srgb, var(--clr-primary) 4%, transparent));
+    }
+    .status-banner.trial::before { background: linear-gradient(90deg, var(--clr-gold), #e0a800); }
+    .status-banner.inactive { background: var(--clr-surface); }
+    .status-banner.inactive::before { background: var(--clr-border); }
+    .status-banner.expired {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--clr-error) 8%, transparent), color-mix(in srgb, var(--clr-gold) 4%, transparent));
+    }
+    .status-banner.expired::before { background: linear-gradient(90deg, var(--clr-error), var(--clr-gold)); }
+
+    .status-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-size: 1.75rem;
+      border: 3px solid var(--clr-surface);
+    }
+    .status-banner.active .status-icon {
+      background: linear-gradient(135deg, var(--clr-ok), var(--clr-primary));
+      color: #fff;
+      box-shadow: 0 12px 30px -10px color-mix(in srgb, var(--clr-ok) 50%, transparent);
+    }
+    .status-banner.trial .status-icon {
+      background: linear-gradient(135deg, var(--clr-gold), #e0a800);
+      color: #fff;
+      box-shadow: 0 12px 30px -10px color-mix(in srgb, var(--clr-gold) 50%, transparent);
+    }
+    .status-banner.inactive .status-icon { background: var(--clr-bg); color: var(--clr-muted); }
+    .status-banner.expired .status-icon { background: linear-gradient(135deg, var(--clr-error), var(--clr-gold)); color: #fff; }
+
+    .status-body { flex: 1; min-width: 220px; }
+    .status-label {
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: .35rem;
+    }
+    .status-banner.active .status-label { color: var(--clr-ok); }
+    .status-banner.trial .status-label { color: var(--clr-gold); }
+    .status-banner.expired .status-label { color: var(--clr-error); }
+    .status-banner.inactive .status-label { color: var(--clr-muted); }
+    .status-plan {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .35rem;
+      letter-spacing: -.02em;
+    }
+    .status-meta { font-size: .82rem; color: var(--clr-muted); margin: 0; }
+    .status-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+    /* Cycle toggle */
+    .cycle-toggle {
+      display: inline-flex;
+      gap: .25rem;
+      padding: .35rem;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .cycle-toggle button {
+      padding: .55rem 1.25rem;
+      border: none;
+      background: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--clr-muted);
+      transition: .2s;
+    }
+    .cycle-toggle button.on { background: var(--clr-primary); color: #fff; }
+    .cycle-toggle button:hover:not(.on) { color: var(--clr-ink); }
+    .cycle-toggle .save-badge {
+      font-size: .6rem;
+      background: var(--clr-ok);
+      color: #fff;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      font-weight: 800;
+      margin-left: .35rem;
+    }
+
+    /* Plans grid */
+    .plans-grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 768px) { .plans-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1100px) { .plans-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .plan-card {
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: 1.25rem;
+      padding: 1.75rem 1.35rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: .25s;
+    }
+    .plan-card:hover { transform: translateY(-4px); box-shadow: 0 24px 60px -24px rgba(15,23,42,.15); }
+    .plan-card.current {
+      border-color: var(--clr-ok);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-ok) 15%, transparent);
+    }
+    .plan-card.popular {
+      border-color: var(--clr-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-primary) 15%, transparent);
+    }
+    .plan-card.popular::before {
+      content: attr(data-popular);
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--clr-primary);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      padding: .3rem .75rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .plan-card.current::after {
+      content: attr(data-current);
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--clr-ok);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      padding: .3rem .75rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .plan-name { font-size: 1.1rem; font-weight: 800; color: var(--clr-ink); margin: 0 0 1rem; }
+    .plan-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      line-height: 1;
+      letter-spacing: -.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .plan-price .currency { font-size: .9rem; font-weight: 600; color: var(--clr-muted); margin-left: .25rem; }
+    .plan-period { font-size: .72rem; color: var(--clr-muted); margin-bottom: 1.25rem; }
+    .plan-features { list-style: none; padding: 0; margin: 0 0 1.25rem; flex: 1; }
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+      font-size: .8rem;
+      color: var(--clr-muted);
+      padding: .35rem 0;
+      line-height: 1.5;
+    }
+    .plan-features li i { color: var(--clr-ok); flex-shrink: 0; margin-top: .2rem; font-size: .7rem; }
+    .plan-features li.disabled { opacity: .4; }
+    .plan-features li.disabled i { color: var(--clr-muted); }
+
+    .plan-btn {
+      width: 100%;
+      padding: .85rem;
+      border-radius: .7rem;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 800;
+      border: 1.5px solid var(--clr-border);
+      background: var(--clr-bg);
+      color: var(--clr-ink);
+      cursor: pointer;
+      transition: .15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+    }
+    .plan-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); transform: translateY(-1px); }
+    .plan-btn.primary { background: var(--clr-primary); color: #fff; border-color: var(--clr-primary); }
+    .plan-btn.primary:hover { background: var(--clr-primary-2); color: #fff; }
+    .plan-btn.current { background: var(--clr-ok); color: #fff; border-color: var(--clr-ok); cursor: default; }
+    .plan-btn.current:hover { transform: none; }
+
+    /* History */
+    .history-panel {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .panel-title {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+    .panel-title i { color: var(--clr-primary); }
+
+    .hist-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .85rem 0;
+      border-bottom: 1px solid var(--clr-border);
+      flex-wrap: wrap;
+    }
+    .hist-row:last-child { border-bottom: none; }
+    .hist-ref {
+      font-family: ui-monospace, monospace;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+      flex: 1;
+      min-width: 140px;
+    }
+    .hist-date { font-size: .78rem; color: var(--clr-muted); white-space: nowrap; }
+    .hist-amount { font-size: .85rem; font-weight: 800; color: var(--clr-ink); white-space: nowrap; }
+    .hist-status {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .25rem .55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .hist-status.pending { background: color-mix(in srgb, var(--clr-gold) 12%, transparent); color: var(--clr-gold); }
+    .hist-status.approved { background: color-mix(in srgb, var(--clr-ok) 12%, transparent); color: var(--clr-ok); }
+    .hist-status.rejected { background: color-mix(in srgb, var(--clr-error) 12%, transparent); color: var(--clr-error); }
+
+    .empty-mini {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--clr-muted);
+      font-size: .85rem;
+    }
+    .empty-mini i { font-size: 1.75rem; opacity: .4; display: block; margin-bottom: .5rem; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(15,23,42,.7);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-overlay.on { display: flex; }
+    .modal-box {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1.15rem;
+      padding: 1.75rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      animation: slideUp .25s ease-out;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      background: color-mix(in srgb, var(--clr-error) 15%, transparent);
+      color: var(--clr-error);
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 800; color: var(--clr-ink); margin: 0 0 .5rem; }
+    .modal-sub { font-size: .85rem; color: var(--clr-muted); line-height: 1.55; margin: 0 0 1.5rem; }
+    .modal-actions { display: flex; gap: .5rem; }
+    .modal-actions .btn { flex: 1; justify-content: center; }
+
+    .skeleton {
+      height: 120px;
+      border-radius: 1rem;
+      background: linear-gradient(90deg, var(--clr-surface) 0%, color-mix(in srgb, var(--clr-primary) 4%, var(--clr-surface)) 50%, var(--clr-surface) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="AfroPulse — Accueil">
+        <span class="brand__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/>
+          </svg>
+        </span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" data-i18n="nav.home">Accueil</a>
+        <a href="talents.html" data-i18n="nav.talents">Talents</a>
+        <a href="missions.html" data-i18n="nav.missions">Missions</a>
+        <a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a>
+      </nav>
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Basculer le thème">
+          <i data-theme-icon class="fa-solid fa-moon"></i>
+        </button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="sub-wrap">
+
+      <div class="sub-head">
+        <span class="chip" style="display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:999px;background:color-mix(in srgb,var(--clr-primary) 10%,transparent);border:1px solid color-mix(in srgb,var(--clr-primary) 22%,transparent);color:var(--clr-primary);font-size:.78rem;font-weight:700;margin-bottom:.75rem">
+          <i class="fa-solid fa-crown" style="font-size:.7rem" aria-hidden="true"></i>
+          <span data-i18n="nav.premium">Premium</span>
+        </span>
+        <h1 class="sub-title" data-i18n="sub.title">Mon abonnement</h1>
+        <p class="sub-sub" data-i18n="sub.sub">Gérez votre formule, activez votre essai gratuit et consultez votre historique.</p>
+      </div>
+
+      <div id="loading">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+
+      <div id="content" class="hidden">
+
+        <div id="statusBanner" class="status-banner"></div>
+
+        <div style="text-align:center">
+          <div class="cycle-toggle" role="tablist">
+            <button id="btnMonthly" class="on" onclick="setCycle('monthly')" role="tab" aria-selected="true" data-i18n="sub.cycle.monthly">Mensuel</button>
+            <button id="btnYearly" onclick="setCycle('yearly')" role="tab" aria-selected="false">
+              <span data-i18n="sub.cycle.yearly">Annuel</span>
+              <span class="save-badge" data-i18n="sub.cycle.save">-20%</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="plans-grid" id="plansGrid"></div>
+
+        <div class="history-panel">
+          <h2 class="panel-title">
+            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+            <span data-i18n="sub.history.title">Historique</span>
+          </h2>
+          <div id="historyList"><div class="empty-mini"><i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i></div></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="cancelModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+      <h3 class="modal-title" data-i18n="sub.cancel.confirm">Résilier votre abonnement ?</h3>
+      <p class="modal-sub" data-i18n="sub.cancel.hint">Vous perdrez les avantages Premium à la fin de la période en cours.</p>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" onclick="closeCancelModal()" data-i18n="sub.cancel.keep">Garder mon abonnement</button>
+        <button class="btn btn--primary" style="background:var(--clr-error);border-color:var(--clr-error)" onclick="confirmCancel()" data-i18n="sub.cancel.ok">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/supabase.js" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/premium.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function T(key, fallback) {
+      if (typeof I18n !== 'undefined' && I18n.t) {
+        const v = I18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
+
+    const esc = s => String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    const fmtMoney = n => Number(n || 0).toLocaleString(
+      (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR'
+    ) + ' FCFA';
+
+    const fmtDate = iso => iso ? new Date(iso).toLocaleDateString(
+      (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR',
+      { day: '2-digit', month: 'short', year: 'numeric' }
+    ) : '—';
+
+    const PLANS = [
+      {
+        id: 'starter', name: 'Starter',
+        prices: { monthly: 0, yearly: 0 },
+        features: ['pricing.plan.starter.f1', 'pricing.plan.starter.f2', 'pricing.plan.starter.f3'],
+        disabled: ['pricing.plan.starter.f4', 'pricing.plan.starter.f5', 'pricing.plan.starter.f6']
+      },
+      {
+        id: 'pro', name: 'Pro', popular: true,
+        prices: { monthly: 5000, yearly: 48000 },
+        features: ['pricing.plan.pro.f2', 'pricing.plan.pro.f3', 'pricing.plan.pro.f4', 'pricing.plan.pro.f5', 'pricing.plan.pro.f6']
+      },
+      {
+        id: 'business', name: 'Business',
+        prices: { monthly: 15000, yearly: 144000 },
+        features: ['pricing.plan.business.f2', 'pricing.plan.business.f3', 'pricing.plan.business.f4', 'pricing.plan.business.f5', 'pricing.plan.business.f6']
+      },
+      {
+        id: 'vip', name: 'VIP',
+        prices: { monthly: 50000, yearly: 480000 },
+        features: ['pricing.plan.vip.f2', 'pricing.plan.vip.f3', 'pricing.plan.vip.f4', 'pricing.plan.vip.f5', 'pricing.plan.vip.f6']
+      }
+    ];
+
+    let CURRENT_PREMIUM = null;
+    let CURRENT_CYCLE = 'monthly';
+    let HISTORY = [];
+
+    function setCycle(cycle) {
+      CURRENT_CYCLE = cycle;
+      $('btnMonthly').classList.toggle('on', cycle === 'monthly');
+      $('btnYearly').classList.toggle('on', cycle === 'yearly');
+      $('btnMonthly').setAttribute('aria-selected', cycle === 'monthly' ? 'true' : 'false');
+      $('btnYearly').setAttribute('aria-selected', cycle === 'yearly' ? 'true' : 'false');
+      renderPlans();
+    }
+    window.setCycle = setCycle;
+
+    function renderStatus() {
+      const banner = $('statusBanner');
+      const p = CURRENT_PREMIUM;
+
+      let state = 'inactive';
+      let icon = 'fa-crown';
+      let labelKey = 'sub.status.inactive';
+      let labelDef = 'Aucun abonnement';
+      let planName = '';
+      let meta = '';
+      let actions = '';
+
+      if (p && p.status === 'active' && p.expires_at && new Date(p.expires_at) > new Date()) {
+        state = 'active';
+        icon = 'fa-crown';
+        labelKey = 'sub.status.active';
+        labelDef = 'Abonnement actif';
+        planName = (p.plan || 'pro').toUpperCase();
+        const days = Math.ceil((new Date(p.expires_at) - new Date()) / 86400000);
+        meta = `${T('sub.status.expires', 'Expire le')} ${fmtDate(p.expires_at)} · ${days} ${T('sub.status.daysLeft', 'jours restants')}`;
+        actions = `
+          <button class="btn btn--ghost btn--sm" onclick="openCancelModal()">
+            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>${T('sub.status.cancel', 'Résilier')}
+          </button>
+          <a href="#plans" class="btn btn--primary btn--sm" onclick="scrollToPlans(event)">
+            <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>${T('sub.status.upgrade', 'Changer de formule')}
+          </a>`;
+      } else if (p && p.status === 'trial') {
+        state = 'trial';
+        icon = 'fa-gift';
+        labelKey = 'sub.status.trial';
+        labelDef = 'Essai gratuit';
+        planName = (p.plan || 'pro').toUpperCase();
+        const days = p.expires_at ? Math.ceil((new Date(p.expires_at) - new Date()) / 86400000) : 3;
+        meta = `${days} ${T('sub.status.daysLeft', 'jours restants')} · ${T('sub.trial.active', 'Essai activé')}`;
+        actions = `
+          <a href="#plans" class="btn btn--primary btn--sm" onclick="scrollToPlans(event)">
+            <i class="fa-solid fa-rocket" aria-hidden="true"></i>${T('sub.status.upgrade', 'Changer de formule')}
+          </a>`;
+      } else if (p && p.status === 'active' && p.expires_at && new Date(p.expires_at) <= new Date()) {
+        state = 'expired';
+        icon = 'fa-hourglass-end';
+        labelKey = 'sub.status.expired';
+        labelDef = 'Abonnement expiré';
+        planName = (p.plan || 'pro').toUpperCase();
+        meta = `${T('sub.status.expires', 'Expiré le')} ${fmtDate(p.expires_at)}`;
+        actions = `
+          <a href="#plans" class="btn btn--primary btn--sm" onclick="scrollToPlans(event)">
+            <i class="fa-solid fa-rotate" aria-hidden="true"></i>${T('sub.status.renew', 'Renouveler')}
+          </a>`;
+      } else {
+        const trialUsed = p?.trial_used || false;
+        if (!trialUsed) {
+          actions = `
+            <button class="btn btn--primary btn--sm" onclick="activateTrial()">
+              <i class="fa-solid fa-gift" aria-hidden="true"></i>${T('sub.trial.activate', "Activer l'essai gratuit")}
+            </button>`;
+          meta = T('sub.trial.hint', "Vous n'avez pas encore utilisé votre essai gratuit de 3 jours.");
+        } else {
+          actions = `
+            <a href="#plans" class="btn btn--primary btn--sm" onclick="scrollToPlans(event)">
+              <i class="fa-solid fa-rocket" aria-hidden="true"></i>${T('sub.plan.choose', 'Choisir une formule')}
+            </a>`;
+          meta = T('sub.trial.used', 'Essai déjà utilisé');
+        }
+      }
+
+      banner.className = 'status-banner ' + state;
+      banner.innerHTML = `
+        <div class="status-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></div>
+        <div class="status-body">
+          <div class="status-label">${T(labelKey, labelDef)}</div>
+          ${planName ? `<h2 class="status-plan">${esc(planName)}</h2>` : ''}
+          <p class="status-meta">${esc(meta)}</p>
+        </div>
+        <div class="status-actions">${actions}</div>
+      `;
+    }
+
+    function renderPlans() {
+      const grid = $('plansGrid');
+      const currentPlanId = CURRENT_PREMIUM?.status === 'active' && CURRENT_PREMIUM.expires_at && new Date(CURRENT_PREMIUM.expires_at) > new Date()
+        ? (CURRENT_PREMIUM.plan || '').toLowerCase()
+        : '';
+
+      grid.innerHTML = PLANS.map(plan => {
+        const price = plan.prices[CURRENT_CYCLE];
+        const isCurrent = plan.id === currentPlanId;
+        const isFree = price === 0;
+
+        const featuresHtml = [
+          ...plan.features.map(k => `<li><i class="fa-solid fa-check" aria-hidden="true"></i><span>${esc(T(k, k))}</span></li>`),
+          ...(plan.disabled || []).map(k => `<li class="disabled"><i class="fa-solid fa-xmark" aria-hidden="true"></i><span>${esc(T(k, k))}</span></li>`)
+        ].join('');
+
+        let btn;
+        if (isCurrent) {
+          btn = `<div class="plan-btn current"><i class="fa-solid fa-check" aria-hidden="true"></i>${T('sub.plan.current', 'Formule actuelle')}</div>`;
+        } else if (isFree) {
+          btn = `<a href="signup.html" class="plan-btn">${T('pricing.plan.starter.btn', 'Commencer gratuitement')}</a>`;
+        } else {
+          btn = `<a href="paiement.html?plan=${plan.id}&cycle=${CURRENT_CYCLE}&amount=${price}" class="plan-btn primary">
+            <i class="fa-solid fa-rocket" aria-hidden="true"></i>${T('sub.plan.choose', 'Choisir')} ${esc(plan.name)}
+          </a>`;
+        }
+
+        return `
+          <article class="plan-card ${isCurrent ? 'current' : ''} ${plan.popular && !isCurrent ? 'popular' : ''}"
+                   data-current="${T('sub.plan.current', 'Formule actuelle')}"
+                   data-popular="${T('sub.plan.popular', 'Populaire')}">
+            <h3 class="plan-name">${esc(plan.name)}</h3>
+            <div class="plan-price">
+              ${isFree ? T('sub.plan.free', 'Gratuit') : Number(price).toLocaleString((typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR')}
+              ${isFree ? '' : '<span class="currency">FCFA</span>'}
+            </div>
+            <div class="plan-period">
+              ${isFree
+                ? T('pricing.period.free', 'Gratuit pour toujours')
+                : (CURRENT_CYCLE === 'monthly' ? T('sub.plan.perMonth', '/mois') : T('sub.plan.perYear', '/an'))}
+            </div>
+            <ul class="plan-features">${featuresHtml}</ul>
+            ${btn}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function scrollToPlans(e) {
+      e.preventDefault();
+      $('plansGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    window.scrollToPlans = scrollToPlans;
+
+    function renderHistory() {
+      const box = $('historyList');
+
+      if (!HISTORY.length) {
+        box.innerHTML = `<div class="empty-mini"><i class="fa-solid fa-inbox" aria-hidden="true"></i>${T('sub.history.empty', 'Aucun paiement enregistré.')}</div>`;
+        return;
+      }
+
+      const statusMap = {
+        pending: { labelKey: 'sub.history.pending', def: 'En attente' },
+        approved: { labelKey: 'sub.history.approved', def: 'Approuvé' },
+        paid: { labelKey: 'sub.history.approved', def: 'Approuvé' },
+        rejected: { labelKey: 'sub.history.rejected', def: 'Rejeté' },
+        failed: { labelKey: 'sub.history.rejected', def: 'Rejeté' }
+      };
+
+      box.innerHTML = HISTORY.map(h => {
+        const st = statusMap[h.status] || { labelKey: null, def: h.status };
+        const label = st.labelKey ? T(st.labelKey, st.def) : st.def;
+        const cls = ['pending'].includes(h.status) ? 'pending'
+                  : ['approved', 'paid'].includes(h.status) ? 'approved'
+                  : 'rejected';
+
+        return `
+          <div class="hist-row">
+            <span class="hist-ref">${esc(h.ref || '—')}</span>
+            <span class="hist-date">${fmtDate(h.created_at || h.requested_at)}</span>
+            <span class="hist-amount">${fmtMoney(h.total || h.amount || 0)}</span>
+            <span class="hist-status ${cls}">${esc(label)}</span>
+          </div>`;
+      }).join('');
+    }
+
+    async function activateTrial() {
+      const user = Auth?.getUser?.();
+      if (!user) return;
+
+      try {
+        const now = new Date();
+        const expires = new Date(now);
+        expires.setDate(expires.getDate() + 3);
+
+        if (typeof DB.upsertUserPremium === 'function') {
+          await DB.upsertUserPremium({
+            user_id: user.id,
+            plan: 'pro',
+            cycle: 'monthly',
+            status: 'trial',
+            activated_at: now.toISOString(),
+            expires_at: expires.toISOString(),
+            trial_used: true,
+            trial_started_at: now.toISOString()
+          });
+        }
+
+        UI.toast(T('sub.trial.active', 'Essai activé pour 3 jours'), 'success');
+        await loadAll();
+      } catch (e) {
+        console.error('[trial]', e);
+        UI.toast(e.message || T('common.error', 'Erreur'), 'error');
+      }
+    }
+    window.activateTrial = activateTrial;
+
+    function openCancelModal() { $('cancelModal').classList.add('on'); }
+    function closeCancelModal() { $('cancelModal').classList.remove('on'); }
+    window.openCancelModal = openCancelModal;
+    window.closeCancelModal = closeCancelModal;
+
+    async function confirmCancel() {
+      const user = Auth?.getUser?.();
+      if (!user) return;
+
+      try {
+        if (typeof DB.upsertUserPremium === 'function') {
+          await DB.upsertUserPremium({
+            user_id: user.id,
+            plan: CURRENT_PREMIUM?.plan || 'pro',
+            cycle: CURRENT_PREMIUM?.cycle || 'monthly',
+            status: 'cancelled'
+          });
+        }
+
+        closeCancelModal();
+        UI.toast(T('sub.cancel.done', 'Abonnement résilié'), 'success');
+        await loadAll();
+      } catch (e) {
+        console.error('[cancel]', e);
+        UI.toast(e.message || T('common.error', 'Erreur'), 'error');
+      }
+    }
+    window.confirmCancel = confirmCancel;
+
+    async function loadAll() {
+      const user = Auth.getUser();
+
+      try {
+        CURRENT_PREMIUM = typeof DB.getUserPremium === 'function'
+          ? await DB.getUserPremium(user.id)
+          : null;
+      } catch (e) { CURRENT_PREMIUM = null; }
+
+      try {
+        HISTORY = typeof DB.getMyPremiumRequests === 'function'
+          ? await DB.getMyPremiumRequests()
+          : [];
+      } catch (e) { HISTORY = []; }
+
+      renderStatus();
+      renderPlans();
+      renderHistory();
+    }
+
+    addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 500));
+
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      if (!Auth?.isLogged?.()) {
+        UI.toast(T('sub.error.login', 'Connectez-vous pour continuer.'), 'error');
+        setTimeout(() => location.href = 'login.html?next=abonnement.html', 800);
+        return;
+      }
+
+      try {
+        await loadAll();
+        $('loading').classList.add('hidden');
+        $('content').classList.remove('hidden');
+      } catch (e) {
+        console.error(e);
+        UI.toast(T('sub.error.load', 'Erreur de chargement'), 'error');
+      }
+
+      if (typeof I18n !== 'undefined' && I18n.onChange) {
+        I18n.onChange(() => {
+          renderStatus();
+          renderPlans();
+          renderHistory();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

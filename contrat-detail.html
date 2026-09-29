@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contrat — AfroPulse</title>
+
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://afro-pulse.netlify.app/contrat-detail.html">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5fff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: .5;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .ctr-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 5rem;
+      position: relative;
+    }
+    @media (min-width: 640px) { .ctr-wrap { padding: 2rem 1.5rem 5rem; } }
+
+    .ctr-back {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--clr-muted);
+      text-decoration: none;
+      margin-bottom: 1rem;
+      transition: color .15s;
+    }
+    .ctr-back:hover { color: var(--clr-primary); }
+
+    /* Hero */
+    .ctr-hero {
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--clr-primary) 6%, transparent),
+        color-mix(in srgb, var(--clr-gold) 4%, transparent));
+      border: 1px solid var(--clr-border);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .ctr-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--clr-primary), var(--clr-gold));
+    }
+    .ctr-hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .ctr-hero-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .35rem;
+      letter-spacing: -.02em;
+    }
+    .ctr-hero-ref {
+      font-family: ui-monospace, monospace;
+      font-size: .72rem;
+      color: var(--clr-muted);
+    }
+    .ctr-hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .35rem .75rem;
+      border-radius: 999px;
+    }
+    .ctr-hero-status.pending {
+      background: color-mix(in srgb, var(--clr-gold) 12%, transparent);
+      color: var(--clr-gold);
+    }
+    .ctr-hero-status.active {
+      background: color-mix(in srgb, var(--clr-primary) 12%, transparent);
+      color: var(--clr-primary);
+    }
+    .ctr-hero-status.completed {
+      background: color-mix(in srgb, var(--clr-ok) 12%, transparent);
+      color: var(--clr-ok);
+    }
+    .ctr-hero-status.cancelled {
+      background: color-mix(in srgb, var(--clr-error) 12%, transparent);
+      color: var(--clr-error);
+    }
+    .ctr-hero-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--clr-primary);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+    }
+    .ctr-hero-amount-lbl {
+      font-size: .72rem;
+      color: var(--clr-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-weight: 700;
+      margin-top: .25rem;
+    }
+
+    /* Blocks */
+    .block {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1rem;
+      padding: 1.35rem;
+      margin-bottom: 1rem;
+    }
+    .block-title {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .block-title i { color: var(--clr-primary); }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .6rem 0;
+      font-size: .85rem;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .row:last-child { border-bottom: none; }
+    .row-lbl { color: var(--clr-muted); flex-shrink: 0; }
+    .row-val {
+      color: var(--clr-ink);
+      font-weight: 700;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .desc-text {
+      font-size: .88rem;
+      color: var(--clr-muted);
+      line-height: 1.7;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--clr-border);
+    }
+    .tl-item {
+      position: relative;
+      padding-bottom: 1.25rem;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: -1.5rem;
+      top: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--clr-border);
+      border: 2px solid var(--clr-surface);
+    }
+    .tl-item.done .tl-dot { background: var(--clr-ok); }
+    .tl-item.current .tl-dot {
+      background: var(--clr-primary);
+      animation: pulse-tl 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-tl {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--clr-primary) 40%, transparent); }
+      50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--clr-primary) 0%, transparent); }
+    }
+    .tl-title {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--clr-ink);
+      margin: 0 0 .15rem;
+    }
+    .tl-time {
+      font-size: .7rem;
+      color: var(--clr-muted);
+      margin: 0;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+    .btn-act {
+      width: 100%;
+      padding: .9rem;
+      border-radius: .75rem;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      text-decoration: none;
+      border: none;
+    }
+    .btn-act:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-act:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-act.primary { background: var(--clr-primary); color: #fff; }
+    .btn-act.success { background: var(--clr-ok); color: #fff; }
+    .btn-act.warn { background: var(--clr-gold); color: #fff; }
+    .btn-act.danger { background: var(--clr-error); color: #fff; }
+    .btn-act.outline {
+      background: var(--clr-bg);
+      color: var(--clr-ink);
+      border: 1.5px solid var(--clr-border);
+    }
+    .btn-act.outline:hover:not(:disabled) {
+      border-color: var(--clr-primary);
+      color: var(--clr-primary);
+    }
+
+    /* Signature badges */
+    .sig-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: .3rem .65rem;
+      border-radius: 999px;
+    }
+    .sig-badge.signed {
+      background: color-mix(in srgb, var(--clr-ok) 12%, transparent);
+      color: var(--clr-ok);
+    }
+    .sig-badge.pending {
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      color: var(--clr-muted);
+    }
+
+    /* Loading / Not found */
+    .loading {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--clr-muted);
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid var(--clr-border);
+      border-top-color: var(--clr-primary);
+      animation: spin .8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .not-found { text-align: center; padding: 3rem 1rem; }
+    .not-found-icon {
+      font-size: 3rem;
+      color: var(--clr-muted);
+      opacity: .4;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .not-found-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+    }
+    .not-found-sub {
+      font-size: .85rem;
+      color: var(--clr-muted);
+      margin: 0 0 1.5rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(15,23,42,.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-overlay.on { display: flex; }
+    .modal-box {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1.15rem;
+      padding: 1.75rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      animation: slideUp .25s ease-out;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+    }
+    .modal-icon.warn {
+      background: color-mix(in srgb, var(--clr-gold) 15%, transparent);
+      color: var(--clr-gold);
+    }
+    .modal-icon.ok {
+      background: color-mix(in srgb, var(--clr-ok) 15%, transparent);
+      color: var(--clr-ok);
+    }
+    .modal-icon.er {
+      background: color-mix(in srgb, var(--clr-error) 15%, transparent);
+      color: var(--clr-error);
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+    }
+    .modal-sub {
+      font-size: .85rem;
+      color: var(--clr-muted);
+      line-height: 1.55;
+      margin: 0 0 1.5rem;
+    }
+    .modal-actions {
+      display: flex;
+      gap: .5rem;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: .8rem;
+      border-radius: .7rem;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s;
+      border: none;
+    }
+    .modal-actions .no {
+      background: var(--clr-bg);
+      color: var(--clr-ink);
+      border: 1.5px solid var(--clr-border);
+    }
+    .modal-actions .yes {
+      background: var(--clr-primary);
+      color: #fff;
+    }
+    .modal-actions .yes:hover { transform: translateY(-1px); }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="AfroPulse — Accueil">
+        <span class="brand__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/>
+          </svg>
+        </span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" data-i18n="nav.home">Accueil</a>
+        <a href="talents.html" data-i18n="nav.talents">Talents</a>
+        <a href="missions.html" data-i18n="nav.missions">Missions</a>
+        <a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a>
+      </nav>
+
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Basculer le thème">
+          <i data-theme-icon class="fa-solid fa-moon"></i>
+        </button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="ctr-wrap" id="ctrWrap">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div data-i18n="common.loading">Chargement…</div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-icon" id="modalIcon"></div>
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <p class="modal-sub" id="modalSub"></p>
+      <div class="modal-actions">
+        <button class="no" onclick="closeModal()" data-i18n="ctr.detail.confirm.no">Annuler</button>
+        <button class="yes" id="modalYes" onclick="confirmModal()" data-i18n="ctr.detail.confirm.ok">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function T(key, fallback) {
+      if (typeof I18n !== 'undefined' && I18n.t) {
+        const v = I18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
+
+    const esc = s => String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    const fmtMoney = n => Number(n || 0).toLocaleString(
+      (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR'
+    ) + ' FCFA';
+
+    const fmtDate = iso => iso ? new Date(iso).toLocaleDateString(
+      (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR',
+      { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }
+    ) : '—';
+
+    let CONTRACT = null;
+    let MY_ROLE = null;
+    let CONFIRM_ACTION = null;
+
+    function getIdFromUrl() {
+      try {
+        const p = new URLSearchParams(location.search);
+        const id = p.get('id');
+        if (id && id !== 'undefined') return id;
+      } catch (e) {}
+      if (location.hash) {
+        const m = location.hash.match(/[#&]id=([^&]+)/);
+        if (m && m[1]) return decodeURIComponent(m[1]);
+      }
+      return null;
+    }
+
+    function renderNotFound() {
+      $('ctrWrap').innerHTML = `
+        <div class="not-found">
+          <i class="fa-solid fa-file-circle-xmark not-found-icon" aria-hidden="true"></i>
+          <h2 class="not-found-title">${T('ctr.detail.notFound', 'Contrat introuvable')}</h2>
+          <p class="not-found-sub">${T('ctr.detail.notFoundSub', "Ce contrat n'existe pas ou vous n'avez pas accès.")}</p>
+          <a href="contrats.html" class="btn btn--primary">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            ${T('ctr.detail.back', 'Retour aux contrats')}
+          </a>
+        </div>`;
+    }
+
+    async function loadContract(id) {
+      try {
+        const user = Auth.getUser();
+        if (!user) throw new Error('Not logged');
+
+        const { data, error } = await DB.client
+          .from('contracts')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (error || !data) throw new Error('Not found');
+
+        if (data.client_id !== user.id && data.provider_id !== user.id) {
+          renderNotFound();
+          return;
+        }
+
+        CONTRACT = data;
+        MY_ROLE = data.client_id === user.id ? 'client' : 'provider';
+
+        // Charge les profils des 2 parties
+        const [clientProf, providerProf] = await Promise.all([
+          data.client_id ? DB.getProfileById(data.client_id) : null,
+          data.provider_id ? DB.getProfileById(data.provider_id) : null
+        ]);
+
+        CONTRACT._clientProfile = clientProf;
+        CONTRACT._providerProfile = providerProf;
+
+        renderContract();
+      } catch (e) {
+        console.error('[ctr]', e);
+        renderNotFound();
+      }
+    }
+
+    function renderContract() {
+      if (!CONTRACT) { renderNotFound(); return; }
+
+      const c = CONTRACT;
+      const statusKey = 'ctr.status.' + (c.status || 'pending');
+      const statusLabel = T(statusKey, c.status || 'pending');
+
+      const clientName = c._clientProfile?.full_name || c.client_name || T('ctr.card.client', 'Client');
+      const providerName = c._providerProfile?.full_name || c.provider_name || T('ctr.card.provider', 'Prestataire');
+
+      const amClient = MY_ROLE === 'client';
+      const otherId = amClient ? c.provider_id : c.client_id;
+      const otherName = amClient ? providerName : clientName;
+
+      // Timeline
+      const timelineItems = [];
+      timelineItems.push({
+        title: T('ctr.detail.timeline.created', 'Contrat créé'),
+        time: c.created_at,
+        done: true
+      });
+      if (c.client_signed_at) {
+        timelineItems.push({
+          title: T('ctr.detail.timeline.signedClient', 'Signé par le client'),
+          time: c.client_signed_at,
+          done: true
+        });
+      }
+      if (c.provider_signed_at) {
+        timelineItems.push({
+          title: T('ctr.detail.timeline.signedProvider', 'Signé par le prestataire'),
+          time: c.provider_signed_at,
+          done: true
+        });
+      }
+      if (c.proof_url) {
+        timelineItems.push({
+          title: T('ctr.detail.timeline.proof', 'Preuve de paiement envoyée'),
+          time: c.proof_at || c.updated_at,
+          done: true
+        });
+      }
+      if (c.status === 'completed') {
+        timelineItems.push({
+          title: T('ctr.detail.timeline.completed', 'Mission terminée'),
+          time: c.updated_at || c.created_at,
+          done: true
+        });
+      }
+      if (c.status === 'cancelled') {
+        timelineItems.push({
+          title: T('ctr.detail.timeline.cancelled', 'Contrat annulé'),
+          time: c.updated_at || c.created_at,
+          done: true
+        });
+      }
+
+      // Actions
+      const actions = [];
+      if (c.status === 'pending') {
+        const mySigField = amClient ? 'client_signed_at' : 'provider_signed_at';
+        if (!c[mySigField]) {
+          actions.push({
+            label: amClient
+              ? T('ctr.detail.signClient', 'Signer en tant que client')
+              : T('ctr.detail.signProvider', 'Signer en tant que prestataire'),
+            icon: 'fa-signature',
+            cls: 'primary',
+            action: 'sign'
+          });
+        } else {
+          actions.push({
+            label: T('ctr.detail.waitingOther', "En attente de l'autre partie"),
+            icon: 'fa-clock',
+            cls: 'outline',
+            disabled: true
+          });
+        }
+      }
+
+      if (c.status === 'active' || (c.client_signed_at && c.provider_signed_at)) {
+        if (amClient && !c.proof_url) {
+          actions.push({
+            label: T('ctr.detail.uploadProof', 'Envoyer la preuve de paiement'),
+            icon: 'fa-upload',
+            cls: 'warn',
+            action: 'uploadProof'
+          });
+        }
+
+        if (c.proof_url) {
+          actions.push({
+            label: T('ctr.detail.viewProof', 'Voir la preuve'),
+            icon: 'fa-image',
+            cls: 'outline',
+            href: c.proof_url,
+            target: '_blank'
+          });
+        }
+
+        if (!amClient) {
+          actions.push({
+            label: T('ctr.detail.markComplete', 'Marquer comme terminé'),
+            icon: 'fa-circle-check',
+            cls: 'success',
+            action: 'complete'
+          });
+        }
+      }
+
+      if (otherId) {
+        actions.push({
+          label: T('ctr.detail.contact', 'Contacter') + ' ' + esc(otherName.split(' ')[0]),
+          icon: 'fa-comments',
+          cls: 'outline',
+          href: `messages.html?to=${encodeURIComponent(otherId)}`
+        });
+      }
+
+      if (c.status === 'pending' || c.status === 'active') {
+        actions.push({
+          label: T('ctr.detail.markCancelled', 'Annuler le contrat'),
+          icon: 'fa-circle-xmark',
+          cls: 'danger',
+          action: 'cancel'
+        });
+      }
+
+      // Signature badges
+      const clientSigBadge = c.client_signed_at
+        ? `<span class="sig-badge signed"><i class="fa-solid fa-check" aria-hidden="true"></i>${T('ctr.detail.signed', 'Signé')}</span>`
+        : `<span class="sig-badge pending"><i class="fa-regular fa-clock" aria-hidden="true"></i>${T('ctr.detail.pending.signature', 'En attente')}</span>`;
+
+      const providerSigBadge = c.provider_signed_at
+        ? `<span class="sig-badge signed"><i class="fa-solid fa-check" aria-hidden="true"></i>${T('ctr.detail.signed', 'Signé')}</span>`
+        : `<span class="sig-badge pending"><i class="fa-regular fa-clock" aria-hidden="true"></i>${T('ctr.detail.pending.signature', 'En attente')}</span>`;
+
+      $('ctrWrap').innerHTML = `
+        <a href="contrats.html" class="ctr-back">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          ${T('ctr.detail.back', 'Retour aux contrats')}
+        </a>
+
+        <div class="ctr-hero">
+          <div class="ctr-hero-top">
+            <div style="flex:1;min-width:220px">
+              <h1 class="ctr-hero-title">${esc(c.title || 'Contrat')}</h1>
+              <div class="ctr-hero-ref">${T('ctr.detail.ref', 'Référence')} : ${esc((c.id || '').slice(0, 8).toUpperCase())}</div>
+            </div>
+            <span class="ctr-hero-status ${esc(c.status || 'pending')}">
+              <i class="fa-solid fa-circle" style="font-size:.5rem" aria-hidden="true"></i>${esc(statusLabel)}
+            </span>
+          </div>
+          <div>
+            <div class="ctr-hero-amount">${fmtMoney(c.amount || 0)}</div>
+            <div class="ctr-hero-amount-lbl">${T('ctr.detail.amount', 'Montant')}</div>
+          </div>
+        </div>
+
+        ${c.description ? `
+          <div class="block">
+            <h2 class="block-title"><i class="fa-solid fa-align-left" aria-hidden="true"></i>${T('ctr.detail.description', 'Description')}</h2>
+            <p class="desc-text">${esc(c.description)}</p>
+          </div>
+        ` : ''}
+
+        <div class="block">
+          <h2 class="block-title"><i class="fa-solid fa-users" aria-hidden="true"></i>${T('ctr.detail.parties', 'Parties')}</h2>
+          <div class="row">
+            <span class="row-lbl">${T('ctr.card.client', 'Client')}${amClient ? ' (' + T('ctr.card.you', 'Vous') + ')' : ''}</span>
+            <span class="row-val">${esc(clientName)}</span>
+          </div>
+          <div class="row">
+            <span class="row-lbl">${T('ctr.card.provider', 'Prestataire')}${!amClient ? ' (' + T('ctr.card.you', 'Vous') + ')' : ''}</span>
+            <span class="row-val">${esc(providerName)}</span>
+          </div>
+          <div class="row">
+            <span class="row-lbl">${T('ctr.detail.signatureClient', 'Signature client')}</span>
+            <span class="row-val">${clientSigBadge}</span>
+          </div>
+          <div class="row">
+            <span class="row-lbl">${T('ctr.detail.signatureProvider', 'Signature prestataire')}</span>
+            <span class="row-val">${providerSigBadge}</span>
+          </div>
+          <div class="row">
+            <span class="row-lbl">${T('ctr.detail.createdAt', 'Créé le')}</span>
+            <span class="row-val">${fmtDate(c.created_at)}</span>
+          </div>
+        </div>
+
+        <div class="block">
+          <h2 class="block-title"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>${T('ctr.detail.timeline', 'Historique')}</h2>
+          <div class="timeline">
+            ${timelineItems.map(item => `
+              <div class="tl-item done">
+                <div class="tl-dot" aria-hidden="true"></div>
+                <div class="tl-title">${esc(item.title)}</div>
+                <div class="tl-time">${fmtDate(item.time)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${actions.length ? `
+          <div class="block">
+            <h2 class="block-title"><i class="fa-solid fa-bolt" aria-hidden="true"></i>${T('ctr.detail.actions', 'Actions')}</h2>
+            <div class="actions">
+              ${actions.map(a => {
+                if (a.href) {
+                  return `<a href="${a.href}" class="btn-act ${a.cls}"${a.target ? ` target="${a.target}" rel="noopener"` : ''}>
+                    <i class="fa-solid ${a.icon}" aria-hidden="true"></i>${esc(a.label)}
+                  </a>`;
+                }
+                return `<button class="btn-act ${a.cls}" ${a.disabled ? 'disabled' : ''} onclick="handleAction('${a.action}')">
+                  <i class="fa-solid ${a.icon}" aria-hidden="true"></i>${esc(a.label)}
+                </button>`;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    // ═══ ACTIONS ═══
+    function handleAction(action) {
+      if (action === 'sign') return signContract();
+      if (action === 'complete') return askConfirm('complete');
+      if (action === 'cancel') return askConfirm('cancel');
+      if (action === 'uploadProof') return uploadProof();
+    }
+    window.handleAction = handleAction;
+
+    async function signContract() {
+      try {
+        const now = new Date().toISOString();
+        const update = MY_ROLE === 'client'
+          ? { client_signed_at: now, status: 'active' }
+          : { provider_signed_at: now, status: 'active' };
+
+        const { error } = await DB.client
+          .from('contracts')
+          .update(update)
+          .eq('id', CONTRACT.id);
+
+        if (error) throw error;
+
+        UI.toast(T('ctr.detail.signSuccess', 'Contrat signé !'), 'success');
+        await loadContract(CONTRACT.id);
+      } catch (e) {
+        console.error('[sign]', e);
+        UI.toast(e.message || T('common.error', 'Erreur'), 'error');
+      }
+    }
+
+    function askConfirm(kind) {
+      CONFIRM_ACTION = kind;
+
+      const iconMap = {
+        complete: { cls: 'ok', icon: 'fa-circle-check' },
+        cancel: { cls: 'er', icon: 'fa-triangle-exclamation' }
+      };
+      const meta = iconMap[kind];
+
+      $('modalIcon').className = 'modal-icon ' + meta.cls;
+      $('modalIcon').innerHTML = `<i class="fa-solid ${meta.icon}" aria-hidden="true"></i>`;
+
+      if (kind === 'complete') {
+        $('modalTitle').textContent = T('ctr.detail.confirm.complete', 'Marquer ce contrat comme terminé ?');
+        $('modalSub').textContent = '';
+      } else {
+        $('modalTitle').textContent = T('ctr.detail.confirm.cancel', 'Annuler ce contrat ?');
+        $('modalSub').textContent = T('ctr.detail.confirm.cancelHint', 'Cette action est irréversible.');
+      }
+
+      $('confirmModal').classList.add('on');
+    }
+
+    function closeModal() {
+      $('confirmModal').classList.remove('on');
+      CONFIRM_ACTION = null;
+    }
+    window.closeModal = closeModal;
+
+    async function confirmModal() {
+      const kind = CONFIRM_ACTION;
+      closeModal();
+      if (!kind) return;
+
+      try {
+        const status = kind === 'complete' ? 'completed' : 'cancelled';
+        const { error } = await DB.client
+          .from('contracts')
+          .update({ status, updated_at: new Date().toISOString() })
+          .eq('id', CONTRACT.id);
+
+        if (error) throw error;
+
+        const msg = kind === 'complete'
+          ? T('ctr.detail.completeSuccess', 'Contrat marqué comme terminé')
+          : T('ctr.detail.cancelSuccess', 'Contrat annulé');
+        UI.toast(msg, 'success');
+
+        await loadContract(CONTRACT.id);
+      } catch (e) {
+        console.error('[confirm]', e);
+        UI.toast(e.message || T('common.error', 'Erreur'), 'error');
+      }
+    }
+    window.confirmModal = confirmModal;
+
+    function uploadProof() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*,application/pdf';
+      input.onchange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+          const user = Auth.getUser();
+          const ext = file.name.split('.').pop().toLowerCase();
+          const filename = `${user.id}/proof-contract-${CONTRACT.id}-${Date.now()}.${ext}`;
+
+          const { error: upErr } = await DB.client.storage
+            .from('uploads')
+            .upload(filename, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+
+          if (upErr) throw upErr;
+
+          const { data: { publicUrl } } = DB.client.storage.from('uploads').getPublicUrl(filename);
+
+          const { error } = await DB.client
+            .from('contracts')
+            .update({
+              proof_url: publicUrl,
+              proof_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', CONTRACT.id);
+
+          if (error) throw error;
+
+          UI.toast(T('ctr.detail.proofSent', 'Preuve envoyée !'), 'success');
+          await loadContract(CONTRACT.id);
+        } catch (err) {
+          console.error('[proof]', err);
+          UI.toast(err.message || T('common.error', 'Erreur'), 'error');
+        }
+      };
+      input.click();
+    }
+
+    $('confirmModal').addEventListener('click', e => {
+      if (e.target === $('confirmModal')) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    addEventListener('DOMContentLoaded', async () => {
+      if (typeof DB !== 'undefined' && !DB.isRemote()) {
+        try { await Promise.race([DB.wait(), new Promise(r => setTimeout(r, 4000))]); } catch (e) {}
+      }
+      await new Promise(r => setTimeout(r, 300));
+
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      if (!Auth?.isLogged?.()) {
+        UI.toast(T('sub.error.login', 'Connectez-vous pour continuer.'), 'error');
+        setTimeout(() => location.href = 'login.html?next=' + encodeURIComponent(location.pathname + location.search), 800);
+        return;
+      }
+
+      const id = getIdFromUrl();
+      if (!id) { renderNotFound(); return; }
+
+      await loadContract(id);
+
+      if (typeof I18n !== 'undefined' && I18n.onChange) {
+        I18n.onChange(() => { if (CONTRACT) renderContract(); });
+      }
+    });
+  </script>
+</body>
+</html>

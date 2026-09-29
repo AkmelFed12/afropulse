@@ -1,10 +1,12 @@
 node_modules/
-assets/env.js
-assets/tailwind.css
 .env
 .env.local
+.env.*.local
+*.log
 .DS_Store
 Thumbs.db
+*.bak
+*.bak.*
+*.swp
 .vscode/
 .idea/
-*.swp

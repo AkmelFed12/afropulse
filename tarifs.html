@@ -4,151 +4,1264 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tarifs, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/currency.js" defer></script>
 <style>
-.tg{display:inline-flex;padding:.25rem;border-radius:.75rem;background:var(--sf);border:1px solid var(--bd)}
-.tg button{padding:.6rem 1.15rem;border-radius:.5rem;font-size:.8rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.4rem}
-.tg button.on{background:var(--ac);color:#fff}
-.tg button.on .sv{background:#fff;color:var(--ac)}
-.sv{display:inline-flex;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:999px;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
-.feat{border-color:var(--ac)!important;position:relative}
-.feat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 5%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));pointer-events:none;border-radius:1rem}
-.mb{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+/* ═══════════════════════════════════════════════════════════════
+   PALETTE PROFESSIONNELLE
+═══════════════════════════════════════════════════════════════ */
+:root{
+  --brand-blue:#0b5fff;
+  --brand-blue-soft:#3b82f6;
+  --brand-gold:#c99a2e;
+  --brand-gold-soft:#e0b54a;
+  --brand-emerald:#059669;
+  --brand-emerald-soft:#10b981;
+  --neutral-50:#fafbfc;
+  --neutral-100:#f4f6f8;
+  --neutral-200:#e6eaef;
+  --neutral-300:#cdd5df;
+  --neutral-500:#64748b;
+  --neutral-700:#334155;
+  --neutral-900:#0f172a;
+}
+.dark{
+  --neutral-50:#0a0e17;
+  --neutral-100:#111826;
+  --neutral-200:#1e293b;
+  --neutral-300:#334155;
+  --neutral-500:#94a3b8;
+  --neutral-700:#cbd5e1;
+  --neutral-900:#e6edf7;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════════ */
+.hero-pricing{
+  position:relative;
+  padding:4.5rem 1.25rem 3rem;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-pricing::before{
+  content:'';
+  position:absolute;
+  top:-30%;left:50%;transform:translateX(-50%);
+  width:1100px;height:1100px;
+  background:radial-gradient(circle,color-mix(in srgb,var(--brand-blue) 10%,transparent) 0%,transparent 55%);
+  pointer-events:none;
+  z-index:0;
+}
+.hero-pricing::after{
+  content:'';
+  position:absolute;
+  bottom:-50%;right:-15%;
+  width:700px;height:700px;
+  background:radial-gradient(circle,color-mix(in srgb,var(--brand-gold) 8%,transparent) 0%,transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+.hero-pricing > *{position:relative;z-index:1}
+
+.hero-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.4rem .9rem;
+  border-radius:999px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--brand-blue) 10%,transparent),color-mix(in srgb,var(--brand-gold) 8%,transparent));
+  border:1px solid color-mix(in srgb,var(--brand-blue) 20%,transparent);
+  font-size:.72rem;
+  font-weight:700;
+  color:var(--brand-blue);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:1.5rem;
+}
+
+.hero-title{
+  font-size:clamp(2.25rem,5vw,3.75rem);
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-.03em;
+  margin-bottom:1.25rem;
+  color:var(--neutral-900);
+}
+.hero-title .accent{
+  font-family:'Instrument Serif',serif;
+  font-style:italic;
+  font-weight:400;
+  background:linear-gradient(135deg,var(--brand-blue),var(--brand-gold));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:1.05rem;
+  line-height:1.6;
+  max-width:640px;
+  margin:0 auto 2rem;
+  color:var(--neutral-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOGGLE MENSUEL/ANNUEL
+═══════════════════════════════════════════════════════════════ */
+.tg-wrap{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  padding:.35rem;
+  border-radius:1rem;
+  background:var(--neutral-50);
+  border:1px solid var(--neutral-200);
+  box-shadow:0 1px 3px rgba(15,23,42,.04);
+  margin-bottom:1rem;
+}
+.dark .tg-wrap{background:var(--neutral-100)}
+.tg{display:inline-flex;gap:.2rem;background:transparent;border:none;padding:0}
+.tg button{
+  padding:.7rem 1.35rem;
+  border-radius:.75rem;
+  font-size:.83rem;
+  font-weight:600;
+  border:none;
+  background:transparent;
+  color:var(--neutral-500);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  transition:.22s;
+}
+.tg button.on{
+  background:var(--brand-blue);
+  color:#fff;
+  box-shadow:0 6px 16px -6px color-mix(in srgb,var(--brand-blue) 50%,transparent);
+}
+.sv{
+  display:inline-flex;
+  font-size:.65rem;
+  font-weight:800;
+  padding:.2rem .5rem;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--brand-emerald) 15%,transparent);
+  color:var(--brand-emerald);
+}
+.tg button.on .sv{background:rgba(255,255,255,.2);color:#fff}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRUST BAR
+═══════════════════════════════════════════════════════════════ */
+.trust-bar{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:1.5rem 2.5rem;
+  margin-top:2rem;
+  padding-top:2rem;
+  border-top:1px solid var(--neutral-200);
+  max-width:820px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.trust-item{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  font-size:.8rem;
+  color:var(--neutral-500);
+  font-weight:500;
+}
+.trust-item i{color:var(--brand-emerald);font-size:.9rem}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARTES DE FORMULES
+═══════════════════════════════════════════════════════════════ */
+.plans-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1.5rem;
+  max-width:1140px;
+  margin:0 auto;
+  padding:0 1.25rem 3rem;
+}
+@media(min-width:768px){
+  .plans-grid{grid-template-columns:repeat(3,1fr);gap:1.75rem}
+}
+
+.plan-card{
+  background:var(--neutral-50);
+  border:1.5px solid var(--neutral-200);
+  border-radius:1.5rem;
+  padding:2.25rem 1.85rem;
+  display:flex;
+  flex-direction:column;
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  position:relative;
+}
+.dark .plan-card{background:var(--neutral-100)}
+.plan-card:hover{
+  transform:translateY(-4px);
+  border-color:color-mix(in srgb,var(--brand-blue) 40%,transparent);
+  box-shadow:0 24px 48px -24px rgba(15,23,42,.12);
+}
+.plan-card.popular{
+  border:2px solid transparent;
+  background:
+    linear-gradient(var(--neutral-50),var(--neutral-50)) padding-box,
+    linear-gradient(135deg,var(--brand-blue),var(--brand-gold)) border-box;
+  box-shadow:
+    0 24px 56px -24px color-mix(in srgb,var(--brand-blue) 30%,transparent),
+    0 0 0 1px color-mix(in srgb,var(--brand-blue) 10%,transparent);
+}
+.dark .plan-card.popular{
+  background:
+    linear-gradient(var(--neutral-100),var(--neutral-100)) padding-box,
+    linear-gradient(135deg,var(--brand-blue),var(--brand-gold)) border-box;
+}
+.plan-card.popular:hover{
+  transform:translateY(-6px) scale(1.01);
+  box-shadow:
+    0 32px 64px -24px color-mix(in srgb,var(--brand-blue) 40%,transparent),
+    0 0 0 1px color-mix(in srgb,var(--brand-blue) 15%,transparent);
+}
+.popular-badge{
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--brand-blue),var(--brand-blue-soft));
+  color:#fff;
+  font-size:.68rem;
+  font-weight:800;
+  padding:.45rem 1.1rem;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  box-shadow:0 8px 20px -8px color-mix(in srgb,var(--brand-blue) 60%,transparent);
+  white-space:nowrap;
+}
+.plan-icon{
+  width:52px;height:52px;
+  border-radius:.9rem;
+  display:grid;place-items:center;
+  margin-bottom:1.25rem;
+  font-size:1.25rem;
+}
+.plan-card[data-slug*="starter"] .plan-icon,
+.plan-card[data-slug*="free"] .plan-icon,
+.plan-card[data-slug*="jeune"] .plan-icon,
+.plan-card[data-slug*="basic"] .plan-icon{
+  background:color-mix(in srgb,var(--brand-emerald) 12%,transparent);
+  color:var(--brand-emerald);
+}
+.plan-card[data-slug*="pro"] .plan-icon,
+.plan-card[data-slug*="business"] .plan-icon,
+.plan-card[data-slug*="entreprise"] .plan-icon{
+  background:color-mix(in srgb,var(--brand-blue) 12%,transparent);
+  color:var(--brand-blue);
+}
+.plan-card[data-slug*="vip"] .plan-icon,
+.plan-card[data-slug*="enterprise"] .plan-icon,
+.plan-card[data-slug*="premium"] .plan-icon{
+  background:color-mix(in srgb,var(--brand-gold) 15%,transparent);
+  color:var(--brand-gold);
+}
+.plan-name{
+  font-size:1.2rem;
+  font-weight:800;
+  color:var(--neutral-900);
+  margin-bottom:.4rem;
+  letter-spacing:-.02em;
+}
+.plan-desc{
+  font-size:.82rem;
+  color:var(--neutral-500);
+  margin-bottom:1.5rem;
+  line-height:1.55;
+  min-height:2.5em;
+}
+.plan-price-wrap{
+  margin-bottom:1.5rem;
+  padding-bottom:1.5rem;
+  border-bottom:1px solid var(--neutral-200);
+}
+.plan-price{
+  display:flex;
+  align-items:flex-end;
+  gap:.4rem;
+  margin-bottom:.5rem;
+}
+.plan-price .amount{
+  font-size:2.9rem;
+  font-weight:900;
+  line-height:1;
+  color:var(--neutral-900);
+  letter-spacing:-.04em;
+}
+.plan-price .currency{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--neutral-500);
+  padding-bottom:.4rem;
+}
+.plan-price .period{
+  font-size:.78rem;
+  color:var(--neutral-500);
+  padding-bottom:.45rem;
+}
+.plan-eur{
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--brand-blue);
+  margin-bottom:.4rem;
+}
+.plan-billing{
+  font-size:.72rem;
+  color:var(--neutral-500);
+}
+.plan-features{
+  list-style:none;
+  padding:0;
+  margin:0 0 1.75rem;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:.75rem;
+}
+.plan-features li{
+  display:flex;
+  align-items:flex-start;
+  gap:.65rem;
+  font-size:.83rem;
+  color:var(--neutral-700);
+  line-height:1.45;
+}
+.plan-features li i{
+  color:var(--brand-emerald);
+  font-size:.85rem;
+  flex-shrink:0;
+  margin-top:.15rem;
+}
+.plan-cta{
+  width:100%;
+  padding:.95rem 1.15rem;
+  border-radius:.85rem;
+  font-weight:700;
+  font-size:.9rem;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+  transition:.22s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+  letter-spacing:-.01em;
+}
+.plan-cta.primary{
+  background:var(--brand-blue);
+  color:#fff;
+  box-shadow:0 12px 28px -10px color-mix(in srgb,var(--brand-blue) 60%,transparent);
+}
+.plan-cta.primary:hover{
+  background:#0a52e0;
+  transform:translateY(-2px);
+  box-shadow:0 16px 32px -10px color-mix(in srgb,var(--brand-blue) 70%,transparent);
+}
+.plan-cta.secondary{
+  background:transparent;
+  color:var(--neutral-900);
+  border:1.5px solid var(--neutral-200);
+}
+.plan-cta.secondary:hover{
+  border-color:var(--brand-blue);
+  color:var(--brand-blue);
+  background:color-mix(in srgb,var(--brand-blue) 4%,transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLEAU DE COMPARAISON
+═══════════════════════════════════════════════════════════════ */
+.comparison-section{
+  max-width:1140px;
+  margin:0 auto;
+  padding:3rem 1.25rem 4rem;
+}
+.comparison-header{
+  text-align:center;
+  margin-bottom:2.5rem;
+}
+.comparison-table-wrap{
+  border-radius:1.5rem;
+  border:1px solid var(--neutral-200);
+  background:var(--neutral-50);
+  overflow:hidden;
+  box-shadow:0 4px 24px -12px rgba(15,23,42,.08);
+}
+.dark .comparison-table-wrap{background:var(--neutral-100)}
+
+.comparison-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.85rem;
+  min-width:720px;
+}
+.comparison-table thead th{
+  padding:1.25rem 1rem;
+  text-align:center;
+  font-weight:700;
+  font-size:.78rem;
+  color:var(--neutral-500);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  background:var(--neutral-100);
+  border-bottom:1px solid var(--neutral-200);
+  position:relative;
+}
+.dark .comparison-table thead th{background:var(--neutral-200)}
+.comparison-table thead th:first-child{
+  text-align:left;
+  padding-left:1.75rem;
+  color:var(--neutral-500);
+}
+.comparison-table thead th.col-popular{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--brand-blue) 8%,transparent),color-mix(in srgb,var(--brand-blue) 4%,transparent));
+  color:var(--brand-blue);
+}
+.dark .comparison-table thead th.col-popular{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--brand-blue) 15%,transparent),color-mix(in srgb,var(--brand-blue) 8%,transparent));
+}
+.comparison-table thead th .col-popular-badge{
+  display:inline-block;
+  font-size:.6rem;
+  font-weight:800;
+  padding:.15rem .5rem;
+  border-radius:999px;
+  background:var(--brand-blue);
+  color:#fff;
+  margin-top:.35rem;
+  letter-spacing:.05em;
+}
+.comparison-table thead th .col-name{
+  display:block;
+  font-size:.95rem;
+  font-weight:800;
+  color:var(--neutral-900);
+  text-transform:none;
+  letter-spacing:-.01em;
+  margin-bottom:.25rem;
+}
+.comparison-table thead th.col-popular .col-name{color:var(--brand-blue)}
+.comparison-table thead th .col-price{
+  display:block;
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--neutral-500);
+  text-transform:none;
+  letter-spacing:0;
+}
+.comparison-table tbody tr{
+  transition:background .15s;
+}
+.comparison-table tbody tr:hover{
+  background:color-mix(in srgb,var(--brand-blue) 3%,transparent);
+}
+.comparison-table tbody tr.section-divider td{
+  background:var(--neutral-100);
+  font-size:.7rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--neutral-500);
+  padding:.7rem 1.75rem;
+}
+.dark .comparison-table tbody tr.section-divider td{background:var(--neutral-200)}
+.comparison-table tbody td{
+  padding:1rem;
+  text-align:center;
+  border-bottom:1px solid var(--neutral-200);
+  color:var(--neutral-700);
+  font-weight:500;
+}
+.comparison-table tbody td:first-child{
+  text-align:left;
+  padding-left:1.75rem;
+  font-weight:600;
+  color:var(--neutral-900);
+}
+.comparison-table tbody td:first-child i{
+  color:var(--neutral-500);
+  margin-right:.6rem;
+  font-size:.85rem;
+  width:16px;
+  text-align:center;
+}
+.comparison-table tbody td.col-popular{
+  background:color-mix(in srgb,var(--brand-blue) 3%,transparent);
+  font-weight:600;
+  color:var(--neutral-900);
+}
+.comparison-table tbody tr:last-child td{border-bottom:none}
+
+/* Marqueurs */
+.mark-yes{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;height:24px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--brand-emerald) 12%,transparent);
+  color:var(--brand-emerald);
+  font-size:.7rem;
+}
+.mark-no{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;height:24px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--neutral-500) 10%,transparent);
+  color:var(--neutral-500);
+  font-size:.7rem;
+}
+.mark-value{
+  font-weight:700;
+  color:var(--neutral-900);
+  font-size:.85rem;
+}
+.mark-value.positive{color:var(--brand-emerald)}
+.mark-value.gold{color:var(--brand-gold)}
+.mark-value.blue{color:var(--brand-blue)}
+
+/* Scroll horizontal sur mobile */
+.comparison-scroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.comparison-scroll::-webkit-scrollbar{height:6px}
+.comparison-scroll::-webkit-scrollbar-track{background:transparent}
+.comparison-scroll::-webkit-scrollbar-thumb{background:var(--neutral-300);border-radius:3px}
+
+/* Hint scroll mobile */
+.scroll-hint{
+  display:none;
+  text-align:center;
+  font-size:.72rem;
+  color:var(--neutral-500);
+  margin-top:.75rem;
+  font-weight:600;
+}
+.scroll-hint i{margin-right:.35rem}
+@media(max-width:768px){
+  .scroll-hint{display:block}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOYENS DE PAIEMENT
+═══════════════════════════════════════════════════════════════ */
+.payment-section{
+  max-width:1000px;
+  margin:0 auto;
+  padding:3rem 1.25rem 4rem;
+  text-align:center;
+}
+.section-eyebrow{
+  display:inline-block;
+  font-size:.72rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--brand-blue);
+  margin-bottom:.75rem;
+}
+.section-title{
+  font-size:clamp(1.6rem,3.5vw,2.25rem);
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--neutral-900);
+  margin-bottom:.75rem;
+  line-height:1.15;
+}
+.section-desc{
+  font-size:.92rem;
+  color:var(--neutral-500);
+  max-width:560px;
+  margin:0 auto 2.5rem;
+  line-height:1.6;
+}
+
+.payment-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1rem;
+  margin-top:2rem;
+}
+@media(min-width:640px){
+  .payment-grid{grid-template-columns:repeat(4,1fr);gap:1.25rem}
+}
+.payment-card{
+  background:var(--neutral-50);
+  border:1px solid var(--neutral-200);
+  border-radius:1rem;
+  padding:1.35rem .75rem 1.15rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.7rem;
+  transition:.25s;
+  position:relative;
+}
+.dark .payment-card{background:var(--neutral-100)}
+.payment-card:hover{
+  border-color:color-mix(in srgb,var(--brand-blue) 40%,transparent);
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px -12px rgba(15,23,42,.12);
+}
+.payment-card img{
+  height:34px;width:auto;max-width:95px;object-fit:contain;
+}
+.payment-card .pay-name{
+  font-size:.85rem;font-weight:800;color:var(--neutral-900);
+}
+.payment-card .pay-fee{
+  font-size:.68rem;font-weight:700;
+  padding:.2rem .6rem;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--brand-emerald) 12%,transparent);
+  color:var(--brand-emerald);
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+.payment-card .pay-fee.high{
+  background:color-mix(in srgb,var(--brand-gold) 15%,transparent);
+  color:var(--brand-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION INCLUS
+═══════════════════════════════════════════════════════════════ */
+.included-section{
+  max-width:1000px;
+  margin:0 auto;
+  padding:2rem 1.25rem 4rem;
+  text-align:center;
+}
+.included-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1rem;
+  margin-top:2.5rem;
+}
+@media(min-width:640px){.included-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.included-grid{grid-template-columns:repeat(4,1fr)}}
+.included-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:.85rem;
+  padding:1.5rem 1.15rem;
+  background:var(--neutral-50);
+  border:1px solid var(--neutral-200);
+  border-radius:1rem;
+  transition:.22s;
+}
+.dark .included-item{background:var(--neutral-100)}
+.included-item:hover{
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb,var(--brand-blue) 30%,transparent);
+  box-shadow:0 12px 28px -16px rgba(15,23,42,.12);
+}
+.included-item .ic{
+  width:46px;height:46px;
+  border-radius:.85rem;
+  display:grid;place-items:center;
+  background:color-mix(in srgb,var(--brand-blue) 10%,transparent);
+  color:var(--brand-blue);
+  font-size:1.05rem;
+}
+.included-item:nth-child(2) .ic{
+  background:color-mix(in srgb,var(--brand-emerald) 10%,transparent);
+  color:var(--brand-emerald);
+}
+.included-item:nth-child(3) .ic{
+  background:color-mix(in srgb,var(--brand-gold) 12%,transparent);
+  color:var(--brand-gold);
+}
+.included-item .t{
+  font-weight:800;
+  font-size:.88rem;
+  color:var(--neutral-900);
+  letter-spacing:-.01em;
+}
+.included-item .d{
+  font-size:.78rem;
+  color:var(--neutral-500);
+  line-height:1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════════════════════════ */
+.faq-wrap{
+  max-width:760px;
+  margin:0 auto;
+  padding:2rem 1.25rem 5rem;
+}
+.faq-wrap .comparison-header{margin-bottom:2rem}
+.faq-item{
+  background:var(--neutral-50);
+  border:1px solid var(--neutral-200);
+  border-radius:1rem;
+  margin-bottom:.75rem;
+  transition:.22s;
+  overflow:hidden;
+}
+.dark .faq-item{background:var(--neutral-100)}
+.faq-item:hover{border-color:color-mix(in srgb,var(--brand-blue) 30%,transparent)}
+.faq-item[open]{
+  border-color:color-mix(in srgb,var(--brand-blue) 40%,transparent);
+  box-shadow:0 8px 24px -12px rgba(15,23,42,.08);
+}
+.faq-item summary{
+  cursor:pointer;list-style:none;
+  padding:1.2rem 1.4rem;
+  font-weight:700;
+  font-size:.9rem;
+  color:var(--neutral-900);
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  letter-spacing:-.01em;
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:'\f078';
+  font-family:'Font Awesome 6 Free';
+  font-weight:900;
+  color:var(--neutral-500);
+  font-size:.72rem;
+  transition:transform .25s,color .25s;
+  flex-shrink:0;
+}
+.faq-item[open] summary::after{
+  transform:rotate(180deg);
+  color:var(--brand-blue);
+}
+.faq-item .faq-answer{
+  padding:0 1.4rem 1.35rem;
+  font-size:.85rem;
+  line-height:1.65;
+  color:var(--neutral-500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA FINAL
+═══════════════════════════════════════════════════════════════ */
+.final-cta-wrap{padding:0 1.25rem 5rem}
+.final-cta{
+  max-width:1000px;
+  margin:0 auto;
+  padding:3rem 1.75rem;
+  border-radius:1.75rem;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--brand-blue) 8%,transparent),
+      color-mix(in srgb,var(--brand-gold) 6%,transparent));
+  border:1px solid color-mix(in srgb,var(--brand-blue) 15%,transparent);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.final-cta::before{
+  content:'';
+  position:absolute;
+  top:-50%;right:-15%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,color-mix(in srgb,var(--brand-blue) 20%,transparent),transparent 70%);
+  pointer-events:none;
+}
+.final-cta > *{position:relative;z-index:1}
+.final-cta h2{
+  font-size:clamp(1.35rem,2.5vw,1.75rem);
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--neutral-900);
+  margin-bottom:.6rem;
+}
+.final-cta p{
+  font-size:.9rem;
+  color:var(--neutral-500);
+  max-width:520px;
+  margin:0 auto 1.75rem;
+  line-height:1.55;
+}
+.btn-wa{
+  display:inline-flex;
+  align-items:center;
+  gap:.55rem;
+  padding:.85rem 1.5rem;
+  border-radius:.75rem;
+  background:#25d366;
+  color:#fff;
+  font-weight:700;
+  font-size:.88rem;
+  text-decoration:none;
+  transition:.22s;
+  box-shadow:0 10px 24px -10px rgba(37,211,102,.55);
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+}
+.btn-wa:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px -10px rgba(37,211,102,.65);
+  background:#1db954;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════════════════ */
+.mb{
+  position:fixed;inset:0;z-index:100;
+  display:none;align-items:center;justify-content:center;
+  padding:1rem;
+  background:rgba(10,14,23,.65);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
 .mb.on{display:flex}
-.mbox{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px -20px rgba(0,0,0,.4);position:relative}
-.gt{flex:1;padding:.75rem .5rem;min-height:88px;border-radius:.7rem;border:1.5px solid var(--bd);background:#fff;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;transition:.2s;overflow:hidden}
-.gt:hover{border-color:var(--mu)}
-.gt.on{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 15%,transparent)}
-.gt .gw-logo{height:26px;width:auto;max-width:110px;object-fit:contain;display:block}
-.gt .gw-name{font-weight:800;font-size:.85rem;line-height:1;letter-spacing:-.02em}
-.gt .gw-label{font-size:.6rem;font-weight:500;color:var(--mu)}
-.gp{display:none}.gp.on{display:block}
+.mbox{
+  background:var(--neutral-50);
+  border:1px solid var(--neutral-200);
+  border-radius:1.5rem;
+  width:100%;max-width:560px;max-height:92vh;
+  overflow-y:auto;
+  box-shadow:0 32px 80px -24px rgba(0,0,0,.55);
+  position:relative;
+  animation:popIn .3s cubic-bezier(.2,.9,.3,1.1);
+}
+.dark .mbox{background:var(--neutral-100)}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.95) translateY(10px)}
+  to{opacity:1;transform:none}
+}
+
+/* Gateway buttons */
+.gt{
+  flex:1;
+  padding:.75rem .4rem;
+  min-height:88px;
+  border-radius:.85rem;
+  border:1.5px solid var(--neutral-200);
+  background:#fff;
+  cursor:pointer;
+  font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.35rem;
+  transition:.2s;
+  overflow:hidden;
+}
+.dark .gt{background:var(--neutral-200);border-color:var(--neutral-300)}
+.gt:hover{border-color:var(--neutral-500);transform:translateY(-1px)}
+.gt.on{
+  border-color:var(--brand-blue);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--brand-blue) 15%,transparent);
+  background:color-mix(in srgb,var(--brand-blue) 3%,#fff);
+}
+.dark .gt.on{background:color-mix(in srgb,var(--brand-blue) 10%,var(--neutral-200))}
+.gt .gw-logo{height:24px;width:auto;max-width:100px;object-fit:contain;display:block}
+.gt .gw-name{font-weight:800;font-size:.78rem;line-height:1;letter-spacing:-.02em}
+.gt .gw-label{font-size:.62rem;font-weight:700;color:var(--neutral-500);text-transform:uppercase;letter-spacing:.04em}
+.gp{display:none}
+.gp.on{display:block;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .gp-logo{height:32px;width:auto;max-width:120px;object-fit:contain}
-details.card-static summary{cursor:pointer;list-style:none}
-details.card-static summary::-webkit-details-marker{display:none}
-details.card-static summary::after{content:'+';float:right;font-weight:bold;color:var(--ac)}
-details.card-static[open] summary::after{content:'−'}
-.alert{display:flex;gap:.6rem;align-items:flex-start;padding:.75rem .9rem;border-radius:.65rem;font-size:.75rem;line-height:1.5;margin-top:.9rem}
-.alert.err{background:color-mix(in srgb,var(--er) 8%,transparent);border:1px solid color-mix(in srgb,var(--er) 25%,transparent);color:var(--er)}
+
+/* Summary box */
+.summary-box{
+  background:linear-gradient(135deg,
+    color-mix(in srgb,var(--brand-blue) 5%,transparent),
+    color-mix(in srgb,var(--brand-blue) 3%,transparent));
+  border:1px solid color-mix(in srgb,var(--brand-blue) 20%,transparent);
+  border-radius:1rem;
+  padding:1.25rem;
+  margin-bottom:1.5rem;
+}
+.summary-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.83rem;
+  margin-bottom:.65rem;
+}
+.summary-row:last-child{margin-bottom:0}
+.summary-row .lbl-s{color:var(--neutral-500)}
+.summary-row .val-s{color:var(--neutral-900);font-weight:600}
+.summary-row.total{
+  padding-top:.85rem;
+  margin-top:.6rem;
+  border-top:1px dashed color-mix(in srgb,var(--brand-blue) 30%,transparent);
+  font-size:1rem;
+}
+.summary-row.total .lbl-s{color:var(--neutral-900);font-weight:700}
+.summary-row.total .val-s{
+  color:var(--brand-blue);
+  font-weight:900;
+  font-size:1.3rem;
+  letter-spacing:-.02em;
+}
+.summary-row.fees .val-s{color:var(--brand-gold)}
+
+/* Alert */
+.alert{
+  display:flex;gap:.6rem;align-items:flex-start;
+  padding:.8rem .95rem;
+  border-radius:.75rem;
+  font-size:.78rem;
+  line-height:1.5;
+  margin-top:1rem;
+}
+.alert.err{
+  background:color-mix(in srgb,#dc2626 8%,transparent);
+  border:1px solid color-mix(in srgb,#dc2626 25%,transparent);
+  color:#dc2626;
+}
 .alert i{margin-top:.15rem;flex-shrink:0}
 .alert a{color:inherit;text-decoration:underline;font-weight:600;cursor:pointer}
+
+/* Wait icon */
+.wait-icon{
+  width:82px;height:82px;
+  border-radius:1.6rem;
+  display:grid;place-items:center;
+  margin:0 auto 1.35rem;
+  background:color-mix(in srgb,var(--brand-emerald) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--brand-emerald) 30%,transparent);
+  position:relative;
+}
+.wait-icon::before{
+  content:'';
+  position:absolute;inset:-8px;
+  border-radius:1.85rem;
+  border:2px solid var(--brand-emerald);
+  opacity:.3;
+  animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(.95);opacity:.5}
+  100%{transform:scale(1.15);opacity:0}
+}
+
+.wa-btn{
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:#fff;
+  font-weight:800;
+  padding:1rem 1.25rem;
+  border-radius:.85rem;
+  display:flex;align-items:center;justify-content:center;
+  gap:.6rem;
+  text-decoration:none;
+  transition:.22s;
+  box-shadow:0 12px 28px -10px rgba(37,211,102,.55);
+  font-size:.92rem;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+}
+.wa-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 36px -10px rgba(37,211,102,.65);
+}
+
+@media(max-width:640px){
+  .plan-price .amount{font-size:2.4rem}
+  .plan-card{padding:2rem 1.5rem}
+  .hero-pricing{padding:3rem 1.25rem 2rem}
+}
 </style>
 </head>
 <body class="font-sans">
 
 <main class="relative">
-<div class="absolute inset-0 grid-bg pointer-events-none"></div>
 
-<section class="relative max-w-6xl mx-auto px-4 pt-16 sm:pt-20 pb-10 text-center">
-  <span class="chip mb-6"><i class="fa-solid fa-tags text-[10px]"></i>Tarifs</span>
-  <h1 class="text-4xl sm:text-5xl font-bold leading-[1.05] mb-6">
-    Des formules <span class="serif" style="color:var(--ac)">simples</span>, des prix honnêtes.
+<!-- ═══ HERO ═══ -->
+<section class="hero-pricing">
+  <div class="hero-pill">
+    <i class="fa-solid fa-tags"></i>Tarifs & Formules
+  </div>
+  <h1 class="hero-title">
+    Des formules <span class="accent">simples</span>,<br>
+    des prix honnêtes.
   </h1>
-  <p class="text-base leading-relaxed max-w-2xl mx-auto mb-10" style="color:var(--mu)">
-    Paiement Wave ou Orange Money. Résiliable à tout moment.
+  <p class="hero-sub">
+    Choisissez la formule qui correspond à vos ambitions. Résiliable à tout moment, sans engagement caché.
   </p>
-  <div class="tg" id="tg">
-    <button data-c="m" class="on">Mensuel</button>
-    <button data-c="y">Annuel <span class="sv">-10%</span></button>
+
+  <div class="tg-wrap">
+    <div class="tg" id="tg">
+      <button data-c="m" class="on">Mensuel</button>
+      <button data-c="y">Annuel <span class="sv">-10%</span></button>
+    </div>
+  </div>
+  <p class="text-xs" style="color:var(--neutral-500)">
+    <i class="fa-solid fa-circle-check mr-1" style="color:var(--brand-emerald)"></i>
+    Paiement sécurisé · Résiliation à tout moment
+  </p>
+
+  <div class="trust-bar">
+    <div class="trust-item"><i class="fa-solid fa-shield-halved"></i>Paiement chiffré</div>
+    <div class="trust-item"><i class="fa-solid fa-bolt"></i>Activation sous 24h</div>
+    <div class="trust-item"><i class="fa-solid fa-rotate-left"></i>Sans engagement</div>
+    <div class="trust-item"><i class="fa-solid fa-headset"></i>Support WhatsApp</div>
   </div>
 </section>
 
-<section class="relative max-w-6xl mx-auto px-4 pb-20">
-  <div class="grid md:grid-cols-3 gap-6" id="plansGrid">
-    <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
-    <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
-    <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
+<!-- ═══ GRILLE DES FORMULES ═══ -->
+<section class="plans-grid" id="plansGrid">
+  <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
+  <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
+  <div class="sk-card"><div class="sk-line" style="width:50%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%;height:32px;margin-top:.5rem"></div><div class="sk-line" style="width:90%;margin-top:1rem"></div><div class="sk-line" style="width:70%"></div><div class="sk-line" style="width:80%"></div></div>
+</section>
+
+<!-- ═══ TABLEAU COMPARATIF ═══ -->
+<section class="comparison-section">
+  <div class="comparison-header">
+    <span class="section-eyebrow">Comparaison</span>
+    <h2 class="section-title">Comparez les formules en un coup d'œil</h2>
+    <p class="section-desc">Toutes les fonctionnalités, tous les avantages. Choisissez en toute transparence.</p>
+  </div>
+
+  <div class="comparison-table-wrap">
+    <div class="comparison-scroll">
+      <table class="comparison-table" id="comparisonTable">
+        <thead>
+          <tr>
+            <th>Fonctionnalités</th>
+            <!-- Rempli par JS -->
+          </tr>
+        </thead>
+        <tbody id="comparisonBody">
+          <tr><td colspan="4" style="text-align:center;padding:3rem;color:var(--neutral-500);font-size:.85rem">
+            <i class="fa-solid fa-circle-notch fa-spin text-lg mb-2" style="display:block;color:var(--brand-blue)"></i>
+            Chargement du comparatif…
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scroll-hint"><i class="fa-solid fa-arrows-left-right"></i>Faites glisser pour voir toutes les formules</div>
   </div>
 </section>
 
-<section class="relative max-w-3xl mx-auto px-4 pb-24">
-  <h2 class="text-xl font-bold mb-6 text-center">Questions fréquentes</h2>
-  <div class="space-y-3" id="faqList">
-    <div class="card-static p-5"><div class="sk-line" style="width:60%"></div></div>
-    <div class="card-static p-5"><div class="sk-line" style="width:70%"></div></div>
-    <div class="card-static p-5"><div class="sk-line" style="width:55%"></div></div>
+<!-- ═══ MOYENS DE PAIEMENT ═══ -->
+<section class="payment-section">
+  <span class="section-eyebrow">Paiement</span>
+  <h2 class="section-title">4 moyens de paiement acceptés.</h2>
+  <p class="section-desc">Payez avec le moyen qui vous arrange. Des frais transparents, aucun coût caché.</p>
+  <div class="payment-grid">
+    <div class="payment-card">
+      <img src="assets/wave.png" alt="Wave" onerror="this.outerHTML='<i class=\'fa-solid fa-bolt\' style=\'font-size:1.5rem;color:#1dc3f1\'></i>'">
+      <div class="pay-name">Wave</div>
+      <div class="pay-fee">1 %</div>
+    </div>
+    <div class="payment-card">
+      <img src="assets/orange.png" alt="Orange Money" onerror="this.outerHTML='<i class=\'fa-solid fa-mobile-screen\' style=\'font-size:1.5rem;color:#ff6600\'></i>'">
+      <div class="pay-name">Orange Money</div>
+      <div class="pay-fee">1 %</div>
+    </div>
+    <div class="payment-card">
+      <img src="assets/djamo.png" alt="Djamo" onerror="this.outerHTML='<i class=\'fa-solid fa-wallet\' style=\'font-size:1.5rem;color:#1a1a2e\'></i>'">
+      <div class="pay-name">Djamo</div>
+      <div class="pay-fee high">3 %</div>
+    </div>
+    <div class="payment-card">
+      <img src="assets/card.jpg" alt="Carte bancaire" style="border-radius:.4rem" onerror="this.outerHTML='<i class=\'fa-solid fa-credit-card\' style=\'font-size:1.5rem;color:#0b5fff\'></i>'">
+      <div class="pay-name">Carte bancaire</div>
+      <div class="pay-fee high">3 %</div>
+    </div>
   </div>
 </section>
+
+<!-- ═══ INCLUS PARTOUT ═══ -->
+<section class="included-section">
+  <span class="section-eyebrow" style="color:var(--brand-emerald)">Inclus partout</span>
+  <h2 class="section-title">Toutes les formules comprennent</h2>
+  <p class="section-desc">Peu importe la formule choisie, vous avez accès à ces fonctionnalités essentielles.</p>
+  <div class="included-grid">
+    <div class="included-item">
+      <div class="ic"><i class="fa-solid fa-comments"></i></div>
+      <div class="t">Messagerie illimitée</div>
+      <div class="d">Échangez avec tous les membres du réseau sans restriction.</div>
+    </div>
+    <div class="included-item">
+      <div class="ic"><i class="fa-solid fa-heart"></i></div>
+      <div class="t">Favoris illimités</div>
+      <div class="d">Sauvegardez tous les profils et missions qui vous intéressent.</div>
+    </div>
+    <div class="included-item">
+      <div class="ic"><i class="fa-solid fa-magnifying-glass"></i></div>
+      <div class="t">Recherche avancée</div>
+      <div class="d">Filtrez les talents par compétence, ville ou type de profil.</div>
+    </div>
+    <div class="included-item">
+      <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="t">Profils vérifiés</div>
+      <div class="d">Toutes les entreprises ont un RCCM validé par notre équipe.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq-wrap">
+  <div class="comparison-header">
+    <span class="section-eyebrow">FAQ</span>
+    <h2 class="section-title">Questions fréquentes</h2>
+  </div>
+  <div id="faqList">
+    <div class="faq-item"><div class="p-5"><div class="sk-line" style="width:60%"></div></div></div>
+    <div class="faq-item"><div class="p-5"><div class="sk-line" style="width:70%"></div></div></div>
+    <div class="faq-item"><div class="p-5"><div class="sk-line" style="width:55%"></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ CTA FINAL ═══ -->
+<section class="final-cta-wrap">
+  <div class="final-cta">
+    <h2>Une question sur nos formules ?</h2>
+    <p>Notre équipe vous répond en moins de 2 heures sur WhatsApp.</p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="https://wa.me/2250150070083" target="_blank" rel="noopener" class="btn-wa">
+        <i class="fa-brands fa-whatsapp text-base"></i>Contacter le support
+      </a>
+      <a href="contact.html" class="btn bo">Envoyer un email</a>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- ═══ MODAL PAIEMENT ═══ -->
 <div id="pay" class="mb">
 <div class="mbox">
-  <button onclick="Pay.close()" class="absolute top-4 right-4 w-9 h-9 rounded-lg grid place-items-center" style="background:var(--bg);color:var(--mu);border:none;cursor:pointer"><i class="fa-solid fa-xmark"></i></button>
+  <button onclick="Pay.close()" class="absolute top-4 right-4 w-9 h-9 rounded-lg grid place-items-center" style="background:var(--neutral-100);color:var(--neutral-500);border:none;cursor:pointer;z-index:10"><i class="fa-solid fa-xmark"></i></button>
   <div class="p-6 sm:p-8">
-    <div class="mb-6 pr-10">
-      <span class="text-xs font-bold uppercase tracking-wider" style="color:var(--ac)">Paiement sécurisé</span>
-      <h2 class="text-xl font-bold mt-1">Formule <span id="pP">—</span></h2>
-      <p class="text-xs mt-1" style="color:var(--mu)">Cycle : <span id="pC">—</span></p>
+    <div class="mb-5 pr-10">
+      <span class="text-xs font-bold uppercase tracking-wider" style="color:var(--brand-blue)">Paiement sécurisé</span>
+      <h2 class="text-xl font-bold mt-1" style="color:var(--neutral-900)">Formule <span id="pP">—</span></h2>
+      <p class="text-xs mt-1" style="color:var(--neutral-500)">Cycle : <span id="pC">—</span></p>
     </div>
 
-    <div class="p-4 rounded-xl mb-6" style="background:color-mix(in srgb,var(--ac) 5%,transparent);border:1px solid var(--bd)">
-      <div class="flex justify-between items-center">
-        <span class="text-xs" style="color:var(--mu)">Montant à payer</span>
-        <span class="text-2xl font-bold" id="pA" style="color:var(--ac)">—</span>
+    <div class="summary-box">
+      <div class="summary-row">
+        <span class="lbl-s">Montant de l'abonnement</span>
+        <span class="val-s" id="pAmount">—</span>
       </div>
+      <div class="summary-row fees">
+        <span class="lbl-s">Frais de paiement <span id="pFeeRate" style="opacity:.7">(—)</span></span>
+        <span class="val-s" id="pFees">—</span>
+      </div>
+      <div class="summary-row total">
+        <span class="lbl-s">Total à payer</span>
+        <span class="val-s" id="pTotal">—</span>
+      </div>
+      <div class="text-[10px] text-right mt-2" id="pEur" style="color:var(--neutral-500)"></div>
     </div>
 
-    <p class="text-xs font-semibold mb-3">1. Choisissez votre moyen de paiement</p>
+    <p class="text-xs font-bold mb-3" style="color:var(--neutral-900)"><span style="color:var(--brand-blue)">1.</span> Choisissez votre moyen de paiement</p>
 
-    <div class="grid grid-cols-2 gap-3 mb-5">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
       <button class="gt on" data-g="wave" type="button">
         <img class="gw-logo" src="assets/wave.png" alt="Wave" onerror="this.style.display='none'">
         <span class="gw-name" style="color:#1dc3f1">Wave</span>
-        <span class="gw-label">Côte d'Ivoire</span>
+        <span class="gw-label">1 %</span>
       </button>
       <button class="gt" data-g="orange" type="button">
         <img class="gw-logo" src="assets/orange.png" alt="Orange Money" onerror="this.style.display='none'">
-        <span class="gw-name" style="color:#ff6600">Orange Money</span>
-        <span class="gw-label">Côte d'Ivoire</span>
+        <span class="gw-name" style="color:#ff6600">Orange</span>
+        <span class="gw-label">1 %</span>
+      </button>
+      <button class="gt" data-g="djamo" type="button">
+        <img class="gw-logo" src="assets/djamo.png" alt="Djamo" onerror="this.style.display='none'">
+        <span class="gw-name" style="color:#1a1a2e">Djamo</span>
+        <span class="gw-label">3 %</span>
+      </button>
+      <button class="gt" data-g="card" type="button">
+        <img class="gw-logo" src="assets/card.jpg" alt="Carte bancaire" onerror="this.style.display='none'">
+        <span class="gw-name" style="color:#0b5fff">Carte</span>
+        <span class="gw-label">3 %</span>
       </button>
     </div>
 
     <div class="gp on mb-5" data-pn="wave">
-      <div class="p-4 rounded-xl" style="background:var(--bg);border:1px solid var(--bd)">
+      <div class="p-4 rounded-xl" style="background:var(--neutral-100);border:1px solid var(--neutral-200)">
         <div class="flex items-center gap-3 mb-4">
           <img src="assets/wave.png" alt="Wave" class="gp-logo" onerror="this.style.display='none'">
-          <p class="text-xs leading-relaxed" style="color:var(--mu)">Ouvrez l'application Wave et réglez le montant exact. Puis revenez ici avec la référence SMS.</p>
+          <p class="text-xs leading-relaxed" style="color:var(--neutral-500)">Ouvrez l'application Wave et réglez le montant total affiché ci-dessus. Puis revenez ici avec la référence SMS.</p>
         </div>
-        <a href="https://pay.wave.com/m/M_ci_85MvaTHMpTqa/c/ci/" target="_blank" rel="noopener" class="btn bp w-full" id="gwWave"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>Ouvrir Wave</a>
+        <a href="https://pay.wave.com/m/M_ci_85MvaTHMpTqa/c/ci/" target="_blank" rel="noopener" class="btn bp w-full"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>Ouvrir Wave</a>
       </div>
     </div>
 
     <div class="gp mb-5" data-pn="orange">
-      <div class="p-4 rounded-xl" style="background:var(--bg);border:1px solid var(--bd)">
+      <div class="p-4 rounded-xl" style="background:var(--neutral-100);border:1px solid var(--neutral-200)">
         <div class="flex items-center gap-3 mb-4">
           <img src="assets/orange.png" alt="Orange Money" class="gp-logo" onerror="this.style.display='none'">
-          <p class="text-xs leading-relaxed" style="color:var(--mu)">Ouvrez l'application Orange Money et validez le paiement. Puis revenez ici avec la référence SMS.</p>
+          <p class="text-xs leading-relaxed" style="color:var(--neutral-500)">Ouvrez l'application Orange Money et validez le paiement du montant total. Puis revenez ici avec la référence SMS.</p>
         </div>
-        <a href="https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen101-24dad81fb3c94f499f9d996047f137b0&v=1" target="_blank" rel="noopener" class="btn w-full" id="gwOrange" style="background:#ff6600;color:#fff"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>Ouvrir Orange Money</a>
+        <a href="https://multi.app.orange-money.com/app/v1/kapptivate/qrcode/odyssee/?id=codgen101-24dad81fb3c94f499f9d996047f137b0&v=1" target="_blank" rel="noopener" class="btn w-full" style="background:#ff6600;color:#fff"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>Ouvrir Orange Money</a>
       </div>
     </div>
 
-    <div class="pt-5" style="border-top:1px solid var(--bd)">
-      <p class="text-xs font-semibold mb-3">2. Confirmez votre paiement</p>
+    <div class="gp mb-5" data-pn="djamo">
+      <div class="p-4 rounded-xl" style="background:var(--neutral-100);border:1px solid var(--neutral-200)">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="assets/djamo.png" alt="Djamo" class="gp-logo" onerror="this.style.display='none'">
+          <p class="text-xs leading-relaxed" style="color:var(--neutral-500)">Payez avec Djamo (interopérable Wave, Orange, MTN, Moov). Vous serez redirigé vers la page de paiement sécurisée Djamo.</p>
+        </div>
+        <a href="https://pay.djamo.com/yga5x" target="_blank" rel="noopener" class="btn bp w-full"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>Ouvrir Djamo</a>
+      </div>
+    </div>
+
+    <div class="gp mb-5" data-pn="card">
+      <div class="p-4 rounded-xl" style="background:var(--neutral-100);border:1px solid var(--neutral-200)">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="assets/card.jpg" alt="Carte bancaire" class="gp-logo" style="border-radius:.4rem" onerror="this.style.display='none'">
+          <p class="text-xs leading-relaxed" style="color:var(--neutral-500)">Paiement sécurisé par carte prépayée ou de débit. Vous serez redirigé vers la page de paiement Momo Africa.</p>
+        </div>
+        <a href="https://qr.momo.africa:9444/fr/home/LightboxHostedCheckout?MID=10153721413&TID=81740229&isQRUniOrder=True&mtoken=U1BEUin%2F88A4oPgf4G06fhlgXaIA5rqiOD4VF5IkCa6Fj3IMviZY8dLXVc79MoD8IIQjyOVE" target="_blank" rel="noopener" class="btn w-full" style="background:var(--brand-blue);color:#fff"><i class="fa-solid fa-credit-card text-xs"></i>Payer par carte</a>
+      </div>
+    </div>
+
+    <div class="pt-5" style="border-top:1px solid var(--neutral-200)">
+      <p class="text-xs font-bold mb-3" style="color:var(--neutral-900)"><span style="color:var(--brand-blue)">2.</span> Confirmez votre paiement</p>
       <div class="space-y-3">
         <div>
-          <label for="pN" class="text-xs font-semibold block mb-1.5">Nom utilisateur ou entreprise <span style="color:var(--er)">*</span></label>
+          <label for="pN" class="text-xs font-semibold block mb-1.5" style="color:var(--neutral-700)">Nom utilisateur ou entreprise <span style="color:#dc2626">*</span></label>
           <input id="pN" class="input" type="text" placeholder="Ex : Maya Studio SARL" autocomplete="name">
         </div>
         <div>
-          <label for="pR" class="text-xs font-semibold block mb-1.5">Référence SMS <span style="color:var(--er)">*</span></label>
+          <label for="pR" class="text-xs font-semibold block mb-1.5" style="color:var(--neutral-700)">Référence de paiement <span style="color:#dc2626">*</span></label>
           <input id="pR" class="input" type="text" placeholder="Ex : TX-90812903" autocomplete="off">
-          <p class="text-[11px] mt-1" style="color:var(--mu)">Copiez la référence reçue par SMS.</p>
+          <p class="text-[11px] mt-1" style="color:var(--neutral-500)">Copiez la référence reçue par SMS ou sur le reçu Djamo/carte.</p>
         </div>
       </div>
       <div id="pE" class="alert err" style="display:none">
         <i class="fa-solid fa-circle-exclamation"></i>
         <span id="pEm">Veuillez remplir tous les champs.</span>
       </div>
-      <button onclick="Pay.submit()" class="btn bp w-full mt-5" id="pB"><i class="fa-solid fa-check text-xs"></i>Valider mon paiement</button>
-      <p class="text-[11px] text-center mt-3" style="color:var(--mu)"><i class="fa-solid fa-lock mr-1"></i>Validation en 2h à 24h.</p>
+      <button onclick="Pay.submit()" class="btn bp w-full mt-5" id="pB" style="padding:.95rem 1rem;font-weight:700">
+        <i class="fa-solid fa-check text-xs"></i>Valider mon paiement
+      </button>
+      <p class="text-[11px] text-center mt-3" style="color:var(--neutral-500)"><i class="fa-solid fa-lock mr-1"></i>Paiement chiffré · Validation sous 2h à 24h</p>
     </div>
   </div>
 </div>
@@ -156,24 +1269,45 @@ details.card-static[open] summary::after{content:'−'}
 
 <!-- ═══ MODAL ATTENTE ═══ -->
 <div id="wait" class="mb">
-<div class="mbox" style="max-width:460px">
-  <div class="p-8 text-center">
-    <div class="w-16 h-16 rounded-2xl grid place-items-center mx-auto mb-5" style="background:color-mix(in srgb,var(--ok) 12%,transparent);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent)"><i class="fa-solid fa-circle-check text-2xl" style="color:var(--ok)"></i></div>
-    <h2 class="text-xl font-bold mb-2">Paiement soumis</h2>
-    <p class="text-sm mb-6 leading-relaxed" style="color:var(--mu)">Votre paiement est enregistré. Validation sous 2h à 24h.</p>
-    <div class="p-4 rounded-xl mb-6 text-left text-xs space-y-2" style="background:color-mix(in srgb,var(--ac) 5%,transparent);border:1px solid var(--bd)">
-      <div class="flex justify-between gap-3"><span style="color:var(--mu)">Formule</span><span class="font-semibold text-right" id="wP">—</span></div>
-      <div class="flex justify-between gap-3"><span style="color:var(--mu)">Montant</span><span class="font-semibold text-right" id="wA">—</span></div>
-      <div class="flex justify-between gap-3"><span style="color:var(--mu)">Passerelle</span><span class="text-right" id="wG">—</span></div>
-      <div class="flex justify-between gap-3"><span style="color:var(--mu)">Référence</span><span class="font-mono text-right" id="wR">—</span></div>
-      <div class="flex justify-between gap-3"><span style="color:var(--mu)">Statut</span><span class="font-semibold" style="color:var(--gd)"><i class="fa-solid fa-clock mr-1"></i>En attente</span></div>
+<div class="mbox" style="max-width:520px">
+  <div class="p-7 sm:p-8">
+    <div class="text-center mb-6">
+      <div class="wait-icon">
+        <i class="fa-solid fa-circle-check text-3xl" style="color:var(--brand-emerald)"></i>
+      </div>
+      <h2 class="text-xl font-bold mb-2" style="color:var(--neutral-900)">Paiement enregistré</h2>
+      <p class="text-sm leading-relaxed max-w-sm mx-auto" style="color:var(--neutral-500)">Pour activer votre compte plus vite, envoyez la preuve de paiement au support via WhatsApp.</p>
     </div>
-    <p class="text-xs mb-4" style="color:var(--mu)">Accélérez la validation via WhatsApp :</p>
-    <div class="grid grid-cols-2 gap-3 mb-5">
-      <a href="https://wa.me/2250150070083" target="_blank" rel="noopener" class="btn w-full" style="background:#25d366;color:#fff"><i class="fa-brands fa-whatsapp"></i>Support 1</a>
-      <a href="https://wa.me/2250574724233" target="_blank" rel="noopener" class="btn w-full" style="background:#25d366;color:#fff"><i class="fa-brands fa-whatsapp"></i>Support 2</a>
+
+    <div class="p-4 rounded-xl mb-5 text-left text-xs space-y-2" style="background:color-mix(in srgb,var(--brand-blue) 5%,transparent);border:1px solid var(--neutral-200)">
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Formule</span><span class="font-semibold text-right" style="color:var(--neutral-900)" id="wP">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Montant</span><span class="font-semibold text-right" style="color:var(--neutral-900)" id="wA">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Frais</span><span class="font-semibold text-right" style="color:var(--brand-gold)" id="wF">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Total payé</span><span class="font-bold text-right" style="color:var(--brand-blue);font-size:.95rem" id="wT">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Passerelle</span><span class="text-right" id="wG">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Référence</span><span class="font-mono text-right" style="color:var(--neutral-900)" id="wR">—</span></div>
+      <div class="flex justify-between gap-3"><span style="color:var(--neutral-500)">Statut</span><span class="font-semibold" style="color:var(--brand-gold)"><i class="fa-solid fa-clock mr-1"></i>En attente</span></div>
     </div>
-    <button onclick="Pay.closeWait()" class="btn bo w-full">Fermer</button>
+
+    <div class="p-3 rounded-lg mb-4 text-left text-[11px] leading-relaxed" style="background:color-mix(in srgb,var(--brand-gold) 6%,transparent);border:1px solid color-mix(in srgb,var(--brand-gold) 20%,transparent);color:var(--neutral-500)">
+      <i class="fa-solid fa-circle-info mr-1" style="color:var(--brand-gold)"></i>
+      <strong style="color:var(--neutral-900)">Important :</strong> Le bouton WhatsApp ouvre une conversation pré-remplie. Ajoutez la <strong>capture d'écran</strong> ou la <strong>photo du reçu</strong> avant d'envoyer.
+    </div>
+
+    <a id="wWhatsApp" href="#" target="_blank" rel="noopener" class="wa-btn w-full mb-3">
+      <i class="fa-brands fa-whatsapp text-lg"></i>Envoyer la preuve sur WhatsApp
+    </a>
+
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <a href="https://wa.me/2250150070083" target="_blank" rel="noopener" class="btn bo text-xs" style="padding:.6rem .5rem">
+        <i class="fa-brands fa-whatsapp" style="color:#25d366"></i>Support 1
+      </a>
+      <a href="https://wa.me/2250574724233" target="_blank" rel="noopener" class="btn bo text-xs" style="padding:.6rem .5rem">
+        <i class="fa-brands fa-whatsapp" style="color:#25d366"></i>Support 2
+      </a>
+    </div>
+
+    <button onclick="Pay.closeWait()" class="btn bo w-full text-xs">Fermer</button>
   </div>
 </div>
 </div>
@@ -188,55 +1322,74 @@ const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
 let cycle='m',sel=null,PLANS=[];
 const $=id=>document.getElementById(id);
 
+const FEES={wave:0.01,orange:0.01,djamo:0.03,card:0.03};
+const GATEWAY_LABELS={wave:'Wave CI',orange:'Orange Money CI',djamo:'Djamo',card:'Carte bancaire'};
+const GATEWAY_COLORS={wave:'#1dc3f1',orange:'#ff6600',djamo:'#1a1a2e',card:'#0b5fff'};
+const SUPPORT_WHATSAPP='2250150070083';
+
+function planIcon(slug){
+  if(/vip|enterprise|premium/i.test(slug))return 'fa-crown';
+  if(/pro|business|entreprise/i.test(slug))return 'fa-briefcase';
+  if(/starter|free|jeune|basic/i.test(slug))return 'fa-rocket';
+  return 'fa-star';
+}
+
 $('tg').addEventListener('click',e=>{
   const b=e.target.closest('button[data-c]');if(!b)return;
   cycle=b.dataset.c;
   $('tg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   renderPlans();
+  renderComparison();
 });
 
+/* ═══ RENDU DES CARTES ═══ */
 function renderPlans(){
   const grid = $('plansGrid');
   if(!PLANS.length){
-    grid.innerHTML=`<div class="text-center py-12 col-span-full text-sm" style="color:var(--mu)">Aucune formule disponible pour le moment.</div>`;
+    grid.innerHTML=`<div class="text-center py-12 col-span-full text-sm" style="color:var(--neutral-500)">Aucune formule disponible pour le moment.</div>`;
     return;
   }
 
   grid.innerHTML = PLANS.map(p=>{
     const price = cycle === 'm' ? p.monthly : p.yearly;
     const isReco = p.recommended;
-    const ctaClass = isReco ? 'btn bp' : 'btn bo';
-    const ctaLabel = isReco ? 'Souscrire' : 'Choisir';
+    const ctaClass = isReco ? 'plan-cta primary' : 'plan-cta secondary';
+    const ctaLabel = isReco ? 'Souscrire maintenant' : 'Choisir cette formule';
+    const cardClass = isReco ? 'plan-card popular' : 'plan-card';
     const badge = isReco
-      ? `<span class="absolute top-4 right-4 sv" style="z-index:1"><i class="fa-solid fa-star"></i>Recommandé</span>`
+      ? `<div class="popular-badge"><i class="fa-solid fa-star text-[9px]"></i>Recommandé</div>`
       : '';
-    const borderClass = isReco ? 'card-static feat p-6 flex flex-col' : 'card-static p-6 flex flex-col';
-    const relClass = isReco ? 'relative' : '';
 
     const billing = cycle === 'm'
       ? `Facturé ${fmt(p.monthly)} FCFA chaque mois`
-      : `Soit ${fmt(Math.round(p.yearly / 12))} FCFA par mois (10 % économisés)`;
+      : `Soit ${fmt(Math.round(p.yearly / 12))} FCFA/mois · 10 % économisés`;
 
-    const altPrice = (typeof Currency !== 'undefined')
-      ? Currency.format(price, 'XOF', 'EUR')
-      : '';
+    const altPrice = (typeof Currency !== 'undefined') ? Currency.format(price, 'XOF', 'EUR') : '';
 
-    return `<article class="${borderClass}" data-slug="${p.slug}">
+    return `<article class="${cardClass}" data-slug="${p.slug}">
       ${badge}
-      <h3 class="font-bold text-lg mb-1 ${relClass}" style="color:var(--ink)">${p.name}</h3>
-      <p class="text-xs mb-5 ${relClass}" style="color:var(--mu)">${p.description||''}</p>
-      <div class="mb-6 ${relClass}">
-        <div class="flex items-end gap-2">
-          <span class="text-4xl font-bold" style="color:var(--ink)">${fmt(price)}</span>
-          <span class="text-sm mb-1" style="color:var(--mu)">FCFA <span>${cycle==='m'?'/ mois':'/ an'}</span></span>
+      <div class="plan-icon"><i class="fa-solid ${planIcon(p.slug)}"></i></div>
+      <h3 class="plan-name">${p.name}</h3>
+      <p class="plan-desc">${p.description||''}</p>
+
+      <div class="plan-price-wrap">
+        <div class="plan-price">
+          <span class="amount">${fmt(price)}</span>
+          <span class="currency">FCFA</span>
+          <span class="period">${cycle==='m'?'/mois':'/an'}</span>
         </div>
-        ${altPrice ? `<p class="text-xs mt-1 font-semibold" style="color:var(--ac)">${altPrice}</p>` : ''}
-        <p class="text-xs mt-2" style="color:var(--mu)">${billing}</p>
+        ${altPrice ? `<div class="plan-eur">${altPrice}</div>` : ''}
+        <div class="plan-billing">${billing}</div>
       </div>
-      <ul class="space-y-3 text-sm mb-8 flex-1 ${relClass}" style="list-style:none;padding:0;margin:0">
-        ${(p.features||[]).map(f=>`<li class="flex gap-2.5"><i class="fa-solid fa-circle-check mt-1 text-xs" style="color:var(--ok)"></i>${f}</li>`).join('')}
+
+      <ul class="plan-features">
+        ${(p.features||[]).map(f=>`<li><i class="fa-solid fa-circle-check"></i><span>${f}</span></li>`).join('')}
       </ul>
-      <button class="${ctaClass} w-full ${relClass}" data-slug="${p.slug}">${ctaLabel}</button>
+
+      <button class="${ctaClass}" data-slug="${p.slug}">
+        <span>${ctaLabel}</span>
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+      </button>
     </article>`;
   }).join('');
 
@@ -247,14 +1400,159 @@ function renderPlans(){
   });
 }
 
+/* ═══ TABLEAU COMPARATIF ═══ */
+function renderComparison(){
+  const thead = $('comparisonTable').querySelector('thead tr');
+  const tbody = $('comparisonBody');
+
+  if(!PLANS.length){
+    thead.innerHTML='<th>Fonctionnalités</th>';
+    tbody.innerHTML='<tr><td style="text-align:center;padding:3rem;color:var(--neutral-500)">Aucune formule disponible</td></tr>';
+    return;
+  }
+
+  // Header dynamique
+  thead.innerHTML = '<th>Fonctionnalités</th>' + PLANS.map(p=>{
+    const price = cycle === 'm' ? p.monthly : p.yearly;
+    return `<th class="${p.recommended?'col-popular':''}">
+      <span class="col-name">${p.name}</span>
+      <span class="col-price">${fmt(price)} FCFA${cycle==='m'?'/mois':'/an'}</span>
+      ${p.recommended?'<span class="col-popular-badge">Populaire</span>':''}
+    </th>`;
+  }).join('');
+
+  // ═══ Lignes statiques du comparatif ═══
+  // Pour chaque ligne : [icône, label, valeursParSlug (object), type]
+
+  const features = buildComparisonRows();
+
+  tbody.innerHTML = features.map(row=>{
+    if(row.type === 'divider'){
+      return `<tr class="section-divider"><td colspan="${PLANS.length+1}">${row.label}</td></tr>`;
+    }
+    return `<tr>
+      <td><i class="fa-solid ${row.icon||'fa-circle'}"></i>${row.label}</td>
+      ${PLANS.map(p=>{
+        const v = row.values[p.slug];
+        return `<td class="${p.recommended?'col-popular':''}">${renderCell(v)}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+}
+
+/* Helper : construit les lignes du comparatif selon les formules présentes */
+function buildComparisonRows(){
+  // Détecte les slugs présents
+  const slugs = PLANS.map(p=>p.slug);
+  const hasStarter = slugs.some(s=>/starter|free|jeune|basic/i.test(s));
+  const hasPro = slugs.some(s=>/pro|business|entreprise/i.test(s) && !/vip|enterprise|premium/i.test(s));
+  const hasVip = slugs.some(s=>/vip|enterprise|premium/i.test(s));
+
+  // Récupère les vrais slugs
+  const slugStarter = slugs.find(s=>/starter|free|jeune|basic/i.test(s)) || slugs[0];
+  const slugPro = slugs.find(s=>/pro|business|entreprise/i.test(s) && !/vip|enterprise|premium/i.test(s)) || slugs[1] || slugs[0];
+  const slugVip = slugs.find(s=>/vip|enterprise|premium/i.test(s)) || slugs[slugs.length-1];
+
+  return [
+    { type:'divider', label:'Profil & Visibilité' },
+    { icon:'fa-user', label:'Profil complet', values:{
+      [slugStarter]:{v:true},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+    { icon:'fa-magnifying-glass', label:'Apparaître dans les recherches', values:{
+      [slugStarter]:{v:true},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+    { icon:'fa-chart-line', label:'Statistiques de profil', values:{
+      [slugStarter]:{v:false},[slugPro]:{t:'Basiques', c:'blue'},[slugVip]:{t:'Avancées', c:'gold'}
+    }},
+    { icon:'fa-star', label:'Mise en avant', values:{
+      [slugStarter]:{v:false},[slugPro]:{t:'Mensuelle', c:'blue'},[slugVip]:{t:'Prioritaire', c:'gold'}
+    }},
+
+    { type:'divider', label:'Réseau & Échanges' },
+    { icon:'fa-arrows-rotate', label:'Troc de compétences', values:{
+      [slugStarter]:{t:'3 en cours', c:'positive'},[slugPro]:{t:'Illimité', c:'positive'},[slugVip]:{t:'Illimité', c:'positive'}
+    }},
+    { icon:'fa-comments', label:'Messagerie', values:{
+      [slugStarter]:{v:true},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+    { icon:'fa-globe', label:'Contact mentor diaspora', values:{
+      [slugStarter]:{t:'1 / mois', c:'positive'},[slugPro]:{t:'5 / mois', c:'positive'},[slugVip]:{t:'Illimité', c:'gold'}
+    }},
+    { icon:'fa-heart', label:'Favoris', values:{
+      [slugStarter]:{v:true},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+
+    { type:'divider', label:'Missions & Recrutement' },
+    { icon:'fa-briefcase', label:'Publier des missions', values:{
+      [slugStarter]:{t:'2 / mois', c:'positive'},[slugPro]:{t:'15 / mois', c:'positive'},[slugVip]:{t:'Illimité', c:'gold'}
+    }},
+    { icon:'fa-inbox', label:'Candidatures reçues', values:{
+      [slugStarter]:{v:true},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+    { icon:'fa-file-signature', label:'Accès aux CV complets', values:{
+      [slugStarter]:{v:false},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+    { icon:'fa-user-plus', label:'Recherche avancée de talents', values:{
+      [slugStarter]:{v:false},[slugPro]:{v:true},[slugVip]:{v:true}
+    }},
+
+    { type:'divider', label:'Confiance & Support' },
+    { icon:'fa-shield-halved', label:'Badge RCCM vérifié', values:{
+      [slugStarter]:{t:'Après abo.', c:'blue'},[slugPro]:{t:'Après abo.', c:'blue'},[slugVip]:{t:'Prioritaire', c:'gold'}
+    }},
+    { icon:'fa-headset', label:'Support', values:{
+      [slugStarter]:{t:'Email', c:'blue'},[slugPro]:{t:'Email + WhatsApp', c:'blue'},[slugVip]:{t:'Dédié 24/7', c:'gold'}
+    }},
+    { icon:'fa-clock', label:'Délai d\'activation', values:{
+      [slugStarter]:{t:'24-48h', c:'blue'},[slugPro]:{t:'< 24h', c:'positive'},[slugVip]:{t:'< 2h', c:'gold'}
+    }},
+    { icon:'fa-chart-pie', label:'Analytics', values:{
+      [slugStarter]:{v:false},[slugPro]:{t:'Basiques', c:'blue'},[slugVip]:{t:'Complets', c:'gold'}
+    }}
+  ];
+}
+
+/* Helper : rend une cellule */
+function renderCell(v){
+  if(!v) return '<span class="mark-no"><i class="fa-solid fa-minus"></i></span>';
+  if(v.v === true) return '<span class="mark-yes"><i class="fa-solid fa-check"></i></span>';
+  if(v.v === false) return '<span class="mark-no"><i class="fa-solid fa-xmark"></i></span>';
+  if(v.t) return `<span class="mark-value ${v.c||''}">${v.t}</span>`;
+  return '—';
+}
+
+/* ═══ SÉLECTION PASSERELLE ═══ */
 document.querySelectorAll('.gt').forEach(t=>{
   t.addEventListener('click',()=>{
     if(sel)sel.g=t.dataset.g;
     document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x===t));
     document.querySelectorAll('.gp').forEach(p=>p.classList.toggle('on',p.dataset.pn===t.dataset.g));
+    updatePaymentSummary();
   });
 });
 
+function updatePaymentSummary(){
+  if(!sel)return;
+  const base = sel.price;
+  const feeRate = FEES[sel.g] || 0.01;
+  const fees = Math.round(base * feeRate);
+  const total = base + fees;
+  sel.feeRate = feeRate;
+  sel.fees = fees;
+  sel.totalAmount = total;
+  $('pAmount').textContent = fmt(base) + ' FCFA';
+  $('pFees').textContent = '+' + fmt(fees) + ' FCFA';
+  $('pFeeRate').textContent = '(' + Math.round(feeRate*100) + ' %)';
+  $('pTotal').textContent = fmt(total) + ' FCFA';
+  if(typeof Currency !== 'undefined'){
+    const eur = Currency.format(total, 'XOF', 'EUR');
+    $('pEur').textContent = eur ? '≈ ' + eur : '';
+  } else {
+    $('pEur').textContent = '';
+  }
+}
+
+/* ═══ VALIDATION ═══ */
 function showError(msg){
   const box=$('pE'),em=$('pEm');
   if(!box||!em)return;
@@ -272,9 +1570,9 @@ function validate(name,ref){
   const n=(name||'').trim(),r=(ref||'').trim();
   if(n.length<2)return "Le nom doit contenir au moins 2 caractères.";
   if(n.length>80)return "Le nom est trop long (80 caractères maximum).";
-  if(r.length<4)return "La référence SMS doit contenir au moins 4 caractères.";
-  if(r.length>40)return "La référence SMS est trop longue (40 caractères maximum).";
-  if(!/^[A-Za-z0-9\-_]+$/.test(r))return "La référence SMS ne doit contenir que des lettres, chiffres, tirets ou underscores.";
+  if(r.length<4)return "La référence de paiement doit contenir au moins 4 caractères.";
+  if(r.length>40)return "La référence est trop longue (40 caractères maximum).";
+  if(!/^[A-Za-z0-9\-_]+$/.test(r))return "La référence ne doit contenir que des lettres, chiffres, tirets ou underscores.";
   return null;
 }
 
@@ -283,18 +1581,20 @@ const Pay={
     const p = PLANS.find(x => x.slug === slug);
     if(!p) return;
     const price = cycle === 'm' ? p.monthly : p.yearly;
-    sel = { slug, label: p.name, cycle, price, g: 'wave' };
+    sel = { slug, label: p.name, cycle, price, g: 'wave', feeRate: FEES.wave, fees: 0, totalAmount: price };
+
     $('pP').textContent = p.name;
-    $('pC').textContent = cycle === 'm' ? 'mensuel' : 'annuel';
-    const altPrice = (typeof Currency !== 'undefined') ? Currency.format(price, 'XOF', 'EUR') : '';
-    $('pA').innerHTML = fmt(price) + ' FCFA' + (altPrice ? `<div class="text-xs mt-1" style="color:var(--mu)">${altPrice}</div>` : '');
+    $('pC').textContent = cycle === 'm' ? 'Mensuel' : 'Annuel';
     $('pN').value='';
     $('pR').value='';
     hideError();
     $('pB').disabled=false;
     $('pB').innerHTML='<i class="fa-solid fa-check text-xs"></i>Valider mon paiement';
+
     document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x.dataset.g==='wave'));
     document.querySelectorAll('.gp').forEach(x=>x.classList.toggle('on',x.dataset.pn==='wave'));
+    updatePaymentSummary();
+
     $('pay').classList.add('on');
     document.body.style.overflow='hidden';
     setTimeout(()=>$('pN').focus(),200);
@@ -324,8 +1624,11 @@ const Pay={
       ref,
       plan: sel.label,
       cycle: sel.cycle === 'm' ? 'monthly' : 'yearly',
-      amount: sel.price,
-      gateway: sel.g === 'wave' ? 'WAVE' : 'ORANGE',
+      amount: sel.totalAmount,
+      baseAmount: sel.price,
+      fees: sel.fees,
+      feeRate: sel.feeRate,
+      gateway: sel.g.toUpperCase(),
       name,
       status: 'en_attente',
       createdAt: new Date().toISOString()
@@ -335,22 +1638,46 @@ const Pay={
       if(typeof DB === 'undefined' || typeof DB.saveSubscription !== 'function'){
         throw new Error("Service indisponible. Rechargez la page.");
       }
+      let userEmail='';
+      try{
+        const u=(typeof Auth!=='undefined' && Auth.getUser) ? Auth.getUser() : null;
+        userEmail=u?.email||'';
+      }catch(e){}
+
       await DB.saveSubscription(payload);
 
       $('wP').textContent = sel.label + ' — ' + (sel.cycle === 'm' ? 'Mensuel' : 'Annuel');
       $('wA').textContent = fmt(sel.price) + ' FCFA';
-      $('wG').innerHTML = sel.g === 'wave'
-        ? '<span style="color:#1dc3f1;font-weight:700">Wave CI</span>'
-        : '<span style="color:#ff6600;font-weight:700">Orange Money CI</span>';
+      $('wF').textContent = '+' + fmt(sel.fees) + ' FCFA (' + Math.round(sel.feeRate*100) + ' %)';
+      $('wT').textContent = fmt(sel.totalAmount) + ' FCFA';
+      $('wG').innerHTML = `<span style="color:${GATEWAY_COLORS[sel.g]};font-weight:700">${GATEWAY_LABELS[sel.g]}</span>`;
       $('wR').textContent = ref;
+
+      const lines=[
+        'Bonjour AfroPulse,','',
+        'Je viens de payer mon abonnement. Voici les détails :','',
+        `• Formule : ${sel.label} (${sel.cycle === 'm' ? 'Mensuel' : 'Annuel'})`,
+        `• Montant : ${fmt(sel.price)} FCFA`,
+        `• Frais : +${fmt(sel.fees)} FCFA (${Math.round(sel.feeRate*100)} %)`,
+        `• Total payé : ${fmt(sel.totalAmount)} FCFA`,
+        `• Passerelle : ${GATEWAY_LABELS[sel.g]}`,
+        `• Référence : ${ref}`,
+        `• Nom : ${name}`
+      ];
+      if(userEmail)lines.push(`• Email : ${userEmail}`);
+      lines.push('','Je joins la preuve de paiement en pièce jointe.','Merci de valider mon abonnement.');
+
+      const msg=encodeURIComponent(lines.join('\n'));
+      $('wWhatsApp').href=`https://wa.me/${SUPPORT_WHATSAPP}?text=${msg}`;
 
       Pay.close();
       $('wait').classList.add('on');
     }catch(e){
       let userMsg = "Impossible d'enregistrer votre paiement.";
       if(!navigator.onLine) userMsg = "Vous êtes hors ligne. Vérifiez votre connexion.";
-      else if(/duplicate|unique/i.test(e.message||'')) userMsg = "Cette référence SMS a déjà été utilisée.";
+      else if(/duplicate|unique/i.test(e.message||'')) userMsg = "Cette référence a déjà été utilisée.";
       else if(/network|fetch|timeout/i.test(e.message||'')) userMsg = "Problème réseau. Réessayez.";
+      else if(/column|does not exist|schema/i.test(e.message||'')) userMsg = "Erreur de configuration. Contactez le support.";
       const box=$('pE');
       box.style.display='flex';
       box.className='alert err';
@@ -362,18 +1689,23 @@ const Pay={
   }
 };
 
+/* ═══ FAQ ═══ */
 async function renderFaqs(){
   const list = $('faqList');
   try{
     const faqs = await DB.getFaqs();
     if(!faqs.length){
-      list.innerHTML='';
+      list.innerHTML=`
+        <details class="faq-item">
+          <summary>Comment résilier mon abonnement ?</summary>
+          <p class="faq-answer">Contactez le support via WhatsApp, la résiliation est immédiate.</p>
+        </details>`;
       return;
     }
     list.innerHTML = faqs.map(f=>`
-      <details class="card-static p-5">
-        <summary class="font-semibold text-sm">${f.question}</summary>
-        <p class="text-sm mt-3 leading-relaxed" style="color:var(--mu)">${f.answer}</p>
+      <details class="faq-item">
+        <summary>${f.question}</summary>
+        <p class="faq-answer">${f.answer}</p>
       </details>
     `).join('');
   }catch(e){
@@ -381,12 +1713,14 @@ async function renderFaqs(){
   }
 }
 
+/* ═══ INIT ═══ */
 addEventListener('DOMContentLoaded',async()=>{
   try{
     PLANS = await DB.getPlans();
     renderPlans();
+    renderComparison();
   }catch(e){
-    $('plansGrid').innerHTML='<div class="text-center py-12 col-span-full text-sm" style="color:var(--mu)">Chargement indisponible</div>';
+    $('plansGrid').innerHTML='<div class="text-center py-12 col-span-full text-sm" style="color:var(--neutral-500)">Chargement indisponible</div>';
   }
   renderFaqs();
 
@@ -395,11 +1729,10 @@ addEventListener('DOMContentLoaded',async()=>{
       try{
         PLANS = await DB.getPlans();
         renderPlans();
+        renderComparison();
       }catch(e){}
     });
-    Realtime.on('content:faqs', () => {
-      renderFaqs();
-    });
+    Realtime.on('content:faqs', () => { renderFaqs(); });
   }
 });
 

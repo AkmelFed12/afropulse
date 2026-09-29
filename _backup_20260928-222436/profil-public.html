@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil — AfroPulse</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  :root{--bg:#0b0f14;--card:#111823;--border:#1e2a3a;--text:#e6edf3;--muted:#8b98a9;--accent:#f5b400;--green:#00c896}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+  .head{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;background:#1e2a3a;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:#8b98a9}
+  .info h1{margin:0 0 6px;font-size:1.5rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:rgba(0,200,150,.15);color:var(--green);font-size:.75rem;font-weight:600}
+  .info p{margin:2px 0;color:var(--muted);font-size:.9rem}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-weight:600;font-size:.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+  .btn:hover{opacity:.9}
+  h2{font-size:1.1rem;margin:0 0 12px}
+  .skills{display:flex;flex-wrap:wrap;gap:6px}
+  .skill{padding:5px 10px;border-radius:999px;background:rgba(245,180,0,.12);color:var(--accent);font-size:.8rem;font-weight:600}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:12px}
+  .stat{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+  .stat .v{font-size:1.4rem;font-weight:700;color:var(--accent)}
+  .stat .l{font-size:.75rem;color:var(--muted);margin-top:2px}
+  .notfound{text-align:center;padding:60px 20px}
+  .notfound h2{font-size:1.5rem;color:var(--text)}
+  .notfound p{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="card"><p style="color:var(--muted)">Chargement…</p></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/i18n.js"></script>
+
+<script>
+const sb = window.sb;
+const $  = s => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+const profileId = params.get('id');
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function tr(k, fb){ return (window.I18n && I18n.t(k)) || fb; }
+
+async function loadProfile(){
+  if(!profileId){ notFound(); return; }
+  const { data, error } = await sb.from('profiles').select('*').eq('id', profileId).single();
+  if(error || !data){ console.error(error); notFound(); return; }
+  render(data);
+}
+
+function notFound(){
+  $('#app').innerHTML =
+    '<div class="card notfound">' +
+      '<h2>' + esc(tr('pub.notFound.title', 'Profil introuvable')) + '</h2>' +
+      '<p>' + esc(tr('pub.notFound.sub', "Ce membre n'existe pas ou son profil est privé.")) + '</p>' +
+      '<a class="btn primary" style="margin-top:16px" href="talents.html">' + esc(tr('pub.notFound.btn', 'Voir tous les talents')) + '</a>' +
+    '</div>';
+}
+
+function render(p){
+  const name = p.full_name || p.company_name || 'Membre';
+  const initial = name[0].toUpperCase();
+  const avatar = p.avatar_url
+    ? '<img class="avatar" src="' + esc(p.avatar_url) + '" alt="">'
+    : '<div class="avatar">' + esc(initial) + '</div>';
+
+  const skills = Array.isArray(p.skills) ? p.skills : (typeof p.skills === 'string' ? p.skills.split(',').map(s=>s.trim()).filter(Boolean) : []);
+  const memberSince = p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR', { year:'numeric', month:'long' }) : '—';
+  const reliability = p.reliability_score != null ? Math.round(p.reliability_score) + '%' : '—';
+
+  let html =
+    '<div class="card">' +
+      '<div class="head">' +
+        avatar +
+        '<div class="info" style="flex:1;min-width:200px">' +
+          '<h1>' + esc(name) +
+            (p.is_verified ? ' <span class="badge">✓ ' + esc(tr('pub.verified', 'Vérifié')) + '</span>' : '') +
+          '</h1>' +
+          (p.job_title ? '<p>' + esc(p.job_title) + '</p>' : '') +
+          '<p>📍 ' + esc(p.city || '') + (p.country ? ', ' + esc(p.country) : '') + '</p>' +
+          '<p>' + esc(tr('pub.memberSince', 'Membre depuis')) + ' ' + esc(memberSince) + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="actions">' +
+        '<a class="btn primary" href="messages.html?to=' + encodeURIComponent(p.id) + '">💬 ' + esc(tr('pub.contact', 'Contacter')) + '</a>' +
+        '<button class="btn" id="btn-share">🔗 ' + esc(tr('pub.share', 'Partager')) + '</button>' +
+        '<button class="btn" id="btn-report">⚠️ ' + esc(tr('pub.report', 'Signaler')) + '</button>' +
+      '</div>' +
+    '</div>';
+
+  if(p.bio){
+    html += '<div class="card"><h2>' + esc(tr('pub.about', 'À propos')) + '</h2><p style="line-height:1.6;white-space:pre-wrap">' + esc(p.bio) + '</p></div>';
+  }
+
+  if(skills.length){
+    html += '<div class="card"><h2>' + esc(tr('pub.skills', 'Compétences')) + '</h2><div class="skills">' +
+      skills.map(s => '<span class="skill">' + esc(s) + '</span>').join('') +
+      '</div></div>';
+  }
+
+  html += '<div class="card"><h2>' + esc(tr('pub.reliability', 'Fiabilité')) + '</h2>' +
+    '<div class="stat-row">' +
+      '<div class="stat"><div class="v">' + esc(reliability) + '</div><div class="l">Score</div></div>' +
+      '<div class="stat"><div class="v">' + (p.contracts_count || 0) + '</div><div class="l">Contrats</div></div>' +
+      '<div class="stat"><div class="v">' + (p.reviews_count || 0) + '</div><div class="l">Avis</div></div>' +
+    '</div></div>';
+
+  $('#app').innerHTML = html;
+
+  // Actions
+  $('#btn-share').addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(location.href);
+      alert(tr('pub.linkCopied', 'Lien copié !'));
+    }catch{ prompt('Copie ce lien :', location.href); }
+  });
+  $('#btn-report').addEventListener('click', async () => {
+    const reason = prompt(tr('pub.report.prompt', 'Motif du signalement :'));
+    if(!reason) return;
+    try{
+      await sb.from('reports').insert({ reported_id: p.id, reason });
+      alert(tr('pub.report.sent', 'Signalement envoyé. Merci.'));
+    }catch(e){ console.error(e); alert('Erreur'); }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+</body>
+</html>

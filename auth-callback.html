@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmation — AfroPulse</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0b5fff">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    body {
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: var(--bg);
+    }
+
+    .callback-card {
+      background: var(--surface);
+      border: 1px solid var(--bd);
+      border-radius: 1.25rem;
+      padding: 2.25rem 1.75rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 60px -20px rgba(15,23,42,.18);
+      animation: slideUp .5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .callback-icon {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      margin: 0 auto 1.25rem;
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      transition: .3s;
+    }
+
+    .callback-icon.loading {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
+    }
+    .callback-icon.success {
+      background: color-mix(in srgb, var(--ok) 12%, transparent);
+      color: var(--ok);
+      animation: pop .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    .callback-icon.error {
+      background: color-mix(in srgb, var(--er) 12%, transparent);
+      color: var(--er);
+    }
+    .callback-icon.info {
+      background: color-mix(in srgb, var(--gold) 12%, transparent);
+      color: var(--gold);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .callback-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0 0 .5rem;
+      letter-spacing: -.02em;
+    }
+
+    .callback-sub {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 1.5rem;
+    }
+
+    .callback-user {
+      display: none;
+      align-items: center;
+      gap: .85rem;
+      padding: .85rem 1rem;
+      margin: 0 0 1.25rem;
+      background: var(--bg);
+      border-radius: .75rem;
+      border: 1px solid var(--bd);
+      text-align: left;
+    }
+
+    .callback-user.on { display: flex; }
+
+    .callback-user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: .85rem;
+    }
+
+    .callback-user-name {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .callback-user-email {
+      font-size: .72rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .callback-actions {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .callback-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .callback-progress {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg);
+      margin-top: 1rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .callback-progress.on { display: block; }
+
+    .callback-progress-bar {
+      height: 100%;
+      background: var(--ok);
+      width: 0%;
+      transition: width 2.4s linear;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <main class="callback-card">
+    <div id="iconWrap" class="callback-icon loading">
+      <i id="icon" class="fa-solid fa-circle-notch fa-spin"></i>
+    </div>
+
+    <h1 id="title" class="callback-title">Vérification en cours…</h1>
+    <p id="subtitle" class="callback-sub">Nous confirmons votre adresse email. Cela prend quelques secondes.</p>
+
+    <div id="userBox" class="callback-user"></div>
+    <div id="actions" class="callback-actions"></div>
+
+    <div id="progress" class="callback-progress">
+      <div id="progressBar" class="callback-progress-bar"></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/env.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/db.js"></script>
+
+  <script>
+    (function () {
+      const $ = id => document.getElementById(id);
+
+      function setState(state, icon, title, subtitle) {
+        $('iconWrap').className = 'callback-icon ' + state;
+        $('icon').className = 'fa-solid ' + icon;
+        $('title').textContent = title;
+        $('subtitle').textContent = subtitle;
+      }
+
+      function showActions(buttons) {
+        $('actions').innerHTML = buttons.map(b =>
+          `<a href="${b.url}" class="btn ${b.primary ? 'btn--primary' : 'btn--ghost'}">
+            ${b.icon ? `<i class="fa-solid ${b.icon}"></i>` : ''}${b.label}
+          </a>`
+        ).join('');
+      }
+
+      function showProgress() {
+        $('progress').classList.add('on');
+        setTimeout(() => { $('progressBar').style.width = '100%'; }, 50);
+      }
+
+      function showUser(user) {
+        const meta = user?.user_metadata || {};
+        const name = meta.full_name || user?.email || 'Utilisateur';
+        const email = user?.email || '';
+        const ini = name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+        const box = $('userBox');
+        box.classList.add('on');
+        box.innerHTML = `
+          <div class="callback-user-avatar">${ini}</div>
+          <div style="flex:1;min-width:0">
+            <div class="callback-user-name">${name}</div>
+            <div class="callback-user-email">${email}</div>
+          </div>`;
+      }
+
+      function cleanUrl() {
+        try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+      }
+
+      // ═══════════════════════════════════════════════════════
+      // STRATÉGIE ROBUSTE
+      // 1. Vérifie error_description dans l'URL (Supabase peut renvoyer une erreur)
+      // 2. Si "already confirmed" → succès
+      // 3. Essaie de récupérer la session (hash, code, getSession avec retry)
+      // 4. Fallback : vérifie si un utilisateur est déjà connecté
+      // 5. Dernier recours : message neutre (PAS d'erreur rouge)
+      // ═══════════════════════════════════════════════════════
+      async function run() {
+        const sb = window.__sb || (window.DB && DB.client);
+
+        if (!sb) {
+          setState('error', 'fa-circle-xmark', 'Service indisponible', 'Impossible de contacter le serveur.');
+          showActions([
+            { url: 'index.html', label: 'Retour à l\'accueil', primary: true, icon: 'fa-house' },
+            { url: 'login.html', label: 'Se connecter', primary: false, icon: 'fa-right-to-bracket' }
+          ]);
+          return;
+        }
+
+        const hash = window.location.hash || '';
+        const search = window.location.search || '';
+        const hashParams = new URLSearchParams(hash.slice(1));
+        const searchParams = new URLSearchParams(search);
+
+        // ═══ A. Vérifier si Supabase a renvoyé une erreur dans l'URL ═══
+        const urlError = hashParams.get('error') || searchParams.get('error');
+        const urlErrorDesc = hashParams.get('error_description') || searchParams.get('error_description');
+
+        if (urlError) {
+          const desc = (urlErrorDesc || '').toLowerCase();
+
+          // ✅ Cas spécial : "already confirmed" = email déjà validé → afficher SUCCÈS
+          if (desc.includes('already confirmed') ||
+              desc.includes('already been confirmed') ||
+              desc.includes('already verified') ||
+              desc.includes('expired')) {
+            // On considère que l'email est OK
+            cleanUrl();
+            setState('success', 'fa-circle-check', 'Email déjà confirmé !', 'Votre compte est actif. Connectez-vous pour continuer.');
+            showActions([
+              { url: 'login.html?confirmed=1', label: 'Se connecter', primary: true, icon: 'fa-right-to-bracket' },
+              { url: 'index.html', label: 'Retour à l\'accueil', primary: false, icon: 'fa-house' }
+            ]);
+            return;
+          }
+
+          // Autre erreur réelle
+          cleanUrl();
+          setState('error', 'fa-circle-xmark', 'Lien invalide ou expiré', urlErrorDesc || 'Ce lien de confirmation n\'est plus valide.');
+          showActions([
+            { url: 'signup.html', label: 'Créer un nouveau compte', primary: true, icon: 'fa-user-plus' },
+            { url: 'contact.html', label: 'Contacter le support', primary: false, icon: 'fa-headset' }
+          ]);
+          return;
+        }
+
+        // ═══ B. Essayer de récupérer la session ═══
+        let session = null;
+        let user = null;
+
+        // B.1 : access_token dans le hash (flow implicite)
+        if (hash.includes('access_token')) {
+          try {
+            const access_token = hashParams.get('access_token');
+            const refresh_token = hashParams.get('refresh_token');
+            if (access_token && refresh_token) {
+              const { data, error } = await sb.auth.setSession({ access_token, refresh_token });
+              if (!error && data?.session) {
+                session = data.session;
+                user = data.session.user;
+                console.log('[AUTH-CB] Session via hash');
+              }
+            }
+          } catch (e) { console.warn('[AUTH-CB] hash error:', e); }
+        }
+
+        // B.2 : code PKCE
+        if (!session && search.includes('code=')) {
+          try {
+            const code = searchParams.get('code');
+            if (code) {
+              const { data, error } = await sb.auth.exchangeCodeForSession(code);
+              if (!error && data?.session) {
+                session = data.session;
+                user = data.session.user;
+                console.log('[AUTH-CB] Session via code PKCE');
+              }
+            }
+          } catch (e) { console.warn('[AUTH-CB] code error:', e); }
+        }
+
+        // B.3 : getSession avec retry (détecté auto par Supabase)
+        if (!session) {
+          for (let i = 0; i < 10; i++) {
+            try {
+              const { data } = await sb.auth.getSession();
+              if (data?.session) {
+                session = data.session;
+                user = data.session.user;
+                console.log('[AUTH-CB] Session via getSession (attempt', i + 1, ')');
+                break;
+              }
+            } catch (e) {}
+            await new Promise(r => setTimeout(r, 300));
+          }
+        }
+
+        // ═══ C. Résultat ═══
+        if (session && user) {
+          // ✅ SUCCÈS : on a une session
+          cleanUrl();
+
+          const firstName = (user.user_metadata?.full_name || '').split(' ')[0];
+          setState(
+            'success',
+            'fa-circle-check',
+            firstName ? `Bienvenue ${firstName} !` : 'Email confirmé !',
+            'Votre compte est activé. Redirection vers votre tableau de bord…'
+          );
+          showUser(user);
+          showProgress();
+
+          showActions([
+            { url: 'dashboard.html', label: 'Aller à mon tableau de bord', primary: true, icon: 'fa-chart-simple' }
+          ]);
+
+          setTimeout(() => { location.href = 'dashboard.html'; }, 2500);
+          return;
+        }
+
+        // ⚠️ Pas de session — vérifie si l'utilisateur est déjà connecté ailleurs
+        try {
+          const { data } = await sb.auth.getSession();
+          if (data?.session) {
+            cleanUrl();
+            setState('success', 'fa-circle-check', 'Vous êtes connecté', 'Votre session est active. Redirection…');
+            setTimeout(() => { location.href = 'dashboard.html'; }, 1500);
+            return;
+          }
+        } catch (e) {}
+
+        // Sinon : message NEUTRE (pas d'erreur rouge)
+        cleanUrl();
+        setState(
+          'info',
+          'fa-circle-info',
+          'Lien déjà validé',
+          'Votre email a probablement déjà été confirmé. Connectez-vous pour vérifier.'
+        );
+        showActions([
+          { url: 'login.html?confirmed=1', label: 'Se connecter', primary: true, icon: 'fa-right-to-bracket' },
+          { url: 'index.html', label: 'Retour à l\'accueil', primary: false, icon: 'fa-house' }
+        ]);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+      } else {
+        run();
+      }
+    })();
+  </script>
+</body>
+</html>

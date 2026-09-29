@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>À propos, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.value-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.75rem;transition:.25s;height:100%;display:flex;flex-direction:column}
+.value-card:hover{border-color:var(--ac);transform:translateY(-4px);box-shadow:0 20px 48px -20px rgba(15,23,42,.15)}
+.value-icon{width:48px;height:48px;border-radius:.85rem;display:grid;place-items:center;font-size:1.15rem;margin-bottom:1.15rem;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.value-card:hover .value-icon{transform:scale(1.1) rotate(-5deg)}
+.stat-block{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.5rem;text-align:center}
+.stat-block-value{font-size:2.25rem;font-weight:800;color:var(--ac);line-height:1;margin-bottom:.5rem;font-variant-numeric:tabular-nums}
+.stat-block-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu)}
+.quote-block{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd);border-radius:1.25rem;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.quote-block::before{content:'"';position:absolute;top:-2rem;left:1rem;font-family:'Instrument Serif',Georgia,serif;font-size:8rem;color:color-mix(in srgb,var(--ac) 15%,transparent);line-height:1;pointer-events:none}
+.quote-text{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:clamp(1.1rem,2.5vw,1.5rem);line-height:1.5;color:var(--ink);max-width:720px;margin:0 auto 1rem;position:relative;z-index:1}
+.contact-card{display:flex;align-items:center;gap:1rem;padding:1.25rem;background:var(--sf);border:1px solid var(--bd);border-radius:1rem;transition:.2s;text-decoration:none;color:inherit}
+.contact-card:hover{border-color:var(--ac);transform:translateY(-2px)}
+.contact-icon{width:44px;height:44px;border-radius:.75rem;display:grid;place-items:center;flex-shrink:0;font-size:1.05rem}
+.story-card{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;padding:2.5rem 2rem;max-width:820px;margin:2rem auto 0;line-height:1.85}
+.story-card p{font-size:.95rem;color:var(--mu);margin:0 0 1.25rem}
+.story-card p:last-child{margin-bottom:0}
+.story-card strong{color:var(--ink);font-weight:700}
+.story-card h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin:1.75rem 0 .85rem;padding-left:.85rem;border-left:3px solid var(--ac)}
+.story-highlight{font-size:1rem !important;color:var(--ink) !important;font-weight:600;padding:1.25rem 1.5rem;background:color-mix(in srgb,var(--ac) 6%,transparent);border-left:3px solid var(--ac);border-radius:.5rem;margin:1.5rem 0 !important;line-height:1.7 !important}
+.story-signature{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:.95rem;color:var(--mu);text-align:right;margin-top:1.5rem !important;padding-top:1rem;border-top:1px solid var(--bd)}
+@media(max-width:640px){
+  .quote-block{padding:1.75rem 1.25rem}
+  .quote-block::before{font-size:5rem;top:-1rem}
+  .stat-block-value{font-size:1.75rem}
+  .value-card{padding:1.25rem}
+  .story-card{padding:1.5rem 1.15rem;border-radius:1rem}
+  .story-card p{font-size:.88rem;line-height:1.75}
+  .story-highlight{font-size:.92rem !important;padding:1rem 1.15rem}
+  .story-card h3{font-size:.95rem}
+}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="AfroPulse connecte les talents africains aux entreprises et opportunités. Découvrez notre mission, notre vision et nos valeurs.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/a-propos.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="À propos d'AfroPulse — Notre mission">
+<meta property="og:description" content="Connecter les talents africains aux opportunités du continent et de la diaspora.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/a-propos.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="À propos d'AfroPulse — Notre mission">
+<meta name="twitter:description" content="Connecter les talents africains aux opportunités du continent et de la diaspora.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+  <section class="text-center mb-16 reveal">
+    <span class="chip mb-4"><i class="fa-solid fa-heart text-[10px]"></i><span data-i18n="about.chip">À propos</span></span>
+    <h1 class="hero-title" style="max-width:900px;margin-left:auto;margin-right:auto">
+      <span data-i18n="about.hero.title.1">Connecter les talents</span><br>
+      <em data-i18n="about.hero.title.2">d'Afrique et du monde.</em>
+    </h1>
+    <p class="hero-sub" style="margin-left:auto;margin-right:auto" data-i18n="about.hero.sub">
+      AfroPulse est né d'un constat simple : l'Afrique regorge de talents,
+      mais les opportunités restent concentrées dans quelques mains.
+      Nous changeons ça.
+    </p>
+  </section>
+
+  <section class="mb-16 reveal">
+    <div class="quote-block">
+      <p class="quote-text" data-i18n="about.mission.text">
+        Donner à chaque talent africain les moyens de vivre de son art, de sa compétence ou de son savoir-faire — où qu'il soit.
+      </p>
+      <p style="font-size:.8rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin:0" data-i18n="about.mission.title">
+        — Notre mission
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-16 reveal">
+    <h2 class="section-title text-center" data-i18n="about.values.title">Nos valeurs</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="about.values.sub">
+      Ce qui guide chacune de nos décisions.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-handshake"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.trust.title">Confiance</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.trust.text">
+          Chaque utilisateur est vérifié. Chaque transaction est traçable.
+        </p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-earth-africa"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.panafrican.title">Panafricanisme</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.panafrican.text">
+          Nous croyons en une Afrique unie. Notre plateforme relie les 54 pays et la diaspora.
+        </p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-scale-balanced"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.equity.title">Équité</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.equity.text">
+          Pas de commission abusive, pas d'intermédiaire inutile.
+        </p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-lightbulb"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.innov.title">Innovation</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.innov.text">
+          Nous construisons avec les outils les plus modernes.
+        </p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-users"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.community.title">Communauté</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.community.text">
+          Plus qu'une plateforme, un écosystème. Mentorat, entraide, partage.
+        </p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 style="font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .5rem" data-i18n="about.values.security.title">Sécurité</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.65;margin:0" data-i18n="about.values.security.text">
+          Vos données sont chiffrées. Vos paiements sont protégés.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-16 reveal">
+    <h2 class="section-title text-center" data-i18n="about.stats.title">AfroPulse en chiffres</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="about.stats.sub">
+      Des chiffres qui grandissent chaque jour grâce à vous.
+    </p>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="stat-block">
+        <div class="stat-block-value" id="statMembers">—</div>
+        <div class="stat-block-label" data-i18n="about.stats.members">Membres inscrits</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-value" id="statCountries">—</div>
+        <div class="stat-block-label" data-i18n="about.stats.countries">Pays représentés</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-value" id="statMissions">—</div>
+        <div class="stat-block-label" data-i18n="about.stats.missions">Missions publiées</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-value" id="statContracts">—</div>
+        <div class="stat-block-label" data-i18n="about.stats.contracts">Contrats signés</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-16 reveal">
+    <h2 class="section-title text-center" data-i18n="about.story.title">Notre histoire</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="about.story.sub">
+      Comment AfroPulse est né, et pourquoi.
+    </p>
+
+    <div class="story-card">
+      <p>
+        <strong>AfroPulse</strong> est né en <strong>2026 à Abidjan</strong>, d'une idée portée par
+        <strong>Ladji Moussa Ouattara</strong>, étudiant en informatique, développeur et créateur de projets numériques africains.
+      </p>
+
+      <p>
+        À travers mon parcours dans le numérique, j'ai progressivement constaté un problème qui me préoccupe particulièrement :
+        <strong>l'Afrique regorge de jeunes talentueux, créatifs et capables, mais beaucoup peinent encore à trouver les bonnes opportunités,
+        les bonnes personnes et les bons partenaires pour transformer leurs compétences en projets concrets.</strong>
+      </p>
+
+      <p>
+        J'ai également constaté que les entreprises et entrepreneurs rencontrent le problème inverse : trouver des profils
+        compétents, fiables et adaptés à leurs besoins peut être difficile, particulièrement lorsqu'il s'agit de collaborer
+        au-delà des frontières.
+      </p>
+
+      <p style="text-align:center;font-size:1rem;color:var(--ink);font-weight:600;margin:1.75rem 0">
+        C'est de cette observation qu'est née <strong>AfroPulse</strong>.
+      </p>
+
+      <p>
+        L'ambition est simple, mais profonde : <strong>créer un espace numérique capable de connecter les talents africains,
+        les entreprises, les entrepreneurs, les projets et les opportunités, en Afrique comme dans la diaspora et à l'international.</strong>
+      </p>
+
+      <p>AfroPulse ne veut pas être simplement un réseau social de plus.</p>
+
+      <p>
+        Je veux en faire progressivement <strong>un véritable écosystème numérique africain</strong>, où un jeune développeur peut trouver
+        une entreprise, où un entrepreneur peut rencontrer son futur associé, où une entreprise peut identifier un talent, où un projet
+        peut trouver les compétences dont il a besoin et où les Africains de la diaspora peuvent rester connectés aux opportunités du continent.
+      </p>
+
+      <p>
+        La confiance occupe également une place centrale dans cette vision. C'est pourquoi la plateforme est pensée autour de profils
+        professionnels, de mécanismes de vérification des entreprises, de systèmes de réputation et, à terme, d'outils intelligents
+        capables de faciliter les bonnes mises en relation.
+      </p>
+
+      <p class="story-highlight">
+        Je construis AfroPulse avec une conviction : notre continent ne manque pas de talents.
+        Il manque encore suffisamment de connexions entre ces talents, les entreprises, les ressources et les opportunités.
+      </p>
+
+      <p>Chaque connexion créée, chaque projet lancé, chaque collaboration réussie sera une petite contribution à une ambition plus grande :</p>
+
+      <h3>Construire une Afrique qui se connecte, collabore et crée davantage avec elle-même — tout en restant ouverte sur le monde.</h3>
+
+      <p style="text-align:center;font-size:1rem;color:var(--ac);font-weight:800;margin:1.5rem 0 0">
+        Et ce n'est que le début.
+      </p>
+
+      <p class="story-signature">
+        — Ladji Moussa Ouattara, fondateur d'AfroPulse
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-16 reveal">
+    <h2 class="section-title text-center" data-i18n="about.contact.title">Nous contacter</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="about.contact.sub">
+      Une question, un partenariat, une suggestion ? Nous sommes joignables.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" style="max-width:900px;margin:2rem auto 0">
+      <a href="https://wa.me/2250150070083?text=Bonjour%20LMO%20SERVICES%2C%20je%20vous%20contacte%20au%20sujet%20d%27AfroPulse." target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon" style="background:color-mix(in srgb,var(--wa) 15%,transparent);color:var(--wa)"><i class="fa-brands fa-whatsapp"></i></div>
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--ink)" data-i18n="about.contact.whatsapp">WhatsApp</div>
+          <div style="font-size:.75rem;color:var(--mu)" data-i18n="about.contact.delay">Réponse en moins de 2h</div>
+        </div>
+      </a>
+      <a href="mailto:lmoservices15@gmail.com" class="contact-card">
+        <div class="contact-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-envelope"></i></div>
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--ink)" data-i18n="about.contact.email">Email</div>
+          <div style="font-size:.75rem;color:var(--mu)" data-i18n="about.contact.delay">Réponse en moins de 2h</div>
+        </div>
+      </a>
+      <a href="https://lmoportfolio.vercel.app" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon" style="background:linear-gradient(135deg,var(--gd),var(--gd2));color:#fff"><i class="fa-solid fa-code"></i></div>
+        <div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--ink)" data-i18n="about.contact.dev">Développé par</div>
+          <div style="font-size:.75rem;color:var(--mu)">LMO SERVICES</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="text-center py-12 rounded-2xl reveal" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd)">
+    <h2 class="section-title" style="margin-bottom:.75rem" data-i18n="about.cta.title">Rejoignez l'aventure</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="about.cta.sub">
+      Que vous soyez talent ou entreprise, votre place est ici.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="signup.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-rocket"></i><span data-i18n="about.cta.start">Créer mon compte</span>
+      </a>
+      <a href="talents.html" class="btn bo btn-lg" data-i18n="about.cta.explore">Explorer les talents</a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/premium.js"></script>
+<script src="assets/premium-gate.js"></script>
+<script src="assets/wallet.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/autosave.js"></script>
+<script src="assets/voice-search.js"></script>
+<script src="assets/presence.js"></script>
+<script src="assets/sound.js"></script>
+<script src="assets/timezone.js"></script>
+<script src="assets/realtime.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function T(key, fallback){
+  if(typeof I18n !== 'undefined' && I18n.t) return I18n.t(key) || fallback;
+  return fallback;
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+async function loadStats(){
+  if(typeof DB === 'undefined' || !DB.isRemote()) return;
+
+  try{
+    const members = await DB.searchTalents({ limit: 500 });
+    const count = members.length;
+    const el = $('statMembers');
+    if(el) el.textContent = count > 0 ? count.toLocaleString(I18n?.get?.() === 'en' ? 'en-US' : 'fr-FR') : '1er';
+
+    const countries = new Set();
+    members.forEach(m => {
+      if(!m.city) return;
+      const parts = m.city.split(',');
+      const country = parts[parts.length - 1]?.trim();
+      if(country) countries.add(country);
+    });
+    const el2 = $('statCountries');
+    if(el2) el2.textContent = countries.size > 0 ? countries.size : '—';
+
+    try{
+      const missions = await DB.getMissions();
+      const el3 = $('statMissions');
+      if(el3) el3.textContent = missions.length > 0 ? missions.length : '—';
+    }catch(e){}
+
+    try{
+      const { count: c } = await DB.client.from('contracts').select('id', { count:'exact', head:true });
+      const el4 = $('statContracts');
+      if(el4) el4.textContent = (c || 0);
+    }catch(e){}
+  }catch(e){}
+}
+
+addEventListener('DOMContentLoaded', () => {
+  initReveal();
+  setTimeout(loadStats, 600);
+
+  if(typeof I18n !== 'undefined' && I18n.onChange){
+    I18n.onChange(() => loadStats());
+  }
+});
+</script>
+</body>
+</html>

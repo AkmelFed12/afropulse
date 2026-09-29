@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mon profil, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -18,6 +19,19 @@
 .file-drop{border:2px dashed var(--bd);border-radius:.75rem;padding:1.25rem;text-align:center;cursor:pointer;transition:.2s;background:var(--bg)}
 .file-drop:hover{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 4%,transparent)}
 .file-drop.has{border-color:var(--ok);border-style:solid;background:color-mix(in srgb,var(--ok) 6%,transparent)}
+
+/* Section titles */
+.section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-top:1.5rem;margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:1px solid var(--bd)}
+.section-title:first-child{margin-top:0}
+
+/* Field errors */
+.field-error{font-size:.7rem;color:var(--er);margin-top:.3rem;display:none}
+.field-error.show{display:block}
+.input.invalid{border-color:var(--er)!important}
+
+/* Required badge */
+.req-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.6rem;font-weight:700;padding:.1rem .4rem;border-radius:999px;background:color-mix(in srgb,var(--er) 10%,transparent);color:var(--er);margin-left:.35rem;text-transform:uppercase;letter-spacing:.03em}
+.req-badge.opt{background:color-mix(in srgb,var(--mu) 12%,transparent);color:var(--mu)}
 </style>
 </head>
 <body class="font-sans">
@@ -32,8 +46,9 @@
     <p class="text-sm" style="color:var(--mu)">Ces informations sont visibles par les autres membres du réseau.</p>
   </div>
 
-  <form id="profileForm" class="card-static p-6 sm:p-8">
+  <form id="profileForm" class="card-static p-6 sm:p-8" novalidate>
 
+    <!-- ═══ AVATAR ═══ -->
     <div class="flex flex-col items-center pb-6 mb-6" style="border-bottom:1px solid var(--bd)">
       <label class="avatar-upload">
         <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" class="hidden">
@@ -44,34 +59,85 @@
       <div id="avatarMsg" class="text-[11px] mt-1 hidden"></div>
     </div>
 
+    <!-- ═══ RÉSUMÉ ═══ -->
     <div class="mb-6 text-center">
       <div class="font-bold text-lg" id="displayName" style="color:var(--ink)">—</div>
       <div class="text-xs" style="color:var(--mu)" id="displayEmail">—</div>
       <div class="text-[10px] mt-1 px-2 py-0.5 rounded-full inline-block" style="background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac)" id="displayRole">—</div>
     </div>
 
+    <!-- ═══ BANNIÈRE ENTREPRISE ═══ -->
     <div id="companyBlock" class="hidden p-4 rounded-xl mb-5" style="background:color-mix(in srgb,var(--gd) 5%,transparent);border:1px solid color-mix(in srgb,var(--gd) 20%,transparent)">
       <div class="text-xs font-bold mb-1" style="color:var(--gd)"><i class="fa-solid fa-building mr-1"></i>Compte entreprise</div>
       <p class="text-[11px]" style="color:var(--mu)">Ces informations seront vérifiées pour obtenir le badge RCCM.</p>
     </div>
 
+    <!-- ═══ SECTION IDENTITÉ ═══ -->
+    <div class="section-title">Identité</div>
+
     <div class="space-y-5">
       <div>
-        <label for="fullName" class="lbl" id="nameLabel">Nom complet</label>
-        <input id="fullName" class="input" type="text">
+        <label for="fullName" class="lbl" id="nameLabel">
+          Nom complet <span class="req-badge">Obligatoire</span>
+        </label>
+        <input id="fullName" class="input" type="text" required>
+        <p class="field-error" data-for="fullName"></p>
       </div>
 
+      <!-- Champs entreprise -->
       <div id="companyFields2" class="hidden space-y-5">
         <div>
-          <label for="companyName" class="lbl">Raison sociale</label>
+          <label for="companyName" class="lbl">
+            Raison sociale <span class="req-badge">Obligatoire</span>
+          </label>
           <input id="companyName" class="input" type="text">
+          <p class="field-error" data-for="companyName"></p>
         </div>
+
         <div>
-          <label for="companyRccm" class="lbl">Numéro RCCM</label>
-          <input id="companyRccm" class="input" type="text">
+          <label for="companySector" class="lbl">
+            Secteur d'activité <span class="req-badge">Obligatoire</span>
+          </label>
+          <select id="companySector" class="input">
+            <option value="">— Choisir —</option>
+            <option value="tech">Technologies / IT</option>
+            <option value="design">Design / Créatif</option>
+            <option value="marketing">Marketing / Communication</option>
+            <option value="finance">Finance / Comptabilité</option>
+            <option value="conseil">Conseil / Stratégie</option>
+            <option value="education">Éducation / Formation</option>
+            <option value="sante">Santé</option>
+            <option value="agro">Agroalimentaire</option>
+            <option value="btp">BTP / Construction</option>
+            <option value="commerce">Commerce / Distribution</option>
+            <option value="transport">Transport / Logistique</option>
+            <option value="autre">Autre</option>
+          </select>
+          <p class="field-error" data-for="companySector"></p>
+        </div>
+
+        <div>
+          <label for="companyRccm" class="lbl">
+            Numéro RCCM <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="companyRccm" class="input" type="text" placeholder="Ex : CI-ABJ-2024-B-12345">
+          <p class="text-[10px] mt-1" style="color:var(--mu)">Votre dossier sera vérifié sous 48h.</p>
+          <p class="field-error" data-for="companyRccm"></p>
+        </div>
+
+        <div>
+          <label for="companyCc" class="lbl">
+            Numéro de compte contribuable <span class="req-badge opt">Optionnel</span>
+          </label>
+          <input id="companyCc" class="input" type="text" placeholder="Ex : 1234567 A">
         </div>
       </div>
+    </div>
 
+    <!-- ═══ SECTION CONTACT ═══ -->
+    <div class="section-title">Contact</div>
+
+    <div class="space-y-5">
       <div>
         <label for="phone" class="lbl">Téléphone</label>
         <input id="phone" class="input" type="tel">
@@ -95,65 +161,68 @@
           <option value="entreprise">Entreprise</option>
         </select>
       </div>
-
-      <div style="border-top:1px solid var(--bd);padding-top:1.25rem">
-        <div class="text-xs font-bold uppercase tracking-wider mb-4" style="color:var(--mu)">Informations professionnelles</div>
-        <div class="space-y-4">
-          <div>
-            <label for="jobTitle" class="lbl">Poste ou métier</label>
-            <input id="jobTitle" class="input" type="text" placeholder="Ex : UI/UX Designer">
-          </div>
-          <div>
-            <label for="experience" class="lbl">Expérience</label>
-            <input id="experience" class="input" type="text" placeholder="Ex : 5 ans">
-          </div>
-          <div>
-            <label for="skills" class="lbl">Compétences <span class="text-xs" style="color:var(--mu)">(séparées par des virgules)</span></label>
-            <input id="skills" class="input" type="text" placeholder="Ex : Figma, React, UI Design">
-          </div>
-          <div>
-            <label for="bio" class="lbl">Présentation courte</label>
-            <textarea id="bio" class="input" rows="3" placeholder="En quelques lignes, qui êtes-vous ?"></textarea>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label for="linkedin" class="lbl">LinkedIn</label>
-              <input id="linkedin" class="input" type="url" placeholder="https://linkedin.com/in/...">
-            </div>
-            <div>
-              <label for="portfolio" class="lbl">Portfolio ou site web</label>
-              <input id="portfolio" class="input" type="url" placeholder="https://...">
-            </div>
-          </div>
-          <div>
-            <label for="availability" class="lbl">Disponibilité</label>
-            <select id="availability" class="input">
-              <option value="">Choisir</option>
-              <option value="immediate">Immédiate</option>
-              <option value="1-2 semaines">Dans 1 à 2 semaines</option>
-              <option value="1 mois">Dans 1 mois</option>
-              <option value="mission">Pour des missions ponctuelles</option>
-              <option value="non">Pas disponible</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid var(--bd);padding-top:1.25rem">
-        <label class="lbl">CV au format PDF <span class="text-xs" style="color:var(--mu)">optionnel, 5 Mo maximum</span></label>
-        <div id="cvDrop" class="file-drop">
-          <input type="file" id="cvInput" accept="application/pdf" class="hidden">
-          <i id="cvIcon" class="fa-solid fa-cloud-arrow-up text-xl mb-2" style="color:var(--ac)"></i>
-          <p id="cvTitle" class="text-sm font-semibold" style="color:var(--ink)">Cliquez ou glissez votre CV ici</p>
-          <p id="cvHint" class="text-xs mt-1" style="color:var(--mu)">PDF uniquement, 5 Mo maximum</p>
-        </div>
-        <p id="cvExisting" class="text-xs mt-2 hidden" style="color:var(--ok)">
-          <i class="fa-solid fa-circle-check mr-1"></i>CV déjà au dossier : <a href="#" id="cvExistingLink" target="_blank" class="underline">Voir</a>
-        </p>
-      </div>
-
     </div>
 
+    <!-- ═══ SECTION PRO ═══ -->
+    <div class="section-title">Informations professionnelles</div>
+
+    <div class="space-y-4">
+      <div>
+        <label for="jobTitle" class="lbl">Poste ou métier</label>
+        <input id="jobTitle" class="input" type="text" placeholder="Ex : UI/UX Designer">
+      </div>
+      <div>
+        <label for="experience" class="lbl">Expérience</label>
+        <input id="experience" class="input" type="text" placeholder="Ex : 5 ans">
+      </div>
+      <div>
+        <label for="skills" class="lbl">Compétences <span class="text-xs" style="color:var(--mu)">(séparées par des virgules)</span></label>
+        <input id="skills" class="input" type="text" placeholder="Ex : Figma, React, UI Design">
+      </div>
+      <div>
+        <label for="bio" class="lbl">Présentation courte</label>
+        <textarea id="bio" class="input" rows="3" placeholder="En quelques lignes, qui êtes-vous ?"></textarea>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="linkedin" class="lbl">LinkedIn</label>
+          <input id="linkedin" class="input" type="url" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div>
+          <label for="portfolio" class="lbl">Portfolio ou site web</label>
+          <input id="portfolio" class="input" type="url" placeholder="https://...">
+        </div>
+      </div>
+      <div>
+        <label for="availability" class="lbl">Disponibilité</label>
+        <select id="availability" class="input">
+          <option value="">Choisir</option>
+          <option value="immediate">Immédiate</option>
+          <option value="1-2 semaines">Dans 1 à 2 semaines</option>
+          <option value="1 mois">Dans 1 mois</option>
+          <option value="mission">Pour des missions ponctuelles</option>
+          <option value="non">Pas disponible</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION CV ═══ -->
+    <div class="section-title">Documents</div>
+
+    <div>
+      <label class="lbl">CV au format PDF <span class="text-xs" style="color:var(--mu)">optionnel, 5 Mo maximum</span></label>
+      <div id="cvDrop" class="file-drop">
+        <input type="file" id="cvInput" accept="application/pdf" class="hidden">
+        <i id="cvIcon" class="fa-solid fa-cloud-arrow-up text-xl mb-2" style="color:var(--ac)"></i>
+        <p id="cvTitle" class="text-sm font-semibold" style="color:var(--ink)">Cliquez ou glissez votre CV ici</p>
+        <p id="cvHint" class="text-xs mt-1" style="color:var(--mu)">PDF uniquement, 5 Mo maximum</p>
+      </div>
+      <p id="cvExisting" class="text-xs mt-2 hidden" style="color:var(--ok)">
+        <i class="fa-solid fa-circle-check mr-1"></i>CV déjà au dossier : <a href="#" id="cvExistingLink" target="_blank" class="underline">Voir</a>
+      </p>
+    </div>
+
+    <!-- ═══ MESSAGE + SUBMIT ═══ -->
     <p id="msg" class="hidden text-xs mt-4"></p>
 
     <div class="flex flex-wrap gap-3 mt-6">
@@ -176,12 +245,34 @@ const $=id=>document.getElementById(id);
 let avatarFile=null;
 let cvFile=null;
 
+/* ═══ Basculer les champs entreprise ═══ */
 function toggleCompanyFields(isEnt){
   $('companyBlock').classList.toggle('hidden',!isEnt);
   $('companyFields2').classList.toggle('hidden',!isEnt);
-  $('nameLabel').textContent=isEnt?'Nom du responsable':'Nom complet';
+  $('nameLabel').innerHTML=isEnt
+    ? 'Nom du responsable <span class="req-badge">Obligatoire</span>'
+    : 'Nom complet <span class="req-badge">Obligatoire</span>';
 }
 
+/* ═══ Gestion des erreurs de champ ═══ */
+function setFieldError(fieldId,msg){
+  const input=document.getElementById(fieldId);
+  const err=document.querySelector(`.field-error[data-for="${fieldId}"]`);
+  if(msg){
+    input?.classList.add('invalid');
+    if(err){err.textContent=msg;err.classList.add('show');}
+  }else{
+    input?.classList.remove('invalid');
+    if(err){err.textContent='';err.classList.remove('show');}
+  }
+}
+
+function clearAllFieldErrors(){
+  document.querySelectorAll('.input').forEach(i=>i.classList.remove('invalid'));
+  document.querySelectorAll('.field-error').forEach(e=>{e.textContent='';e.classList.remove('show');});
+}
+
+/* ═══ Remplir le formulaire ═══ */
 async function fill(profile,user){
   if(!profile&&!user)return;
   const name=profile?.full_name||user?.email||'';
@@ -211,17 +302,20 @@ async function fill(profile,user){
 
   const {country,city}=Locations.parse(profile?.city||'');
   if(country){
-    await Locations.fillCountries($('country'),country);
-    await Locations.fillCities($('city'),country,city);
+    Locations.fillCountries($('country'),country);
+    Locations.fillCities($('city'),country,city);
   }else{
-    await Locations.fillCountries($('country'),"Côte d'Ivoire");
-    await Locations.fillCities($('city'),"Côte d'Ivoire");
+    Locations.fillCountries($('country'),"Côte d'Ivoire");
+    Locations.fillCities($('city'),"Côte d'Ivoire");
   }
 
+  // Champs entreprise
   const isEnt=profile?.role==='entreprise';
   toggleCompanyFields(isEnt);
   $('companyName').value=profile?.company_name||'';
+  $('companySector').value=profile?.company_sector||'';
   $('companyRccm').value=profile?.company_rccm||'';
+  $('companyCc').value=profile?.company_cc||'';
 
   if(profile?.cv_url){
     $('cvExisting').classList.remove('hidden');
@@ -229,16 +323,57 @@ async function fill(profile,user){
   }
 }
 
-addEventListener('DOMContentLoaded',async()=>{
-  await Locations.fillCountries($('country'),"Côte d'Ivoire");
-  await Locations.fillCities($('city'),"Côte d'Ivoire");
+/* ═══ Validation avant soumission ═══ */
+function validateForm(){
+  clearAllFieldErrors();
+  let ok=true;
+  const errors={};
 
-  $('country').addEventListener('change',async ()=>{
+  const isEnt=$('role').value==='entreprise';
+  const fullName=$('fullName').value.trim();
+  const country=$('country').value;
+  const city=$('city').value;
+
+  if(fullName.length<2){errors.fullName='Entrez votre nom complet.';ok=false;}
+
+  if(isEnt){
+    const companyName=$('companyName').value.trim();
+    const companySector=$('companySector').value;
+    const companyRccm=$('companyRccm').value.trim();
+    if(companyName.length<2){errors.companyName='Renseignez la raison sociale.';ok=false;}
+    if(!companySector){errors.companySector='Choisissez un secteur d\'activité.';ok=false;}
+    if(companyRccm.length<5){errors.companyRccm='Numéro RCCM obligatoire (min. 5 caractères).';ok=false;}
+  }
+
+  if(!country||!city){
+    const msg=$('msg');
+    msg.textContent='Sélectionnez un pays et une ville.';
+    msg.style.color='var(--er)';
+    msg.classList.remove('hidden');
+    ok=false;
+  }
+
+  Object.keys(errors).forEach(k=>setFieldError(k,errors[k]));
+
+  if(!ok){
+    const firstInvalid=document.querySelector('.input.invalid');
+    if(firstInvalid)firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
+  return ok;
+}
+
+/* ═══ Init ═══ */
+addEventListener('DOMContentLoaded',async()=>{
+  Locations.fillCountries($('country'),"Côte d'Ivoire");
+  Locations.fillCities($('city'),"Côte d'Ivoire");
+
+  $('country').addEventListener('change',()=>{
     const c=$('country').value;
     if(c){
-      await Locations.fillCities($('city'),c);
+      Locations.fillCities($('city'),c);
     }else{
-      await Locations.clearCities($('city'));
+      Locations.clearCities($('city'));
     }
   });
 
@@ -246,6 +381,21 @@ addEventListener('DOMContentLoaded',async()=>{
   if(!Auth.requireLogin())return;
   Auth.onChange((u,p)=>fill(p,u));
 
+  // Effacer les erreurs pendant la frappe
+  ['fullName','companyName','companySector','companyRccm'].forEach(id=>{
+    const el=$(id);
+    if(!el)return;
+    el.addEventListener('input',()=>{
+      el.classList.remove('invalid');
+      document.querySelector(`.field-error[data-for="${id}"]`)?.classList.remove('show');
+    });
+    el.addEventListener('change',()=>{
+      el.classList.remove('invalid');
+      document.querySelector(`.field-error[data-for="${id}"]`)?.classList.remove('show');
+    });
+  });
+
+  // ═══ UPLOAD AVATAR ═══
   $('avatarInput').addEventListener('change',async e=>{
     const f=e.target.files[0];
     if(!f)return;
@@ -268,6 +418,7 @@ addEventListener('DOMContentLoaded',async()=>{
     }
   });
 
+  // ═══ UPLOAD CV ═══
   $('cvDrop').addEventListener('click',()=>$('cvInput').click());
   ['dragenter','dragover'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor='var(--ac)'}));
   ['dragleave','drop'].forEach(ev=>$('cvDrop').addEventListener(ev,e=>{e.preventDefault();$('cvDrop').style.borderColor=''}));
@@ -284,19 +435,13 @@ addEventListener('DOMContentLoaded',async()=>{
     $('cvHint').textContent=(f.size/1024).toFixed(0)+' Ko, prêt à enregistrer';
   }
 
+  // ═══ SOUMISSION ═══
   $('profileForm').addEventListener('submit',async e=>{
     e.preventDefault();
     const btn=$('btn'),msg=$('msg');
     msg.classList.add('hidden');
 
-    const country=$('country').value;
-    const city=$('city').value;
-    if(!country||!city){
-      msg.textContent='Sélectionnez un pays et une ville.';
-      msg.style.color='var(--er)';
-      msg.classList.remove('hidden');
-      return;
-    }
+    if(!validateForm())return;
 
     btn.disabled=true;
     btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Enregistrement…';
@@ -310,6 +455,9 @@ addEventListener('DOMContentLoaded',async()=>{
       }
 
       const isEnt=$('role').value==='entreprise';
+      const country=$('country').value;
+      const city=$('city').value;
+
       const fields={
         full_name:$('fullName').value.trim(),
         phone:$('phone').value.trim(),
@@ -323,7 +471,9 @@ addEventListener('DOMContentLoaded',async()=>{
         portfolio:$('portfolio').value.trim(),
         availability:$('availability').value,
         company_name: isEnt ? $('companyName').value.trim() : null,
-        company_rccm: isEnt ? $('companyRccm').value.trim() : null
+        company_sector: isEnt ? $('companySector').value : null,
+        company_rccm: isEnt ? $('companyRccm').value.trim() : null,
+        company_cc: isEnt ? $('companyCc').value.trim() : null
       };
       if(cv_url){fields.cv_url=cv_url;fields.cv_filename=cv_filename}
 
@@ -344,6 +494,7 @@ addEventListener('DOMContentLoaded',async()=>{
     btn.textContent='Enregistrer';
   });
 
+  // ═══ CHANGEMENT DE TYPE ═══
   $('role').addEventListener('change',()=>{
     toggleCompanyFields($('role').value==='entreprise');
   });

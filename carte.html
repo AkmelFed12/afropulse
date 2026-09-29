@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Carte des talents — AfroPulse</title>
+  <meta name="description" content="Explorez les talents du réseau AfroPulse par ville.">
+  <meta name="theme-color" content="#0b5fff">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .cw { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    .c-head { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .c-title-block { min-width: 220px; }
+    .c-title { font-size: 1.6rem; font-weight: 800; color: var(--ink); margin: .5rem 0 .25rem; letter-spacing: -.02em; }
+    .c-sub { font-size: .9rem; color: var(--muted); margin: 0; }
+    .c-toolbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+    .c-search { flex: 1; min-width: 220px; }
+    .c-search input { width: 100%; padding: .7rem .9rem; border-radius: .65rem; border: 1.5px solid var(--bd); background: var(--surface); color: var(--ink); font-size: .88rem; outline: none; }
+    .c-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+    .c-toggle { display: inline-flex; background: var(--surface); border: 1px solid var(--bd); border-radius: .65rem; overflow: hidden; }
+    .c-toggle button { padding: .65rem 1rem; background: transparent; border: 0; color: var(--muted); cursor: pointer; font-weight: 700; font-size: .82rem; font-family: inherit; transition: .15s; }
+    .c-toggle button.active { background: var(--accent); color: #fff; }
+    .c-counter { color: var(--muted); font-size: .82rem; padding: 0 .5rem; font-variant-numeric: tabular-nums; }
+
+    #map { height: 65vh; min-height: 420px; border-radius: 1rem; overflow: hidden; border: 1px solid var(--bd); background: var(--bg); }
+    @media (max-width: 600px) { #map { height: 55vh; min-height: 320px; } }
+
+    #list { display: none; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: .75rem; }
+    #list.on { display: grid; }
+
+    .talent-mini { background: var(--surface); border: 1px solid var(--bd); border-radius: .75rem; padding: .85rem; display: flex; gap: .75rem; align-items: center; text-decoration: none; color: inherit; transition: .15s; }
+    .talent-mini:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .talent-mini .av { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; font-weight: 800; color: #fff; overflow: hidden; font-size: .85rem; }
+    .talent-mini .av img { width: 100%; height: 100%; object-fit: cover; }
+    .talent-mini-body { min-width: 0; flex: 1; }
+    .talent-mini-name { font-weight: 700; font-size: .85rem; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .talent-mini-job { font-size: .75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .talent-mini-loc { font-size: .7rem; color: var(--muted); margin-top: .15rem; }
+
+    .loading-box { display: flex; align-items: center; justify-content: center; height: 65vh; color: var(--muted); font-size: .9rem; }
+    .empty-box { display: none; text-align: center; padding: 3rem 1.5rem; color: var(--muted); }
+    .empty-box.on { display: block; }
+    .empty-box h3 { color: var(--ink); margin: 0 0 .4rem; font-size: 1.1rem; font-weight: 800; }
+
+    .leaflet-popup-content-wrapper { background: var(--surface); color: var(--ink); border-radius: .65rem; }
+    .leaflet-popup-tip { background: var(--surface); }
+    .leaflet-popup-content a { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .dark #map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.95); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <span class="brand__icon"><img src="assets/favicon.svg" alt=""></span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <nav class="site-nav">
+        <a href="particulier.html">Particulier</a>
+        <a href="entreprise.html">Entreprise</a>
+        <a href="talents.html">Talents</a>
+        <a href="carte.html" class="active">Carte</a>
+        <a href="tarifs.html">Tarifs</a>
+      </nav>
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Thème"><i data-theme-icon class="fa-solid fa-moon"></i></button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+        <button class="icon-btn menu-toggle" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+  <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mobile-menu-head">
+      <a href="index.html" class="brand">
+        <span class="brand__icon"><img src="assets/favicon.svg" alt=""></span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <button class="icon-btn" onclick="closeMobileMenu()" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="mobile-menu-nav">
+      <a href="index.html"><i class="fa-solid fa-house"></i>Accueil</a>
+      <a href="particulier.html"><i class="fa-solid fa-user"></i>Particulier</a>
+      <a href="entreprise.html"><i class="fa-solid fa-building"></i>Entreprise</a>
+      <a href="talents.html"><i class="fa-solid fa-users"></i>Talents</a>
+      <a href="carte.html" class="active"><i class="fa-solid fa-map-location-dot"></i>Carte</a>
+      <a href="tarifs.html"><i class="fa-solid fa-tag"></i>Tarifs</a>
+    </nav>
+    <div class="mobile-menu-foot">
+      <a href="login.html" class="btn-block ghost"><i class="fa-solid fa-right-to-bracket"></i>Connexion</a>
+      <a href="signup.html" class="btn-block primary"><i class="fa-solid fa-user-plus"></i>Inscription</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="cw">
+      <div class="c-head">
+        <div class="c-title-block">
+          <span class="chip"><i class="fa-solid fa-map-location-dot" style="font-size:.7rem"></i>Annuaire</span>
+          <h1 class="c-title">Carte des talents</h1>
+          <p class="c-sub">Explorez les talents par ville</p>
+        </div>
+        <div class="c-toolbar">
+          <div class="c-search">
+            <input id="search-input" type="text" placeholder="Rechercher un talent, une ville…">
+          </div>
+          <div class="c-toggle">
+            <button id="btn-map" class="active" onclick="showView('map')">Carte</button>
+            <button id="btn-list" onclick="showView('list')">Liste</button>
+          </div>
+          <span class="c-counter" id="counter">0</span>
+        </div>
+      </div>
+
+      <div id="loading" class="loading-box">Chargement de la carte…</div>
+      <div id="map" style="display:none"></div>
+      <div id="list"></div>
+      <div id="empty" class="empty-box">
+        <h3>Aucun talent trouvé</h3>
+        <p style="font-size:.85rem;margin:0">Essayez une autre recherche.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const esc = s => String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    const AVATAR_COLORS = ['#0b5fff','#b8860b','#059669','#dc2626','#7c3aed','#0891b2','#db2777','#ea580c','#65a30d','#0284c7'];
+    const initials = n => (n || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    const colorFor = n => AVATAR_COLORS[(n || '?').charCodeAt(0) % AVATAR_COLORS.length];
+
+    const GEO_KEY = 'ap-geo-cache';
+    const loadGeoCache = () => { try { return JSON.parse(localStorage.getItem(GEO_KEY) || '{}'); } catch { return {}; } };
+    const saveGeoCache = c => { try { localStorage.setItem(GEO_KEY, JSON.stringify(c)); } catch {} };
+
+    const CITY_FALLBACK = {
+      'abidjan':{lat:5.36,lng:-4.01},'yamoussoukro':{lat:6.83,lng:-5.29},'bouake':{lat:7.69,lng:-5.03},
+      'dakar':{lat:14.72,lng:-17.47},'lagos':{lat:6.52,lng:3.38},'accra':{lat:5.60,lng:-0.19},
+      'lome':{lat:6.17,lng:1.23},'cotonou':{lat:6.37,lng:2.42},'ouagadougou':{lat:12.37,lng:-1.52},
+      'bamako':{lat:12.64,lng:-8.00},'conakry':{lat:9.64,lng:-13.58},'douala':{lat:4.05,lng:9.77},
+      'yaounde':{lat:3.85,lng:11.50},'kinshasa':{lat:-4.44,lng:15.27},'brazzaville':{lat:-4.26,lng:15.24},
+      'libreville':{lat:0.42,lng:9.47},'casablanca':{lat:33.57,lng:-7.59},'tunis':{lat:36.81,lng:10.18},
+      'alger':{lat:36.75,lng:3.06},'le caire':{lat:30.04,lng:31.24},'nairobi':{lat:-1.29,lng:36.82},
+      'addis-abeba':{lat:9.03,lng:38.74},'johannesburg':{lat:-26.20,lng:28.05},'cape town':{lat:-33.92,lng:18.42},
+      'paris':{lat:48.86,lng:2.35},'marseille':{lat:43.30,lng:5.37},'montreal':{lat:45.50,lng:-73.57},
+      'bruxelles':{lat:50.85,lng:4.35},'londres':{lat:51.51,lng:-0.13},'new york':{lat:40.71,lng:-74.01}
+    };
+
+    async function geocodeCity(city, country) {
+      if (!city) return null;
+      const key = (city + '|' + (country || '')).toLowerCase().trim();
+      const cache = loadGeoCache();
+      if (cache[key]) return cache[key];
+      const c = city.toLowerCase().trim();
+      if (CITY_FALLBACK[c]) {
+        cache[key] = CITY_FALLBACK[c];
+        saveGeoCache(cache);
+        return CITY_FALLBACK[c];
+      }
+      try {
+        const q = encodeURIComponent(city + (country ? ', ' + country : ''));
+        const res = await fetch('https://nominatim.openstreetmap.org/search?q=' + q + '&format=json&limit=1', { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        if (!data.length) return null;
+        const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        cache[key] = coords;
+        saveGeoCache(cache);
+        return coords;
+      } catch (e) { return null; }
+    }
+
+    let map, cluster, allTalents = [];
+
+    function initMap() {
+      if (map) return;
+      map = L.map('map').setView([6.83, -5.29], 4);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18, attribution: '© Esri © OpenStreetMap'
+      }).addTo(map);
+      cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 50, spiderfyOnMaxZoom: true, disableClusteringAtZoom: 12 });
+      map.addLayer(cluster);
+    }
+
+    function makePopup(t) {
+      return '<div style="min-width:180px;font-family:system-ui">' +
+        '<div style="font-weight:700;font-size:.95rem;margin-bottom:2px">' + esc(t.full_name || t.company_name || 'Membre') + '</div>' +
+        (t.job_title ? '<div style="color:#8b98a9;font-size:.85rem">' + esc(t.job_title) + '</div>' : '') +
+        '<div style="color:#8b98a9;font-size:.8rem;margin-top:4px">' + esc(t.city || '') + (t.country ? ', ' + esc(t.country) : '') + '</div>' +
+        '<a href="profil-public.html#id=' + encodeURIComponent(t.id) + '" style="display:inline-block;margin-top:6px">Voir →</a>' +
+        '</div>';
+    }
+
+    async function renderMap(talentsList) {
+      const talents = talentsList.filter(t => t.hasLocation);
+      if (!map) initMap();
+      cluster.clearLayers();
+      const bounds = [];
+      let rendered = 0;
+
+      for (const t of talents) {
+        let coords = null;
+        if (t.lat != null && t.lng != null) {
+          coords = { lat: Number(t.lat), lng: Number(t.lng) };
+        } else if (t.city) {
+          coords = await geocodeCity(t.city, t.country);
+          const c = t.city.toLowerCase().trim();
+          if (!CITY_FALLBACK[c]) await sleep(1100);
+        }
+        if (!coords) continue;
+        const m = L.marker([coords.lat, coords.lng]);
+        m.bindPopup(makePopup(t));
+        cluster.addLayer(m);
+        bounds.push([coords.lat, coords.lng]);
+        rendered++;
+      }
+
+      if (bounds.length > 1) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+      else if (bounds.length === 1) map.setView(bounds[0], 10);
+
+      updateCounter(rendered);
+      toggleEmpty(rendered === 0);
+    }
+
+    function renderList(talents) {
+      const list = $('#list');
+      list.innerHTML = '';
+      talents.forEach(t => {
+        const name = t.full_name || t.company_name || 'Membre';
+        const color = colorFor(name);
+        const avatar = t.avatar_url
+          ? '<img src="' + esc(t.avatar_url) + '" alt="">'
+          : '<span>' + esc(initials(name)) + '</span>';
+
+        const a = document.createElement('a');
+        a.className = 'talent-mini';
+        a.href = 'profil-public.htm#id=' + encodeURIComponent(t.id);
+        a.innerHTML =
+          '<div class="av" style="background:' + color + '">' + avatar + '</div>' +
+          '<div class="talent-mini-body">' +
+            '<div class="talent-mini-name">' + esc(name) + '</div>' +
+            '<div class="talent-mini-job">' + esc(t.job_title || '') + '</div>' +
+            '<div class="talent-mini-loc">' + esc(t.city || '') + (t.country ? ', ' + esc(t.country) : '') + '</div>' +
+          '</div>' +
+          '<i class="fa-solid fa-arrow-right" style="color:var(--accent);font-size:.75rem"></i>';
+        list.appendChild(a);
+      });
+    }
+
+    function updateCounter(n) { $('#counter').textContent = n + ' talent(s)'; }
+    function toggleEmpty(show) {
+      $('#empty').classList.toggle('on', show);
+      if (show) { $('#map').style.display = 'none'; $('#list').classList.remove('on'); }
+    }
+
+    function showView(v) {
+      const isMap = v === 'map';
+      $('#map').style.display = isMap ? 'block' : 'none';
+      $('#list').classList.toggle('on', !isMap);
+      $('#btn-map').classList.toggle('active', isMap);
+      $('#btn-list').classList.toggle('active', !isMap);
+      if (isMap && map) setTimeout(() => map.invalidateSize(), 50);
+    }
+    window.showView = showView;
+
+    function filterTalents(q) {
+      const s = (q || '').toLowerCase().trim();
+      if (!s) return allTalents;
+      return allTalents.filter(t =>
+        [t.full_name, t.company_name, t.job_title, t.city, t.country]
+          .filter(Boolean).join(' ').toLowerCase().includes(s)
+      );
+    }
+
+    async function applyFilter() {
+      const f = filterTalents($('#search-input').value);
+      renderList(f);
+      await renderMap(f);
+      if (f.length) toggleEmpty(false);
+    }
+
+    async function init() {
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      try {
+        if (typeof DB === 'undefined') throw new Error('DB off');
+        await DB.wait();
+        const raw = await DB.getGeolocatedTalents();
+
+        allTalents = (raw || []).map(t => {
+          let city = (t.city || '').trim();
+          let country = (t.country || '').trim();
+          if (city.includes(',')) {
+            const parts = city.split(',').map(s => s.trim()).filter(Boolean);
+            city = parts[0];
+            if (!country && parts[1]) country = parts[1];
+          }
+          return { ...t, city: city || null, country: country || null, hasLocation: !!city };
+        });
+      } catch (e) {
+        allTalents = [];
+      }
+
+      $('#loading').style.display = 'none';
+      $('#map').style.display = 'block';
+      initMap();
+
+      if (allTalents.length === 0) toggleEmpty(true);
+      else { await renderMap(allTalents); renderList(allTalents); }
+
+      let timer;
+      $('#search-input').addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(applyFilter, 300);
+      });
+    }
+
+    addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

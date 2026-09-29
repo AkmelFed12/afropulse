@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Créer un compte, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -40,6 +41,16 @@
 .pwd-hint span{display:inline-flex;align-items:center;gap:.25rem;margin-right:.6rem}
 .pwd-hint span.ok{color:var(--ok)}
 .pwd-hint span.no{color:var(--mu);opacity:.6}
+
+.field-error{font-size:.7rem;color:var(--er);margin-top:.3rem;display:none}
+.field-error.show{display:block}
+.input.invalid{border-color:var(--er)!important}
+
+.req-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.6rem;font-weight:700;padding:.1rem .4rem;border-radius:999px;background:color-mix(in srgb,var(--er) 10%,transparent);color:var(--er);margin-left:.35rem;text-transform:uppercase;letter-spacing:.03em}
+.req-badge.opt{background:color-mix(in srgb,var(--mu) 12%,transparent);color:var(--mu)}
+
+.section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-top:1.25rem;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--bd)}
+.section-title:first-child{margin-top:0}
 </style>
 </head>
 <body class="font-sans">
@@ -57,6 +68,7 @@
     <div class="step-dot" id="dot3">3</div>
   </div>
 
+  <!-- ═══ ÉTAPE 1 : choix du type ═══ -->
   <section class="step active" id="step1">
     <div class="text-center mb-8">
       <div class="w-12 h-12 mx-auto rounded-xl grid place-items-center mb-4" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
@@ -84,6 +96,7 @@
     </p>
   </section>
 
+  <!-- ═══ ÉTAPE 2 : formulaire ═══ -->
   <section class="step" id="step2">
     <div class="text-center mb-6">
       <button onclick="Signup.back()" class="inline-flex items-center gap-1.5 text-xs mb-3" style="color:var(--mu);background:none;border:none;cursor:pointer;font-family:inherit">
@@ -96,55 +109,130 @@
       <p class="text-sm" style="color:var(--mu)" id="formSubtitle">Elles ne sont visibles que par les membres du réseau.</p>
     </div>
 
-    <form id="signupForm" class="card-static p-6">
+    <form id="signupForm" class="card-static p-6" novalidate>
+
+      <!-- ═══ SECTION IDENTITÉ ═══ -->
+      <div class="section-title">Identité</div>
+
       <div class="space-y-4">
         <div>
-          <label for="fullName" class="lbl" id="fullNameLabel">Nom complet <span class="req">*</span></label>
-          <input id="fullName" class="input" type="text" placeholder="Ex : Aïcha Koné" autocomplete="name">
+          <label for="fullName" class="lbl" id="fullNameLabel">
+            Nom complet <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="fullName" class="input" type="text" placeholder="Ex : Aïcha Koné" autocomplete="name" required>
+          <p class="field-error" data-for="fullName"></p>
         </div>
 
-        <div id="companyFields" class="hidden space-y-4">
-          <div>
-            <label for="companyName" class="lbl">Raison sociale <span class="req">*</span></label>
-            <input id="companyName" class="input" type="text" placeholder="Ex : Maya Studio SARL" autocomplete="organization">
-          </div>
-          <div>
-            <label for="companyRccm" class="lbl">Numéro RCCM <span class="text-xs" style="color:var(--mu)">(optionnel)</span></label>
-            <input id="companyRccm" class="input" type="text" placeholder="Ex : CI-ABJ-2024-B-12345">
-          </div>
+        <div id="companyNameField" class="hidden">
+          <label for="companyName" class="lbl">
+            Raison sociale <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="companyName" class="input" type="text" placeholder="Ex : Maya Studio SARL" autocomplete="organization">
+          <p class="field-error" data-for="companyName"></p>
+        </div>
+
+        <div id="companySectorField" class="hidden">
+          <label for="companySector" class="lbl">
+            Secteur d'activité <span class="req-badge">Obligatoire</span>
+          </label>
+          <select id="companySector" class="input">
+            <option value="">— Choisir —</option>
+            <option value="tech">Technologies / IT</option>
+            <option value="design">Design / Créatif</option>
+            <option value="marketing">Marketing / Communication</option>
+            <option value="finance">Finance / Comptabilité</option>
+            <option value="conseil">Conseil / Stratégie</option>
+            <option value="education">Éducation / Formation</option>
+            <option value="sante">Santé</option>
+            <option value="agro">Agroalimentaire</option>
+            <option value="btp">BTP / Construction</option>
+            <option value="commerce">Commerce / Distribution</option>
+            <option value="transport">Transport / Logistique</option>
+            <option value="autre">Autre</option>
+          </select>
+          <p class="field-error" data-for="companySector"></p>
+        </div>
+
+        <div id="companyRccmField" class="hidden">
+          <label for="companyRccm" class="lbl">
+            Numéro RCCM <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="companyRccm" class="input" type="text" placeholder="Ex : CI-ABJ-2024-B-12345">
+          <p class="text-[10px] mt-1" style="color:var(--mu)">Votre dossier sera vérifié sous 48h.</p>
+          <p class="field-error" data-for="companyRccm"></p>
+        </div>
+
+        <div id="companyCcField" class="hidden">
+          <label for="companyCc" class="lbl">
+            Numéro de compte contribuable <span class="req-badge opt">Optionnel</span>
+          </label>
+          <input id="companyCc" class="input" type="text" placeholder="Ex : 1234567 A">
+        </div>
+      </div>
+
+      <!-- ═══ SECTION CONTACT ═══ -->
+      <div class="section-title">Contact</div>
+
+      <div class="space-y-4">
+        <div>
+          <label for="email" class="lbl" id="emailLabel">
+            Adresse email <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="email" class="input" type="email" placeholder="vous@exemple.com" autocomplete="email" required>
+          <p class="field-error" data-for="email"></p>
         </div>
 
         <div>
-          <label for="email" class="lbl">Adresse email <span class="req">*</span></label>
-          <input id="email" class="input" type="email" placeholder="vous@exemple.com" autocomplete="email">
-        </div>
-
-        <div>
-          <label for="phone" class="lbl">Téléphone</label>
-          <input id="phone" class="input" type="tel" placeholder="+225 01 50 07 00 83" autocomplete="tel">
+          <label for="phone" class="lbl">
+            Téléphone <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="phone" class="input" type="tel" placeholder="+225 01 50 07 00 83" autocomplete="tel" required>
+          <p class="field-error" data-for="phone"></p>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
-            <label for="country" class="lbl">Pays <span class="req">*</span></label>
-            <select id="country" class="input"></select>
+            <label for="country" class="lbl">
+              Pays <span class="req-badge">Obligatoire</span>
+            </label>
+            <select id="country" class="input" required></select>
+            <p class="field-error" data-for="country"></p>
           </div>
           <div>
-            <label for="city" class="lbl" id="cityLabel">Ville <span class="req">*</span></label>
-            <select id="city" class="input" disabled></select>
+            <label for="city" class="lbl" id="cityLabel">
+              Ville <span class="req-badge">Obligatoire</span>
+            </label>
+            <select id="city" class="input" disabled required></select>
+            <p class="field-error" data-for="city"></p>
           </div>
         </div>
+      </div>
 
+      <!-- ═══ SECTION SÉCURITÉ ═══ -->
+      <div class="section-title">Sécurité</div>
+
+      <div class="space-y-4">
         <div>
-          <label for="password" class="lbl">Mot de passe <span class="req">*</span></label>
-          <input id="password" class="input" type="password" placeholder="6 caractères minimum" autocomplete="new-password" minlength="6">
+          <label for="password" class="lbl">
+            Mot de passe <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="password" class="input" type="password" placeholder="8 caractères minimum" autocomplete="new-password" minlength="8" required>
           <div class="pwd-hint" id="pwdHint">
             <span data-req="lower" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>minuscule</span>
             <span data-req="upper" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>majuscule</span>
             <span data-req="digit" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>chiffre</span>
             <span data-req="special" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>caractère spécial</span>
-            <span data-req="length" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>6 caractères</span>
+            <span data-req="length" class="no"><i class="fa-solid fa-circle" style="font-size:.4rem"></i>8 caractères</span>
           </div>
+          <p class="field-error" data-for="password"></p>
+        </div>
+
+        <div>
+          <label for="passwordConfirm" class="lbl">
+            Confirmer le mot de passe <span class="req-badge">Obligatoire</span>
+          </label>
+          <input id="passwordConfirm" class="input" type="password" placeholder="Ressaisissez le mot de passe" autocomplete="new-password" required>
+          <p class="field-error" data-for="passwordConfirm"></p>
         </div>
       </div>
 
@@ -158,6 +246,7 @@
     </form>
   </section>
 
+  <!-- ═══ ÉTAPE 3 : confirmation email ═══ -->
   <section class="step" id="step3">
     <div class="card-static p-8 text-center">
       <div class="success-icon">
@@ -205,6 +294,9 @@
 <script>
 const $=id=>document.getElementById(id);
 
+/* ═══════════════════════════════════════════════════════════════
+   Signup
+═══════════════════════════════════════════════════════════════ */
 const Signup=(()=>{
   let role=null;
   let lastEmail='';
@@ -212,52 +304,76 @@ const Signup=(()=>{
   let lastMeta=null;
   const redirectURL=location.origin+'/confirmation.html';
 
+  /* ─── Navigation entre étapes ─── */
   function step(n){
     document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
     $('step'+n).classList.add('active');
     [1,2,3].forEach(i=>{
       const dot=$('dot'+i);
       dot.classList.remove('on','done');
-      if(i<n){dot.classList.add('done');dot.innerHTML='<i class="fa-solid fa-check text-[10px]"></i>'}
-      else if(i===n){dot.classList.add('on');dot.innerHTML=i}
-      else{dot.innerHTML=i}
+      if(i<n){dot.classList.add('done');dot.innerHTML='<i class="fa-solid fa-check text-[10px]"></i>';}
+      else if(i===n){dot.classList.add('on');dot.innerHTML=i;}
+      else{dot.innerHTML=i;}
     });
     $('line1').classList.toggle('done',n>1);
     $('line2').classList.toggle('done',n>2);
     scrollTo({top:0,behavior:'smooth'});
   }
 
+  /* ─── Choix du type de compte ─── */
   async function choose(r){
     role=r;
     document.querySelectorAll('.choice-card').forEach(c=>{
       c.classList.toggle('selected',c.dataset.role===r);
     });
 
-    if(r==='entreprise'){
+    const isEntreprise=(r==='entreprise');
+
+    // Icone + titres
+    if(isEntreprise){
       $('formIcon').innerHTML='<i class="fa-solid fa-building" style="color:var(--gd)"></i>';
       $('formIcon').style.background='color-mix(in srgb,var(--gd) 12%,transparent)';
       $('formIcon').style.borderColor='color-mix(in srgb,var(--gd) 25%,transparent)';
       $('formTitle').textContent='Vos informations entreprise';
       $('formSubtitle').textContent='Le badge RCCM sera vérifié après validation.';
-      $('fullNameLabel').innerHTML='Nom du responsable <span class="req">*</span>';
+      $('fullNameLabel').innerHTML='Nom du responsable <span class="req-badge">Obligatoire</span>';
       $('fullName').placeholder='Ex : Aïcha Koné';
-      $('cityLabel').innerHTML='Ville du siège <span class="req">*</span>';
-      $('companyFields').classList.remove('hidden');
+      $('cityLabel').innerHTML='Ville du siège <span class="req-badge">Obligatoire</span>';
+      $('emailLabel').innerHTML='Email professionnel <span class="req-badge">Obligatoire</span>';
+      $('email').placeholder='contact@entreprise.com';
+
+      // Afficher les champs entreprise
+      $('companyNameField').classList.remove('hidden');
+      $('companySectorField').classList.remove('hidden');
+      $('companyRccmField').classList.remove('hidden');
+      $('companyCcField').classList.remove('hidden');
     }else{
       $('formIcon').innerHTML='<i class="fa-solid fa-user" style="color:var(--ac)"></i>';
       $('formIcon').style.background='color-mix(in srgb,var(--ac) 10%,transparent)';
       $('formIcon').style.borderColor='color-mix(in srgb,var(--ac) 20%,transparent)';
       $('formTitle').textContent='Vos informations';
       $('formSubtitle').textContent='Elles ne sont visibles que par les membres du réseau.';
-      $('fullNameLabel').innerHTML='Nom complet <span class="req">*</span>';
+      $('fullNameLabel').innerHTML='Nom complet <span class="req-badge">Obligatoire</span>';
       $('fullName').placeholder='Ex : Aïcha Koné';
-      $('cityLabel').innerHTML='Ville <span class="req">*</span>';
-      $('companyFields').classList.add('hidden');
+      $('cityLabel').innerHTML='Ville <span class="req-badge">Obligatoire</span>';
+      $('emailLabel').innerHTML='Adresse email <span class="req-badge">Obligatoire</span>';
+      $('email').placeholder='vous@exemple.com';
+
+      // Masquer les champs entreprise
+      $('companyNameField').classList.add('hidden');
+      $('companySectorField').classList.add('hidden');
+      $('companyRccmField').classList.add('hidden');
+      $('companyCcField').classList.add('hidden');
+      // Vider les champs entreprise
+      $('companyName').value='';
+      $('companySector').value='';
+      $('companyRccm').value='';
+      $('companyCc').value='';
     }
 
     if(!$('country').value) $('country').value="Côte d'Ivoire";
     if($('country').value){
-      await Locations.fillCities($('city'),$('country').value);
+      Locations.fillCities($('city'),$('country').value);
     }
 
     setTimeout(()=>step(2),200);
@@ -269,10 +385,81 @@ const Signup=(()=>{
     step(1);
   }
 
+  /* ─── Gestion des erreurs de champ ─── */
+  function setFieldError(fieldId,msg){
+    const input=document.getElementById(fieldId);
+    const err=document.querySelector(`.field-error[data-for="${fieldId}"]`);
+    if(msg){
+      input?.classList.add('invalid');
+      if(err){err.textContent=msg;err.classList.add('show');}
+    }else{
+      input?.classList.remove('invalid');
+      if(err){err.textContent='';err.classList.remove('show');}
+    }
+  }
+
+  function clearAllErrors(){
+    document.querySelectorAll('.input').forEach(i=>i.classList.remove('invalid'));
+    document.querySelectorAll('.field-error').forEach(e=>{e.textContent='';e.classList.remove('show');});
+    $('error').classList.add('hidden');
+  }
+
+  /* ─── Validation ─── */
+  function validateForm(){
+    clearAllErrors();
+    let ok=true;
+    const errors={};
+
+    const fullName=$('fullName').value.trim();
+    const email=$('email').value.trim();
+    const phone=$('phone').value.trim();
+    const country=$('country').value;
+    const city=$('city').value;
+    const password=$('password').value;
+    const passwordConfirm=$('passwordConfirm').value;
+    const companyName=role==='entreprise'?$('companyName').value.trim():'';
+    const companySector=role==='entreprise'?$('companySector').value:'';
+    const companyRccm=role==='entreprise'?$('companyRccm').value.trim():'';
+
+    if(fullName.length<2){errors.fullName='Entrez votre nom complet.';ok=false;}
+    if(!/^\S+@\S+\.\S+$/.test(email)){errors.email='Adresse email invalide.';ok=false;}
+    if(phone.length<6){errors.phone='Numéro de téléphone invalide.';ok=false;}
+    if(!country){errors.country='Sélectionnez un pays.';ok=false;}
+    if(!city){errors.city='Sélectionnez une ville.';ok=false;}
+
+    const pwdOK=/[a-z]/.test(password)&&/[A-Z]/.test(password)&&/\d/.test(password)&&/[!@#$%^&*()+\-=\[\]{};':"|<>?,./`~]/.test(password)&&password.length>=8;
+    if(!pwdOK){errors.password='8 caractères minimum, avec minuscule, majuscule, chiffre et caractère spécial.';ok=false;}
+    if(password!==passwordConfirm){errors.passwordConfirm='Les deux mots de passe ne correspondent pas.';ok=false;}
+
+    if(role==='entreprise'){
+      if(companyName.length<2){errors.companyName='Renseignez la raison sociale.';ok=false;}
+      if(!companySector){errors.companySector='Choisissez un secteur d\'activité.';ok=false;}
+      if(companyRccm.length<5){errors.companyRccm='Numéro RCCM obligatoire (min. 5 caractères).';ok=false;}
+    }
+
+    Object.keys(errors).forEach(k=>setFieldError(k,errors[k]));
+
+    if(!ok){
+      const firstInvalid=document.querySelector('.input.invalid');
+      if(firstInvalid)firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+
+    return ok;
+  }
+
+  /* ─── Soumission ─── */
   async function submit(e){
     if(e)e.preventDefault();
-    const btn=$('btn'),err=$('error');
-    err.classList.add('hidden');
+    const btn=$('btn');
+
+    if(!role){
+      $('error').textContent='Choisissez d\'abord un type de compte.';
+      $('error').classList.remove('hidden');
+      step(1);
+      return;
+    }
+
+    if(!validateForm())return;
 
     const fullName=$('fullName').value.trim();
     const email=$('email').value.trim();
@@ -281,18 +468,10 @@ const Signup=(()=>{
     const city=$('city').value;
     const password=$('password').value;
     const companyName=role==='entreprise'?$('companyName').value.trim():'';
+    const companySector=role==='entreprise'?$('companySector').value:'';
     const companyRccm=role==='entreprise'?$('companyRccm').value.trim():'';
+    const companyCc=role==='entreprise'?$('companyCc').value.trim():'';
     const cityFull=Locations.format(country,city);
-
-    if(fullName.length<2){showErr('Entrez votre nom complet.');return}
-    if(!/^\S+@\S+\.\S+$/.test(email)){showErr('Adresse email invalide.');return}
-    if(!country){showErr('Sélectionnez un pays.');return}
-    if(!city){showErr('Sélectionnez une ville.');return}
-
-    const pwdOK=/[a-z]/.test(password)&&/[A-Z]/.test(password)&&/\d/.test(password)&&/[!@#$%^&*()+\-=\[\]{};':"|<>?,./`~]/.test(password)&&password.length>=6;
-    if(!pwdOK){showErr('Le mot de passe doit contenir au moins 6 caractères, une minuscule, une majuscule, un chiffre et un caractère spécial.');return}
-
-    if(role==='entreprise'&&companyName.length<2){showErr('Renseignez la raison sociale.');return}
 
     btn.disabled=true;
     btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Création du compte…';
@@ -303,6 +482,24 @@ const Signup=(()=>{
         companyName,companyRccm,companyCity:cityFull,
         redirectTo:redirectURL
       });
+
+      // Sauvegarder le secteur et le CC dans le profil après signup
+      if(role==='entreprise' && (companySector||companyCc)){
+        // Le profil est créé côté trigger Supabase, on met à jour après
+        setTimeout(async()=>{
+          try{
+            const {data:{user}}=await window.__sb.auth.getUser();
+            if(user){
+              const updates={};
+              if(companySector)updates.company_sector=companySector;
+              if(companyCc)updates.company_cc=companyCc;
+              if(Object.keys(updates).length){
+                await window.__sb.from('profiles').update(updates).eq('id',user.id);
+              }
+            }
+          }catch(err){console.warn('MAJ secteur/CC échouée',err);}
+        },1500);
+      }
 
       lastEmail=email;
       lastPassword=password;
@@ -315,25 +512,22 @@ const Signup=(()=>{
         location.href='index.html';
       }
     }catch(ex){
-      if(ex.message.includes('already registered'))showErr('Cette adresse email est déjà utilisée.');
-      else if(ex.message.includes('Password should contain'))showErr('Le mot de passe ne respecte pas les règles.');
-      else if(ex.message.includes('Unable to validate email'))showErr('Adresse email invalide ou refusée.');
-      else showErr(ex.message);
+      let msg=ex.message;
+      if(msg.includes('already registered'))msg='Cette adresse email est déjà utilisée.';
+      else if(msg.includes('Password should contain'))msg='Le mot de passe ne respecte pas les règles.';
+      else if(msg.includes('Unable to validate email'))msg='Adresse email invalide ou refusée.';
+      $('error').textContent=msg;
+      $('error').classList.remove('hidden');
     }
 
     btn.disabled=false;
     btn.textContent='Créer mon compte';
   }
 
-  function showErr(msg){
-    const err=$('error');
-    err.textContent=msg;
-    err.classList.remove('hidden');
-  }
-
+  /* ─── Renvoi du lien ─── */
   async function resend(){
     const btn=$('resendBtn');
-    if(!lastEmail){return}
+    if(!lastEmail)return;
     btn.disabled=true;
     btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>Envoi…';
     try{
@@ -360,22 +554,51 @@ const Signup=(()=>{
   return{choose,back,submit,resend};
 })();
 
+/* ═══════════════════════════════════════════════════════════════
+   Init
+═══════════════════════════════════════════════════════════════ */
 addEventListener('DOMContentLoaded',async()=>{
-  await Locations.fillCountries($('country'));
-  await Locations.clearCities($('city'));
+  Locations.fillCountries($('country'));
+  Locations.clearCities($('city'));
 
-  $('country').addEventListener('change',async ()=>{
+  $('country').addEventListener('change',()=>{
     const c=$('country').value;
     if(c){
-      await Locations.fillCities($('city'),c);
+      Locations.fillCities($('city'),c);
     }else{
-      await Locations.clearCities($('city'));
+      Locations.clearCities($('city'));
     }
+    // Reset erreur
+    document.querySelector('.field-error[data-for="country"]')?.classList.remove('show');
+    document.querySelector('.field-error[data-for="city"]')?.classList.remove('show');
+    $('country').classList.remove('invalid');
+    $('city').classList.remove('invalid');
+  });
+
+  $('city').addEventListener('change',()=>{
+    document.querySelector('.field-error[data-for="city"]')?.classList.remove('show');
+    $('city').classList.remove('invalid');
+  });
+
+  // Effacer les erreurs pendant la frappe
+  ['fullName','email','phone','password','passwordConfirm','companyName','companyRccm','companySector'].forEach(id=>{
+    const el=$(id);
+    if(!el)return;
+    el.addEventListener('input',()=>{
+      el.classList.remove('invalid');
+      document.querySelector(`.field-error[data-for="${id}"]`)?.classList.remove('show');
+    });
+    el.addEventListener('change',()=>{
+      el.classList.remove('invalid');
+      document.querySelector(`.field-error[data-for="${id}"]`)?.classList.remove('show');
+    });
   });
 
   await new Promise(r=>setTimeout(r,500));
   if(Auth.isLogged())location.href='index.html';
   $('signupForm').addEventListener('submit',Signup.submit);
+
+  // Checklist mot de passe en direct
   $('password').addEventListener('input',()=>{
     const v=$('password').value;
     const rules={
@@ -383,7 +606,7 @@ addEventListener('DOMContentLoaded',async()=>{
       upper:/[A-Z]/.test(v),
       digit:/\d/.test(v),
       special:/[!@#$%^&*()+\-=\[\]{};':"|<>?,./`~]/.test(v),
-      length:v.length>=6
+      length:v.length>=8
     };
     $('pwdHint').querySelectorAll('span').forEach(s=>{
       const ok=rules[s.dataset.req];

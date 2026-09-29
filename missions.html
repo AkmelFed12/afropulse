@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Missions — AfroPulse</title>
+
+  <meta name="description" content="Découvrez les missions publiées par les entreprises africaines vérifiées. Développement, design, marketing, rédaction. Postulez en un clic.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="canonical" href="https://afro-pulse.netlify.app/missions.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AfroPulse">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Missions disponibles — AfroPulse">
+  <meta property="og:description" content="Trouvez votre prochaine mission freelance en Afrique.">
+  <meta property="og:url" content="https://afro-pulse.netlify.app/missions.html">
+  <meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Missions disponibles — AfroPulse">
+  <meta name="twitter:description" content="Trouvez votre prochaine mission freelance en Afrique.">
+  <meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5fff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: .5;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .mis-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 5rem;
+      position: relative;
+    }
+    @media (min-width: 640px) { .mis-wrap { padding: 2rem 1.5rem 5rem; } }
+
+    .mis-head {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .mis-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+      letter-spacing: -.02em;
+    }
+    .mis-sub {
+      font-size: .9rem;
+      color: var(--clr-muted);
+      margin: 0 0 1.25rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    .mis-cta {
+      display: inline-flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Filters */
+    .filters-bar {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: grid;
+      gap: .75rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+      .filters-bar { grid-template-columns: 2fr 1fr 1fr auto; align-items: end; }
+    }
+    .filter-lbl {
+      display: block;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--clr-ink);
+      margin-bottom: .35rem;
+    }
+    .filter-input {
+      width: 100%;
+      padding: .65rem .85rem;
+      border: 1.5px solid var(--clr-border);
+      border-radius: .6rem;
+      background: var(--clr-bg);
+      color: var(--clr-ink);
+      font-family: inherit;
+      font-size: .85rem;
+      outline: none;
+      transition: .15s;
+    }
+    .filter-input:focus {
+      border-color: var(--clr-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-primary) 12%, transparent);
+    }
+
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: .4rem .8rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+      color: var(--clr-primary);
+      border: 1px solid color-mix(in srgb, var(--clr-primary) 22%, transparent);
+    }
+
+    /* Grid */
+    .mis-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .mis-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1100px) { .mis-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    /* Card */
+    .mis-card {
+      background: var(--clr-surface);
+      border: 1.5px solid var(--clr-border);
+      border-radius: 1rem;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: .2s;
+    }
+    .mis-card:hover {
+      border-color: var(--clr-primary);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -20px rgba(15,23,42,.15);
+    }
+    .mis-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-bottom: .85rem;
+    }
+    .mis-card-category {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: .3rem .65rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+      color: var(--clr-primary);
+      border: 1px solid color-mix(in srgb, var(--clr-primary) 22%, transparent);
+    }
+    .mis-card-verified {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: .3rem .55rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--clr-ok) 12%, transparent);
+      color: var(--clr-ok);
+      border: 1px solid color-mix(in srgb, var(--clr-ok) 25%, transparent);
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    .mis-card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.6em;
+    }
+    .mis-card-desc {
+      font-size: .83rem;
+      color: var(--clr-muted);
+      line-height: 1.55;
+      margin: 0 0 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+    .mis-card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      padding-top: .85rem;
+      border-top: 1px solid var(--clr-border);
+      margin-bottom: .85rem;
+    }
+    .mis-meta-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      color: var(--clr-muted);
+    }
+    .mis-meta-row i {
+      width: 14px;
+      text-align: center;
+      color: var(--clr-primary);
+    }
+    .mis-meta-row strong {
+      color: var(--clr-ink);
+      font-weight: 700;
+    }
+    .mis-card-budget {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--clr-primary);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+    }
+    .mis-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: .85rem;
+      border-top: 1px solid var(--clr-border);
+      font-size: .75rem;
+      color: var(--clr-muted);
+    }
+    .btn-apply {
+      background: var(--clr-primary);
+      color: #fff;
+      border: none;
+      padding: .5rem .9rem;
+      border-radius: .55rem;
+      font-family: inherit;
+      font-size: .75rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      transition: .15s;
+    }
+    .btn-apply:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--clr-primary) 55%, transparent);
+    }
+    .btn-apply:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-apply.own {
+      background: var(--clr-bg);
+      color: var(--clr-muted);
+      border: 1px solid var(--clr-border);
+      cursor: default;
+    }
+    .btn-apply.own:hover { transform: none; box-shadow: none; }
+
+    /* Empty */
+    .empty-state {
+      background: var(--clr-surface);
+      border: 1px dashed var(--clr-border);
+      border-radius: 1rem;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      grid-column: 1/-1;
+    }
+    .empty-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 1.25rem;
+      background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+      color: var(--clr-primary);
+      font-size: 2rem;
+      display: grid;
+      place-items: center;
+    }
+    .empty-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+    }
+    .empty-sub {
+      font-size: .85rem;
+      color: var(--clr-muted);
+      margin: 0 auto 1.5rem;
+      max-width: 420px;
+      line-height: 1.6;
+    }
+
+    .sk {
+      height: 220px;
+      border-radius: 1rem;
+      background: linear-gradient(90deg,
+        var(--clr-surface) 0%,
+        color-mix(in srgb, var(--clr-primary) 4%, var(--clr-surface)) 50%,
+        var(--clr-surface) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="AfroPulse — Accueil">
+        <span class="brand__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/>
+          </svg>
+        </span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" data-i18n="nav.home">Accueil</a>
+        <a href="talents.html" data-i18n="nav.talents">Talents</a>
+        <a href="missions.html" class="active" aria-current="page" data-i18n="nav.missions">Missions</a>
+        <a href="carte.html" data-i18n="nav.carte">Carte</a>
+        <a href="tarifs.html" data-i18n="nav.tarifs">Tarifs</a>
+        <a href="a-propos.html" data-i18n="nav.a-propos">À propos</a>
+      </nav>
+
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Basculer le thème">
+          <i data-theme-icon class="fa-solid fa-moon"></i>
+        </button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="mis-wrap">
+
+      <div class="mis-head">
+        <span class="chip" style="display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:999px;background:color-mix(in srgb,var(--clr-primary) 10%,transparent);border:1px solid color-mix(in srgb,var(--clr-primary) 22%,transparent);color:var(--clr-primary);font-size:.78rem;font-weight:700;margin-bottom:.75rem">
+          <i class="fa-solid fa-bullhorn" style="font-size:.7rem" aria-hidden="true"></i>
+          <span data-i18n="missions.chip">Opportunités</span>
+        </span>
+        <h1 class="mis-title" data-i18n="missions.title">Missions disponibles</h1>
+        <p class="mis-sub" data-i18n="missions.sub">Découvrez les missions publiées par les entreprises africaines vérifiées. Postulez en un clic.</p>
+        <div class="mis-cta">
+          <a href="publier-mission.html" class="btn btn--primary" id="publishBtn" style="display:none">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            <span data-i18n="missions.publish">Publier une mission</span>
+          </a>
+          <a href="signup.html" class="btn btn--ghost" id="signupBtn">
+            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+            <span data-i18n="missions.signup">Créer un compte</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div>
+          <label class="filter-lbl" data-i18n="missions.filter.search">Recherche</label>
+          <input type="text" id="searchInput" class="filter-input" placeholder="Mot-clé, entreprise…" data-i18n-placeholder="missions.filter.search.ph" aria-label="Rechercher une mission">
+        </div>
+        <div>
+          <label class="filter-lbl" data-i18n="missions.filter.category">Catégorie</label>
+          <select id="categorySelect" class="filter-input" aria-label="Filtrer par catégorie">
+            <option value="" data-i18n="missions.filter.all">Toutes</option>
+            <option value="dev">Développement</option>
+            <option value="design">Design</option>
+            <option value="marketing">Marketing</option>
+            <option value="redaction">Rédaction</option>
+            <option value="video">Vidéo / Photo</option>
+            <option value="traduction">Traduction</option>
+            <option value="admin">Administration</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+        <div>
+          <label class="filter-lbl" data-i18n="missions.filter.location">Localisation</label>
+          <input type="text" id="locationInput" class="filter-input" placeholder="Ville, pays…" data-i18n-placeholder="missions.filter.location.ph" aria-label="Filtrer par localisation">
+        </div>
+        <div>
+          <button class="btn btn--primary" onclick="applyFilters()" style="width:100%">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:.75rem" aria-hidden="true"></i>
+            <span data-i18n="talents.search.btn">Chercher</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+        <div class="count-badge">
+          <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+          <span id="countLabel">—</span>
+          <span data-i18n="missions.results">mission(s)</span>
+        </div>
+        <button class="btn btn--ghost btn--sm" onclick="resetFilters()">
+          <i class="fa-solid fa-rotate-left" style="font-size:.75rem" aria-hidden="true"></i>
+          <span data-i18n="talents.reset">Réinitialiser</span>
+        </button>
+      </div>
+
+      <div class="mis-grid" id="missionsGrid">
+        <div class="sk"></div>
+        <div class="sk"></div>
+        <div class="sk"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/vendor/supabase.js" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/locations.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function T(key, fallback) {
+      if (typeof I18n !== 'undefined' && I18n.t) {
+        const v = I18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
+
+    const esc = s => String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    const timeAgo = iso => {
+      if (!iso) return '';
+      const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (s < 60) return T('time.now', "à l'instant");
+      if (s < 3600) return `${Math.floor(s / 60)}min`;
+      if (s < 86400) return `${Math.floor(s / 3600)}h`;
+      if (s < 604800) return `${Math.floor(s / 86400)}j`;
+      return new Date(iso).toLocaleDateString(
+        (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR',
+        { day: '2-digit', month: 'short' }
+      );
+    };
+
+    let ALL_MISSIONS = [];
+
+    async function loadMissions() {
+      const grid = $('missionsGrid');
+      try {
+        if (typeof DB === 'undefined' || !DB.isRemote()) throw new Error('DB unavailable');
+        const { data, error } = await DB.client
+          .from('missions')
+          .select('*')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(100);
+        if (error) throw error;
+        ALL_MISSIONS = data || [];
+        applyFilters();
+      } catch (e) {
+        console.error('[missions]', e);
+        grid.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div><h3 class="empty-title">${T('common.error', 'Erreur')}</h3></div>`;
+      }
+    }
+
+    function applyFilters() {
+      const q = ($('searchInput')?.value || '').toLowerCase().trim();
+      const cat = $('categorySelect')?.value || '';
+      const loc = ($('locationInput')?.value || '').toLowerCase().trim();
+      let list = ALL_MISSIONS.slice();
+
+      if (q) {
+        list = list.filter(m =>
+          (m.title || '').toLowerCase().includes(q) ||
+          (m.description || '').toLowerCase().includes(q) ||
+          (m.business_name || '').toLowerCase().includes(q)
+        );
+      }
+      if (cat) list = list.filter(m => (m.category || '').toLowerCase() === cat);
+      if (loc) list = list.filter(m => (m.location || '').toLowerCase().includes(loc));
+
+      renderMissions(list);
+    }
+
+    function resetFilters() {
+      $('searchInput').value = '';
+      $('categorySelect').value = '';
+      $('locationInput').value = '';
+      applyFilters();
+    }
+
+    function renderMissions(list) {
+      const grid = $('missionsGrid');
+      $('countLabel').textContent = list.length;
+
+      if (!list.length) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></div>
+            <h3 class="empty-title">${T('missions.empty.title', 'Aucune mission disponible')}</h3>
+            <p class="empty-sub">${T('missions.empty.sub', 'Les missions publiées par les entreprises apparaîtront ici.')}</p>
+            <a href="publier-mission.html" class="btn btn--primary">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+              ${T('missions.publish', 'Publier une mission')}
+            </a>
+          </div>`;
+        return;
+      }
+
+      const me = Auth?.getUser?.();
+
+      grid.innerHTML = list.map(m => {
+        const isVerified = m.business_verified === true;
+        const isOwn = me && m.business_id === me.id;
+
+        let actionBtn;
+        if (isOwn) {
+          actionBtn = `<button class="btn-apply own" disabled><i class="fa-solid fa-user" aria-hidden="true"></i>${T('missions.yours', 'Votre mission')}</button>`;
+        } else {
+          actionBtn = `<button class="btn-apply" onclick="applyToMission('${esc(m.id)}', '${esc(m.business_id)}', '${esc(m.title || '')}')">
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>${T('missions.apply', 'Postuler')}
+          </button>`;
+        }
+
+        return `
+          <article class="mis-card">
+            <div class="mis-card-top">
+              <span class="mis-card-category">${esc((m.category || 'Autre').toUpperCase())}</span>
+              ${isVerified ? `<span class="mis-card-verified"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i>${T('missions.verified', 'Vérifiée')}</span>` : ''}
+            </div>
+            <h2 class="mis-card-title">${esc(m.title || 'Mission')}</h2>
+            <p class="mis-card-desc">${esc(m.description || '')}</p>
+            <div class="mis-card-meta">
+              <div class="mis-meta-row"><i class="fa-solid fa-building" aria-hidden="true"></i><strong>${esc(m.business_name || '—')}</strong></div>
+              ${m.location ? `<div class="mis-meta-row"><i class="fa-solid fa-location-dot" aria-hidden="true"></i>${esc(m.location)}</div>` : ''}
+              ${m.duration ? `<div class="mis-meta-row"><i class="fa-solid fa-clock" aria-hidden="true"></i>${esc(m.duration)}</div>` : ''}
+            </div>
+            <div class="mis-card-budget">${esc(m.budget || 'À négocier')}</div>
+            <div class="mis-card-footer">
+              <span><i class="fa-regular fa-clock" aria-hidden="true"></i> ${timeAgo(m.created_at)}</span>
+              ${actionBtn}
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    async function applyToMission(missionId, businessId, missionTitle) {
+      if (!Auth?.isLogged?.()) {
+        UI.toast(T('missions.login.required', 'Connectez-vous pour postuler.'), 'error');
+        setTimeout(() => {
+          location.href = 'login.html?next=' + encodeURIComponent('missions.html');
+        }, 800);
+        return;
+      }
+
+      const me = Auth.getUser();
+      if (me.id === businessId) {
+        UI.toast(T('missions.own', 'Vous ne pouvez pas postuler à votre propre mission.'), 'error');
+        return;
+      }
+
+      const msg = `Bonjour 👋\n\nJe suis intéressé(e) par votre mission "${missionTitle}".\n\nPouvez-vous m'en dire plus sur les livrables attendus et le délai ?\n\nMerci !`;
+      const prefill = encodeURIComponent(msg);
+      location.href = `messages.html?to=${encodeURIComponent(businessId)}&prefill=${prefill}`;
+    }
+    window.applyToMission = applyToMission;
+
+    function adaptAuthUI() {
+      const user = Auth?.getUser?.();
+      const profile = Auth?.getProfile?.();
+      const publishBtn = $('publishBtn');
+      const signupBtn = $('signupBtn');
+
+      if (user) {
+        const isCompany = profile?.role === 'entreprise';
+        if (publishBtn) publishBtn.style.display = isCompany ? 'inline-flex' : 'none';
+        if (signupBtn) {
+          signupBtn.href = 'dashboard.html';
+          signupBtn.innerHTML = `<i class="fa-solid fa-chart-simple" aria-hidden="true"></i><span>${T('index.dashboard', 'Tableau de bord')}</span>`;
+        }
+      } else {
+        if (publishBtn) publishBtn.style.display = 'none';
+        if (signupBtn) {
+          signupBtn.href = 'signup.html';
+          signupBtn.innerHTML = `<i class="fa-solid fa-user-plus" aria-hidden="true"></i><span>${T('missions.signup', 'Créer un compte')}</span>`;
+        }
+      }
+      if (typeof I18n !== 'undefined' && I18n.applyAll) I18n.applyAll();
+      renderMissions(ALL_MISSIONS);
+    }
+
+    addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 400));
+
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      adaptAuthUI();
+      await loadMissions();
+
+      $('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') applyFilters(); });
+
+      if (typeof Auth !== 'undefined') {
+        Auth.onChange(() => adaptAuthUI());
+      }
+      if (typeof I18n !== 'undefined' && I18n.onChange) {
+        I18n.onChange(() => { adaptAuthUI(); applyFilters(); });
+      }
+    });
+  </script>
+</body>
+</html>

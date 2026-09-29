@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mon espace, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -29,15 +30,16 @@
 
   <div class="mb-8">
     <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:var(--mu)" id="todayDate">—</div>
-    <div class="flex items-center gap-4">
-      <div id="dashAvatar" class="w-16 h-16 rounded-full grid place-items-center font-bold text-xl flex-shrink-0" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent)">?</div>
-      <div class="min-w-0">
-        <h1 class="text-2xl sm:text-3xl font-bold mb-1" style="color:var(--ink)">
-          Bonjour, <span id="userFirstName" style="color:var(--ac)">—</span>
-        </h1>
-        <p class="text-sm" id="userSubtitle" style="color:var(--mu)">Votre compte AfroPulse.</p>
-      </div>
-    </div>
+    <a href="profil.html" class="flex items-center gap-4 group cursor-pointer" style="text-decoration:none;color:inherit" title="Voir mon profil">
+  <div id="dashAvatar" class="w-16 h-16 rounded-full grid place-items-center font-bold text-xl flex-shrink-0 transition-transform group-hover:scale-105" style="background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent);overflow:hidden">?</div>
+  <div class="min-w-0">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-1" style="color:var(--ink)">
+      Bonjour, <span id="userFirstName" style="color:var(--ac)">—</span>
+    </h1>
+    <p class="text-sm" id="userSubtitle" style="color:var(--mu)">Votre compte AfroPulse.</p>
+  </div>
+  <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity" style="color:var(--mu)"></i>
+</a>
   </div>
 
   <div id="companyBanner" class="hidden mb-6 p-4 rounded-xl flex items-center gap-3" style="background:color-mix(in srgb,var(--gd) 6%,transparent);border:1px solid color-mix(in srgb,var(--gd) 25%,transparent)">
@@ -156,7 +158,7 @@ async function loadStats(){
       isEntreprise?DB.getBusinessApplications():Promise.resolve([]),
       DB.getContacts(),
       DB.getUnreadCount()
-    ]), 12000);
+    ]),12000);
 
     if(isEntreprise){
       $('statCandidatures').textContent=businessApps.length;
@@ -164,14 +166,13 @@ async function loadStats(){
       const pending=businessApps.filter(a=>a.status==='envoyee').length;
       if(pending>0 && $('linkCandidaturesRecues')){
         const el=$('linkCandidaturesRecues');
-        if(!el.querySelector('.msg-badge')){
-          const badge=document.createElement('span');
+        let badge=el.querySelector('.msg-badge');
+        if(!badge){
+          badge=document.createElement('span');
           badge.className='msg-badge';
-          badge.textContent=pending;
           el.querySelector('.ql-icon').appendChild(badge);
-        }else{
-          el.querySelector('.msg-badge').textContent=pending;
         }
+        badge.textContent=pending;
       }
     }else{
       $('statCandidatures').textContent=myApps.length;
@@ -183,7 +184,37 @@ async function loadStats(){
     $('statMessages').textContent=unread;
 
     const badge=$('msgBadge');
-    if(badge){badge.textContent=unread;badge.classList.toggle('hidden',unread===0)}
+    if(badge){badge.textContent=unread;badge.classList.toggle('hidden',unread===0);}
+
+    // ─── Gestion abonnement pour les entreprises ───
+    if(isEntreprise){
+      const hasSub=await DB.hasActiveSubscription();
+
+      // Lien "Publier une mission" : visible seulement si abonnement actif
+      $('linkPublier').classList.toggle('hidden',!hasSub);
+
+      // Bannière abonnement si pas d'abonnement
+      let subBanner=document.getElementById('subBanner');
+      if(!hasSub && !subBanner){
+        const banner=document.createElement('div');
+        banner.id='subBanner';
+        banner.className='mb-6 p-4 rounded-xl flex items-start gap-3';
+        banner.style.cssText='background:color-mix(in srgb,var(--gd) 6%,transparent);border:1px solid color-mix(in srgb,var(--gd) 25%,transparent)';
+        banner.innerHTML=`
+          <i class="fa-solid fa-lock text-lg" style="color:var(--gd)"></i>
+          <div class="text-xs flex-1 min-w-0">
+            <div class="font-bold" style="color:var(--gd)">Abonnement requis pour publier</div>
+            <div style="color:var(--mu)">
+              Activez un abonnement pour publier des missions et recevoir des candidatures.
+              <a href="tarifs.html" class="font-semibold underline" style="color:var(--ac)">Voir les formules</a>
+            </div>
+          </div>`;
+        const companyBanner=$('companyBanner');
+        companyBanner.parentNode.insertBefore(banner,companyBanner);
+      }else if(hasSub && subBanner){
+        subBanner.remove();
+      }
+    }
 
     const list=isEntreprise?businessApps:myApps;
     const container=$('activityContainer');
@@ -215,7 +246,7 @@ async function loadStats(){
     `;
   }catch(e){
     const container=$('activityContainer');
-    container.innerHTML=UI.error(e.message, ()=>loadStats());
+    container.innerHTML=UI.error(e.message,()=>loadStats());
   }
 }
 
@@ -225,13 +256,18 @@ function render(profile,user){
   $('userFirstName').textContent=name.split(' ')[0]||'utilisateur';
 
   const av=$('dashAvatar');
-  if(av){
-    if(profile?.avatar_url){
-      av.outerHTML=`<img id="dashAvatar" class="w-16 h-16 rounded-full object-cover flex-shrink-0" src="${profile.avatar_url}" alt="${name}" style="border:1px solid var(--bd)">`;
-    }else{
-      av.textContent=name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
-    }
+if(av){
+  if(profile?.avatar_url){
+    // On garde la div (et le lien parent) et on met juste l'image dedans
+    av.innerHTML=`<img src="${profile.avatar_url}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    av.style.background='transparent';
+    av.style.border='1px solid var(--bd)';
+  }else{
+    av.textContent=name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase()||'?';
+    av.style.background='color-mix(in srgb,var(--ac) 15%,transparent)';
+    av.style.border='1px solid color-mix(in srgb,var(--ac) 25%,transparent)';
   }
+}
 
   const d=new Date();
   const dateStr=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -241,7 +277,6 @@ function render(profile,user){
   $('userSubtitle').textContent=isEntreprise?'Votre compte entreprise.':'Votre compte AfroPulse.';
   $('companyBanner').classList.toggle('hidden',!isEntreprise);
   $('linkEntreprise').classList.toggle('hidden',!isEntreprise);
-  $('linkPublier').classList.toggle('hidden',!isEntreprise);
   $('linkCandidaturesRecues').classList.toggle('hidden',!isEntreprise);
 
   if(isEntreprise){

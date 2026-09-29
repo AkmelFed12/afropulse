@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Affiliation — AfroPulse</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://afro-pulse.netlify.app/affiliation.html">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5fff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: .5;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .aff-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 5rem;
+      position: relative;
+    }
+
+    .aff-head { margin-bottom: 2rem; }
+    .aff-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      letter-spacing: -.02em;
+      margin: .5rem 0 .35rem;
+    }
+    .aff-sub { font-size: .9rem; color: var(--clr-muted); margin: 0; max-width: 600px; line-height: 1.6; }
+
+    /* Code box */
+    .code-box {
+      background: var(--clr-surface);
+      border: 2px dashed var(--clr-primary);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .code-title {
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--clr-muted);
+    }
+    .code-value {
+      font-family: ui-monospace, monospace;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--clr-primary);
+      letter-spacing: .15em;
+      margin: .5rem 0;
+      word-break: break-all;
+    }
+    .code-sub {
+      font-size: .78rem;
+      color: var(--clr-muted);
+      margin-bottom: 1rem;
+    }
+    .code-actions {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    @media (min-width: 520px) {
+      .code-actions { flex-direction: row; }
+      .code-actions .input { flex: 1; text-align: center; font-size: .75rem; }
+    }
+
+    /* Stats */
+    .aff-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .75rem;
+      margin-bottom: 2rem;
+    }
+    @media (min-width: 640px) { .aff-stats { grid-template-columns: repeat(4, 1fr); } }
+
+    .aff-stat {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: .85rem;
+      padding: 1.15rem;
+      text-align: center;
+    }
+    .aff-stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: .65rem;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      margin: 0 auto .65rem;
+    }
+    .aff-stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .aff-stat-label {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--clr-muted);
+      margin-top: .35rem;
+    }
+
+    /* Share grid */
+    .share-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: .65rem;
+      margin-top: 1rem;
+    }
+    .share-btn {
+      padding: .85rem;
+      border-radius: .75rem;
+      border: 1px solid var(--clr-border);
+      background: var(--clr-surface);
+      color: var(--clr-ink);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      transition: .15s;
+    }
+    .share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -10px rgba(0,0,0,.15);
+    }
+    .share-btn.wa { border-color: #25D366; color: #25D366; }
+    .share-btn.tg { border-color: #0088cc; color: #0088cc; }
+    .share-btn.li { border-color: #0a66c2; color: #0a66c2; }
+    .share-btn.tw { border-color: var(--clr-ink); color: var(--clr-ink); }
+    .share-btn.cp { border-color: var(--clr-primary); color: var(--clr-primary); }
+
+    /* Progress */
+    .progress-track {
+      height: 12px;
+      border-radius: 6px;
+      background: var(--clr-bg);
+      overflow: hidden;
+      margin: .5rem 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--clr-ok), var(--clr-primary));
+      border-radius: 6px;
+      transition: width .4s;
+    }
+
+    /* Tier cards */
+    .tier-card {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--clr-border);
+      border-radius: .75rem;
+      background: var(--clr-surface);
+      align-items: center;
+      transition: .2s;
+      margin-bottom: .5rem;
+    }
+    .tier-card.done {
+      border-color: var(--clr-ok);
+      background: color-mix(in srgb, var(--clr-ok) 5%, transparent);
+    }
+    .tier-card.current {
+      border-color: var(--clr-gold);
+      background: color-mix(in srgb, var(--clr-gold) 5%, transparent);
+    }
+    .tier-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background: var(--clr-bg);
+      color: var(--clr-muted);
+    }
+    .tier-card.done .tier-icon { background: color-mix(in srgb, var(--clr-ok) 15%, transparent); color: var(--clr-ok); }
+    .tier-card.current .tier-icon { background: linear-gradient(135deg, var(--clr-gold), #e0a800); color: #fff; }
+
+    /* Panel */
+    .panel {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+    .panel-title i { color: var(--clr-primary); }
+
+    /* Ref row */
+    .ref-row {
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .ref-row:last-child { border-bottom: none; }
+    .ref-status {
+      font-size: .6rem;
+      font-weight: 700;
+      padding: .2rem .5rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .ref-status.pending { background: color-mix(in srgb, var(--clr-gold) 12%, transparent); color: var(--clr-gold); }
+    .ref-status.qualified { background: color-mix(in srgb, var(--clr-ok) 12%, transparent); color: var(--clr-ok); }
+    .ref-status.rewarded { background: color-mix(in srgb, var(--clr-primary) 12%, transparent); color: var(--clr-primary); }
+    .ref-status.rejected { background: color-mix(in srgb, var(--clr-error) 12%, transparent); color: var(--clr-error); }
+
+    .empty-mini {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--clr-muted);
+      font-size: .85rem;
+    }
+
+    @media (max-width: 640px) {
+      .code-value { font-size: 1.35rem; letter-spacing: .1em; }
+      .share-grid { grid-template-columns: 1fr 1fr; }
+      .tier-card { padding: .85rem; gap: .75rem; }
+      .tier-icon { width: 38px; height: 38px; font-size: .85rem; }
+    }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="AfroPulse — Accueil">
+        <span class="brand__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/>
+          </svg>
+        </span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" data-i18n="nav.home">Accueil</a>
+        <a href="talents.html" data-i18n="nav.talents">Talents</a>
+        <a href="missions.html" data-i18n="nav.missions">Missions</a>
+        <a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a>
+      </nav>
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Basculer le thème">
+          <i data-theme-icon class="fa-solid fa-moon"></i>
+        </button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="aff-wrap">
+
+      <div class="aff-head">
+        <span class="chip" style="display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:999px;background:color-mix(in srgb,var(--clr-primary) 10%,transparent);border:1px solid color-mix(in srgb,var(--clr-primary) 22%,transparent);color:var(--clr-primary);font-size:.78rem;font-weight:700">
+          <i class="fa-solid fa-gift" style="font-size:.7rem" aria-hidden="true"></i>
+          <span data-i18n="aff.chip">Affiliation</span>
+        </span>
+        <h1 class="aff-title" data-i18n="aff.title">Parrainez et gagnez Premium</h1>
+        <p class="aff-sub" data-i18n="aff.sub">Invitez vos contacts. Tous les 20 filleuls qualifiés = 7 jours Premium offerts.</p>
+      </div>
+
+      <div id="loading" style="text-align:center;padding:4rem 1rem;color:var(--clr-muted)">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size:2rem;margin-bottom:.75rem;display:block" aria-hidden="true"></i>
+        <span data-i18n="common.loading">Chargement…</span>
+      </div>
+
+      <div id="content" class="hidden">
+
+        <!-- Stats -->
+        <div class="aff-stats">
+          <div class="aff-stat">
+            <div class="aff-stat-icon" style="background:color-mix(in srgb,var(--clr-primary) 12%,transparent);color:var(--clr-primary)">
+              <i class="fa-solid fa-users" aria-hidden="true"></i>
+            </div>
+            <div class="aff-stat-value" id="statTotal">0</div>
+            <div class="aff-stat-label" data-i18n="aff.stat.total">Filleuls</div>
+          </div>
+          <div class="aff-stat">
+            <div class="aff-stat-icon" style="background:color-mix(in srgb,var(--clr-ok) 12%,transparent);color:var(--clr-ok)">
+              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            </div>
+            <div class="aff-stat-value" id="statQualified" style="color:var(--clr-ok)">0</div>
+            <div class="aff-stat-label" data-i18n="aff.stat.qualified">Qualifiés</div>
+          </div>
+          <div class="aff-stat">
+            <div class="aff-stat-icon" style="background:color-mix(in srgb,var(--clr-gold) 12%,transparent);color:var(--clr-gold)">
+              <i class="fa-solid fa-clock" aria-hidden="true"></i>
+            </div>
+            <div class="aff-stat-value" id="statPending" style="color:var(--clr-gold)">0</div>
+            <div class="aff-stat-label" data-i18n="aff.stat.pending">En attente</div>
+          </div>
+          <div class="aff-stat">
+            <div class="aff-stat-icon" style="background:linear-gradient(135deg,var(--clr-gold),#e0a800);color:#fff">
+              <i class="fa-solid fa-crown" aria-hidden="true"></i>
+            </div>
+            <div class="aff-stat-value" id="statReward" style="color:var(--clr-gold)">0</div>
+            <div class="aff-stat-label" data-i18n="aff.stat.reward">Jours gagnés</div>
+          </div>
+        </div>
+
+        <!-- Code -->
+        <div class="code-box">
+          <div class="code-title" data-i18n="aff.code.title">Votre code d'affiliation</div>
+          <div class="code-value" id="myCode">—</div>
+          <div class="code-sub" data-i18n="aff.code.sub">Partagez ce code ou votre lien unique</div>
+          <div class="code-actions">
+            <input type="text" id="myLink" class="input" readonly>
+            <button onclick="copyLink()" class="btn btn--primary" style="white-space:nowrap">
+              <i class="fa-solid fa-copy" aria-hidden="true"></i>
+              <span data-i18n="aff.code.copy">Copier le lien</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Share -->
+        <div class="panel">
+          <h2 class="panel-title">
+            <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+            <span data-i18n="aff.share.title">Partager sur</span>
+          </h2>
+          <div class="share-grid">
+            <button class="share-btn wa" onclick="share('whatsapp')"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span data-i18n="aff.share.whatsapp">WhatsApp</span></button>
+            <button class="share-btn tg" onclick="share('telegram')"><i class="fa-brands fa-telegram" aria-hidden="true"></i><span data-i18n="aff.share.telegram">Telegram</span></button>
+            <button class="share-btn li" onclick="share('linkedin')"><i class="fa-brands fa-linkedin" aria-hidden="true"></i><span data-i18n="aff.share.linkedin">LinkedIn</span></button>
+            <button class="share-btn tw" onclick="share('twitter')"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i><span data-i18n="aff.share.twitter">X / Twitter</span></button>
+            <button class="share-btn cp" onclick="share('copy')"><i class="fa-solid fa-copy" aria-hidden="true"></i><span data-i18n="aff.share.message">Message</span></button>
+          </div>
+        </div>
+
+        <!-- Progression -->
+        <div class="panel">
+          <h2 class="panel-title" style="margin-bottom:.5rem">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+            <span data-i18n="aff.progress.title">Progression vers la prochaine récompense</span>
+          </h2>
+          <p style="font-size:.78rem;color:var(--clr-muted);margin:0 0 1rem" data-i18n="aff.progress.sub">
+            Tous les 20 filleuls qualifiés vous rapportent 7 jours Premium.
+          </p>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:.85rem;margin-bottom:.5rem">
+            <span style="font-weight:700;color:var(--clr-ink)"><span id="progressCount">0</span> / 20</span>
+            <span style="font-size:.72rem;color:var(--clr-muted)">
+              <span data-i18n="aff.progress.left">Plus que</span>
+              <strong id="progressLeft">20</strong>
+              <span data-i18n="aff.progress.leftUnit">filleul(s)</span>
+            </span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+
+          <div style="margin-top:1.25rem">
+            <div class="tier-card" data-tier="1">
+              <div class="tier-icon"><i class="fa-solid fa-gift" aria-hidden="true"></i></div>
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:.85rem;color:var(--clr-ink)" data-i18n="aff.tier.1.title">20 filleuls qualifiés</div>
+                <div style="font-size:.75rem;color:var(--clr-muted)" data-i18n="aff.tier.1.sub">7 jours Premium offerts</div>
+              </div>
+              <i class="fa-solid fa-circle-check" style="color:var(--clr-ok);font-size:1.15rem;display:none" aria-hidden="true"></i>
+            </div>
+
+            <div class="tier-card" data-tier="2">
+              <div class="tier-icon"><i class="fa-solid fa-gift" aria-hidden="true"></i></div>
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:.85rem;color:var(--clr-ink)" data-i18n="aff.tier.2.title">40 filleuls qualifiés</div>
+                <div style="font-size:.75rem;color:var(--clr-muted)" data-i18n="aff.tier.2.sub">14 jours Premium offerts</div>
+              </div>
+              <i class="fa-solid fa-circle-check" style="color:var(--clr-ok);font-size:1.15rem;display:none" aria-hidden="true"></i>
+            </div>
+
+            <div class="tier-card" data-tier="3">
+              <div class="tier-icon"><i class="fa-solid fa-crown" aria-hidden="true"></i></div>
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:.85rem;color:var(--clr-ink)" data-i18n="aff.tier.3.title">100 filleuls qualifiés</div>
+                <div style="font-size:.75rem;color:var(--clr-muted)" data-i18n="aff.tier.3.sub">1 mois Premium offert</div>
+              </div>
+              <i class="fa-solid fa-circle-check" style="color:var(--clr-ok);font-size:1.15rem;display:none" aria-hidden="true"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filleuls -->
+        <div class="panel">
+          <h2 class="panel-title">
+            <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+            <span data-i18n="aff.list.title">Mes filleuls</span>
+          </h2>
+          <div id="refList"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/vendor/supabase.js" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/referral.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function T(key, fallback) {
+      if (typeof I18n !== 'undefined' && I18n.t) {
+        const v = I18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
+
+    const esc = s => String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+
+    let STATS = null;
+
+    async function load() {
+      try {
+        const stats = await Referral.getStats();
+        if (!stats.code) {
+          UI.toast(T('aff.error.code', 'Erreur de génération du code'), 'error');
+          return;
+        }
+
+        STATS = stats;
+
+        $('myCode').textContent = stats.code.code;
+        const link = Referral.buildShareUrl(stats.code.code);
+        $('myLink').value = link;
+
+        $('statTotal').textContent = stats.total;
+        $('statQualified').textContent = stats.qualified;
+        $('statPending').textContent = stats.pending;
+        $('statReward').textContent = stats.rewardDays;
+
+        const nextAt = 20;
+        const progress = stats.qualified % nextAt;
+        const remaining = nextAt - progress;
+        $('progressCount').textContent = progress;
+        $('progressLeft').textContent = remaining;
+        $('progressFill').style.width = (progress / nextAt * 100) + '%';
+
+        document.querySelectorAll('.tier-card').forEach(card => {
+          const tier = parseInt(card.dataset.tier, 10);
+          const threshold = tier === 1 ? 20 : tier === 2 ? 40 : 100;
+          const done = stats.qualified >= threshold;
+          const current = !done && stats.qualified >= threshold - 20;
+          card.classList.toggle('done', done);
+          card.classList.toggle('current', current);
+          if (done) card.querySelector('.fa-circle-check').style.display = 'block';
+        });
+
+        renderReferrals(stats);
+
+        $('loading').classList.add('hidden');
+        $('content').classList.remove('hidden');
+      } catch (e) {
+        console.error(e);
+        UI.toast(T('aff.error.load', 'Erreur de chargement'), 'error');
+      }
+    }
+
+    function renderReferrals(stats) {
+      const list = stats.list || [];
+      if (!list.length) {
+        $('refList').innerHTML = `<div class="empty-mini" data-i18n="aff.list.empty">${T('aff.list.empty', 'Aucun filleul pour le moment. Partagez votre lien !')}</div>`;
+        return;
+      }
+
+      $('refList').innerHTML = list.map(r => {
+        const statusLabel = {
+          pending: T('aff.status.pending', 'En attente'),
+          qualified: T('aff.status.qualified', 'Qualifié'),
+          rewarded: T('aff.status.rewarded', 'Récompensé'),
+          rejected: T('aff.status.rejected', 'Rejeté')
+        }[r.status] || r.status;
+
+        const date = new Date(r.created_at).toLocaleDateString(
+          (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR',
+          { day: '2-digit', month: 'short', year: 'numeric' }
+        );
+
+        return `
+          <div class="ref-row">
+            <div style="width:32px;height:32px;border-radius:50%;background:color-mix(in srgb,var(--clr-primary) 12%,transparent);color:var(--clr-primary);display:grid;place-items:center;font-size:.75rem;flex-shrink:0">
+              <i class="fa-solid fa-user" aria-hidden="true"></i>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.82rem;font-weight:600;color:var(--clr-ink)">${T('aff.list.ref', 'Filleul')} #${r.id.slice(0, 6)}</div>
+              <div style="font-size:.7rem;color:var(--clr-muted)">${date}</div>
+            </div>
+            <span class="ref-status ${r.status}">${statusLabel}</span>
+          </div>`;
+      }).join('');
+    }
+
+    function share(channel) {
+      const code = $('myCode').textContent;
+      if (!code || code === '—') return;
+      Referral.share(channel, code);
+    }
+    window.share = share;
+
+    async function copyLink() {
+      const link = $('myLink').value;
+      try {
+        await navigator.clipboard.writeText(link);
+        UI.toast(T('aff.code.copied', 'Lien copié !'), 'success');
+      } catch (e) {
+        $('myLink').select();
+        document.execCommand('copy');
+        UI.toast(T('aff.code.copied', 'Lien copié !'), 'success');
+      }
+    }
+    window.copyLink = copyLink;
+
+    addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 500));
+
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      if (typeof Auth === 'undefined' || !Auth.isLogged()) {
+        location.href = 'login.html?next=' + encodeURIComponent('affiliation.html');
+        return;
+      }
+
+      load();
+
+      if (typeof I18n !== 'undefined' && I18n.onChange) {
+        I18n.onChange(() => {
+          if (STATS) renderReferrals(STATS);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

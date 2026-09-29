@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Candidatures reçues, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -149,7 +150,7 @@ $('submitReview').onclick=async()=>{
       userId:reviewTarget.id,type:'review',
       title:'Vous avez reçu un avis',
       body:`Note : ${selectedRating}/5`,
-      link:`profil-public.html?id=${u.id}`,
+      link:`profil-public.html#id=${u.id}`,
       icon:'fa-star'
     });
     $('reviewModal').classList.remove('on');resetModal();
@@ -237,7 +238,7 @@ const Page=(()=>{
       </article>
     `).join('');
 
-    list.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>location.href='profil-public.html?id='+encodeURIComponent(b.dataset.view)));
+    list.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>location.href='profil-public.html#id='+encodeURIComponent(b.dataset.view)));
     list.querySelectorAll('[data-msg]').forEach(b=>b.addEventListener('click',()=>contactUser(b.dataset.msg,b.dataset.msgname)));
     list.querySelectorAll('[data-accept]').forEach(b=>b.addEventListener('click',()=>changeStatus(b.dataset.accept,'acceptee',b.dataset)));
     list.querySelectorAll('[data-refuse]').forEach(b=>b.addEventListener('click',()=>changeStatus(b.dataset.refuse,'refusee',b.dataset)));

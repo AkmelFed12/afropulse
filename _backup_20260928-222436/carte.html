@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carte des talents — AfroPulse</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+
+<style>
+  :root{--bg:#0b0f14;--card:#111823;--border:#1e2a3a;--text:#e6edf3;--muted:#8b98a9;--accent:#f5b400}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 16px}
+  .head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .title h1{margin:0 0 4px;font-size:1.6rem}
+  .title p{margin:0;color:var(--muted);font-size:.95rem}
+  .chip{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(245,180,0,.12);color:var(--accent);font-size:.75rem;font-weight:600;margin-bottom:8px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:220px}
+  .search input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.95rem;outline:none}
+  .search input:focus{border-color:var(--accent)}
+  .toggle{display:inline-flex;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .toggle button{padding:10px 16px;background:transparent;border:0;color:var(--muted);cursor:pointer;font-weight:600;font-size:.9rem}
+  .toggle button.active{background:var(--accent);color:#000}
+  .counter{color:var(--muted);font-size:.9rem;padding:0 8px}
+  #map{height:65vh;min-height:420px;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#0d141d}
+  #list{display:none;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:center}
+  .card img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#222}
+  .card .info{min-width:0;flex:1}
+  .card .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .job{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .loc{font-size:.8rem;color:var(--muted);margin-top:2px}
+  .card a{color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:600}
+  .loading{display:flex;align-items:center;justify-content:center;height:65vh;color:var(--muted)}
+  .empty{display:none;text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty h3{color:var(--text);margin:0 0 6px}
+  .leaflet-popup-content-wrapper{background:#111823;color:#e6edf3;border-radius:10px}
+  .leaflet-popup-tip{background:#111823}
+  .leaflet-popup-content a{color:var(--accent);font-weight:600;text-decoration:none}
+  @media (max-width:600px){#map{height:55vh}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="title">
+      <span class="chip" data-i18n="talents.chip">Annuaire</span>
+      <h1 data-i18n="carte.title">Carte des talents</h1>
+      <p data-i18n="carte.sub">Explorez les talents par ville</p>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <input id="search-input" type="text" data-i18n-placeholder="carte.search" placeholder="Rechercher un talent, une ville…">
+      </div>
+      <div class="toggle">
+        <button id="btn-map" class="active" data-i18n="carte.map">Carte</button>
+        <button id="btn-list" data-i18n="carte.list">Liste</button>
+      </div>
+      <span class="counter" id="counter">0</span>
+    </div>
+  </div>
+  <div id="loading" class="loading" data-i18n="carte.loading">Chargement de la carte…</div>
+  <div id="map" style="display:none"></div>
+  <div id="list"></div>
+  <div id="empty" class="empty">
+    <h3 data-i18n="carte.empty.title">Aucun talent trouvé</h3>
+    <p data-i18n="carte.empty.sub">Essayez une autre recherche.</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="assets/i18n.js"></script>
+
+<script>
+const sb    = window.sb;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const $     = s => document.querySelector(s);
+
+// Table + colonnes (adapte si besoin)
+const TABLE = 'profiles';
+const COLS  = '*';
+
+// ---------- Cache géocodage ----------
+const GEO_KEY = 'ap-geo-cache';
+const loadGeoCache = () => { try { return JSON.parse(localStorage.getItem(GEO_KEY) || '{}'); } catch { return {}; } };
+const saveGeoCache = c => { try { localStorage.setItem(GEO_KEY, JSON.stringify(c)); } catch {} };
+
+const CITY_FALLBACK = {
+  'abidjan':{lat:5.3600,lng:-4.0083}, 'yamoussoukro':{lat:6.8276,lng:-5.2893},
+  'bouake':{lat:7.6906,lng:-5.0303}, 'dakar':{lat:14.7167,lng:-17.4677},
+  'lagos':{lat:6.5244,lng:3.3792}, 'accra':{lat:5.6037,lng:-0.1870},
+  'lome':{lat:6.1725,lng:1.2314}, 'cotonou':{lat:6.3654,lng:2.4183},
+  'ouagadougou':{lat:12.3714,lng:-1.5197}, 'bamako':{lat:12.6392,lng:-8.0029},
+  'conakry':{lat:9.6412,lng:-13.5784}, 'douala':{lat:4.0511,lng:9.7679},
+  'yaounde':{lat:3.8480,lng:11.5021}, 'kinshasa':{lat:-4.4419,lng:15.2663},
+  'brazzaville':{lat:-4.2634,lng:15.2429}, 'libreville':{lat:0.4162,lng:9.4673},
+  'casablanca':{lat:33.5731,lng:-7.5898}, 'tunis':{lat:36.8065,lng:10.1815},
+  'alger':{lat:36.7538,lng:3.0588}, 'le caire':{lat:30.0444,lng:31.2357},
+  'nairobi':{lat:-1.2864,lng:36.8172}, 'addis-abeba':{lat:9.0300,lng:38.7400},
+  'johannesburg':{lat:-26.2041,lng:28.0473}, 'cape town':{lat:-33.9249,lng:18.4241},
+  'paris':{lat:48.8566,lng:2.3522}, 'marseille':{lat:43.2965,lng:5.3698},
+  'montreal':{lat:45.5017,lng:-73.5673}, 'bruxelles':{lat:50.8503,lng:4.3517},
+  'londres':{lat:51.5074,lng:-0.1278}, 'new york':{lat:40.7128,lng:-74.0060}
+};
+
+async function geocodeCity(city, country){
+  if(!city) return null;
+  const key = (city + '|' + (country||'')).toLowerCase().trim();
+  const cache = loadGeoCache();
+  if(cache[key]) return cache[key];
+  const c = city.toLowerCase().trim();
+  if(CITY_FALLBACK[c]){ cache[key] = CITY_FALLBACK[c]; saveGeoCache(cache); return CITY_FALLBACK[c]; }
+  try{
+    const q = encodeURIComponent(city + (country ? ', ' + country : ''));
+    const res = await fetch('https://nominatim.openstreetmap.org/search?q=' + q + '&format=json&limit=1',
+      { headers:{ 'Accept':'application/json' } });
+    const data = await res.json();
+    if(!data.length) return null;
+    const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    cache[key] = coords; saveGeoCache(cache);
+    return coords;
+  }catch(e){ console.warn('geocode fail:', city, e); return null; }
+}
+
+// ---------- Supabase ----------
+async function loadTalents(){
+  const { data, error } = await sb.from(TABLE).select(COLS);
+  if(error){ console.error('Supabase error:', error); return []; }
+
+  // Parse "Ville, Pays" depuis le champ city (car country n'existe pas en base)
+  const cleaned = (data || []).map(t => {
+    let city = (t.city || '').trim();
+    let country = (t.country || '').trim();
+
+    if(city.includes(',')){
+      const parts = city.split(',').map(s => s.trim()).filter(Boolean);
+      city = parts[0];
+      if(!country && parts[1]) country = parts[1];
+    }
+
+    return {
+      ...t,
+      city: city || null,
+      country: country || null,
+      hasLocation: !!city
+    };
+  });
+
+  const located = cleaned.filter(t => t.hasLocation);
+  console.log('📊 Total:', cleaned.length, '| Localisables:', located.length);
+  console.table(cleaned.map(t => ({ name: t.full_name, city: t.city, country: t.country })));
+  return cleaned;
+}
+
+// ---------- Carte ----------
+let map, cluster, allTalents = [];
+function initMap(){
+  map = L.map('map').setView([6.8276, -5.2893], 4);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 18, attribution: '© Esri © OpenStreetMap'
+  }).addTo(map);
+  cluster = L.markerClusterGroup({
+    showCoverageOnHover: false, maxClusterRadius: 50,
+    spiderfyOnMaxZoom: true, disableClusteringAtZoom: 12
+  });
+  map.addLayer(cluster);
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function makePopup(t){
+  const seeTxt = window.I18n ? (I18n.t('pub.see') || 'Voir') : 'Voir';
+  return '<div style="min-width:180px;font-family:system-ui">' +
+    '<div style="font-weight:700;font-size:.95rem;margin-bottom:2px">' + escapeHtml(t.full_name || t.company_name || 'Membre') + '</div>' +
+    (t.job_title ? '<div style="color:#8b98a9;font-size:.85rem">' + escapeHtml(t.job_title) + '</div>' : '') +
+    '<div style="color:#8b98a9;font-size:.8rem;margin-top:4px">' +
+      escapeHtml(t.city || '') + (t.country ? ', ' + escapeHtml(t.country) : '') +
+    '</div>' +
+    '<a href="profil-public.html?id=' + encodeURIComponent(t.id) + '" style="display:inline-block;margin-top:6px">' + seeTxt + ' →</a>' +
+    '</div>';
+}
+
+async function renderMap(allTalents){ const talents = allTalents.filter(t => t.hasLocation);
+  if(!map) initMap();
+  cluster.clearLayers();
+  const bounds = [];
+  let rendered = 0;
+
+  for(const t of talents){
+    let coords = null;
+    if(t.lat != null && t.lng != null){
+      coords = { lat: Number(t.lat), lng: Number(t.lng) };
+    }else if(t.city){
+      coords = await geocodeCity(t.city, t.country);
+      const c = t.city.toLowerCase().trim();
+      if(!CITY_FALLBACK[c]) await sleep(1100);
+    }
+    if(!coords) continue;
+
+    const m = L.marker([coords.lat, coords.lng]);
+    m.bindPopup(makePopup(t));
+    cluster.addLayer(m);
+    bounds.push([coords.lat, coords.lng]);
+    rendered++;
+  }
+
+  if(bounds.length > 1)       map.fitBounds(bounds, { padding: [40,40], maxZoom: 8 });
+  else if(bounds.length === 1) map.setView(bounds[0], 10);
+
+  updateCounter(rendered);
+  toggleEmpty(rendered === 0);
+}
+
+function renderList(talents){
+  const list = $('#list');
+  list.innerHTML = '';
+  const seeTxt = window.I18n ? (I18n.t('pub.see') || 'Voir') : 'Voir';
+  talents.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const name = t.full_name || t.company_name || 'Membre';
+    const initial = name[0].toUpperCase();
+    const avatar = t.avatar_url
+      ? '<img src="' + escapeHtml(t.avatar_url) + '" alt="">'
+      : '<div style="width:48px;height:48px;border-radius:50%;background:#1e2a3a;display:flex;align-items:center;justify-content:center;font-weight:700;color:#8b98a9">' + escapeHtml(initial) + '</div>';
+    card.innerHTML =
+      avatar +
+      '<div class="info">' +
+        '<div class="name">' + escapeHtml(name) + '</div>' +
+        '<div class="job">' + escapeHtml(t.job_title || '') + '</div>' +
+        '<div class="loc">' + escapeHtml(t.city || '') + (t.country ? ', ' + escapeHtml(t.country) : '') + '</div>' +
+      '</div>' +
+      '<a href="profil-public.html?id=' + encodeURIComponent(t.id) + '">' + seeTxt + '</a>';
+    list.appendChild(card);
+  });
+}
+
+function updateCounter(n){
+  const s = window.I18n ? (I18n.t('carte.talents') || 'talent(s)') : 'talent(s)';
+  $('#counter').textContent = n + ' ' + s;
+}
+function toggleEmpty(show){
+  $('#empty').style.display = show ? 'block' : 'none';
+  if(show){ $('#map').style.display='none'; $('#list').style.display='none'; }
+}
+function showView(v){
+  const isMap = v === 'map';
+  $('#map').style.display  = isMap ? 'block' : 'none';
+  $('#list').style.display = isMap ? 'none'  : 'grid';
+  $('#btn-map').classList.toggle('active', isMap);
+  $('#btn-list').classList.toggle('active', !isMap);
+  if(isMap && map) setTimeout(() => map.invalidateSize(), 50);
+}
+function filterTalents(q){
+  const s = (q||'').toLowerCase().trim();
+  if(!s) return allTalents;
+  return allTalents.filter(t => [t.full_name, t.company_name, t.job_title, t.city, t.country]
+    .filter(Boolean).join(' ').toLowerCase().includes(s));
+}
+async function applyFilter(){
+  const f = filterTalents($('#search-input').value);
+  renderList(f);
+  await renderMap(f);
+  if(f.length) toggleEmpty(false);
+}
+
+async function init(){
+  if(window.I18n && I18n.init) I18n.init();
+  if(!sb){
+    $('#loading').innerHTML = '❌ Supabase non initialisé. Vérifie assets/config.js';
+    return;
+  }
+  try{ allTalents = await loadTalents(); }catch(e){ console.error(e); allTalents = []; }
+
+  $('#loading').style.display = 'none';
+  $('#map').style.display = 'block';
+  initMap();
+
+  if(allTalents.length === 0) toggleEmpty(true);
+  else { await renderMap(allTalents); renderList(allTalents); }
+
+  $('#btn-map').addEventListener('click', () => showView('map'));
+  $('#btn-list').addEventListener('click', () => showView('list'));
+
+  let timer;
+  $('#search-input').addEventListener('input', () => {
+    clearTimeout(timer); timer = setTimeout(applyFilter, 300);
+  });
+
+  if(window.I18n && I18n.onChange){
+    I18n.onChange(() => {
+      const f = filterTalents($('#search-input').value);
+      renderList(f); updateCounter(f.length);
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
+
+

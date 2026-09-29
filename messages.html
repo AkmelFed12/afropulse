@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Messages, AfroPulse</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12h3l2-5 3 10 3-12 3 8 2-3h3' fill='none' stroke='%230b5fff' stroke-width='2.5' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -12,24 +13,40 @@
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/timezone.js" defer></script>
 <style>
-.msg-layout{display:grid;grid-template-columns:1fr;gap:1rem;height:calc(100vh - 200px);min-height:520px}
-@media(min-width:768px){.msg-layout{grid-template-columns:320px 1fr}}
+.msg-layout{display:grid;grid-template-columns:1fr;gap:1rem;height:calc(100dvh - 200px);min-height:480px}
+@media(min-width:768px){.msg-layout{grid-template-columns:320px 1fr;height:calc(100vh - 200px);min-height:520px}}
+
+/* Mobile : une seule colonne visible à la fois */
+@media(max-width:767px){
+  .msg-layout.mobile-chat-open .conv-list{display:none}
+  .msg-layout:not(.mobile-chat-open) .chat-panel{display:none}
+  .msg-layout:not(.mobile-chat-open) .conv-list{max-height:calc(100dvh - 220px)}
+  .msg-layout.mobile-chat-open{height:calc(100dvh - 160px)}
+}
+
 .conv-list{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;overflow-y:auto}
 .conv-item{padding:.9rem 1rem;border-bottom:1px solid var(--bd);cursor:pointer;transition:.15s;display:flex;gap:.75rem;align-items:center}
 .conv-item:hover{background:var(--bg)}
 .conv-item.active{background:color-mix(in srgb,var(--ac) 8%,transparent);border-left:3px solid var(--ac)}
 .conv-item .avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;font-weight:700;font-size:.75rem}
 .conv-unread{background:var(--er);color:#fff;font-size:.6rem;font-weight:700;padding:.15rem .4rem;border-radius:999px;margin-left:auto}
-.chat-panel{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;display:flex;flex-direction:column;overflow:hidden}
-.chat-header{padding:1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.75rem}
-.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+
+.chat-panel{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+/* ─── FIX : chatContent géré proprement ─── */
+#chatContent{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
+#chatContent.hidden{display:none}
+
+.chat-header{padding:1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem;min-height:0}
 .msg{padding:.65rem 1rem;border-radius:1rem;max-width:78%;word-wrap:break-word;font-size:.85rem;line-height:1.4}
 .msg.me{align-self:flex-end;background:var(--ac);color:#fff;border-bottom-right-radius:.25rem}
 .msg.them{align-self:flex-start;background:var(--bg);border:1px solid var(--bd);border-bottom-left-radius:.25rem}
 .msg-time{font-size:.6rem;opacity:.6;margin-top:.25rem}
-.chat-input{padding:1rem;border-top:1px solid var(--bd);display:flex;gap:.5rem;align-items:flex-end}
+.chat-input{padding:1rem;border-top:1px solid var(--bd);display:flex;gap:.5rem;align-items:flex-end;flex-shrink:0}
 .chat-input textarea{resize:none;max-height:120px;min-height:44px}
 .empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--mu)}
+.empty-chat.hidden{display:none}
 </style>
 </head>
 <body class="font-sans">
@@ -55,7 +72,8 @@
         <div class="text-xs">Ou démarrez-en une depuis un profil, une mission ou une candidature.</div>
       </div>
 
-      <div id="chatContent" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <!-- FIX : plus de style inline qui casse le hidden -->
+      <div id="chatContent" class="hidden">
         <div class="chat-header">
           <button onclick="Chat.closeChat()" class="md:hidden w-8 h-8 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--bg);cursor:pointer"><i class="fa-solid fa-arrow-left text-xs"></i></button>
           <div id="chatAvatar" class="avatar" style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.75rem;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac)">?</div>
@@ -127,6 +145,10 @@ const Chat=(()=>{
 
   async function open(conversationId,otherId,otherName){
     current={conversationId,otherId,otherName};
+
+    // Responsive : bascule en mode "chat plein écran" sur mobile
+    document.querySelector('.msg-layout').classList.add('mobile-chat-open');
+
     $('emptyChat').classList.add('hidden');
     $('chatContent').classList.remove('hidden');
     $('chatAvatar').textContent=initials(otherName);
@@ -230,6 +252,8 @@ const Chat=(()=>{
 
   function closeChat(){
     current=null;
+    // Responsive : retour à la liste des conversations sur mobile
+    document.querySelector('.msg-layout').classList.remove('mobile-chat-open');
     $('chatContent').classList.add('hidden');
     $('emptyChat').classList.remove('hidden');
     loadConversations();

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tarifs, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.cycle-toggle{display:inline-flex;gap:.25rem;padding:.3rem;background:var(--sf);border:1px solid var(--bd);border-radius:999px;margin-bottom:2rem}
+.cycle-toggle button{padding:.55rem 1.25rem;border:none;background:none;border-radius:999px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;color:var(--mu);transition:.2s}
+.cycle-toggle button.on{background:var(--ac);color:#fff}
+.cycle-toggle button:hover:not(.on){color:var(--ink)}
+.cycle-toggle .save-badge{font-size:.6rem;background:var(--ok);color:#fff;padding:.15rem .45rem;border-radius:999px;font-weight:800;margin-left:.35rem}
+
+.plans-grid{display:grid;gap:1.25rem;grid-template-columns:1fr}
+@media(min-width:768px){.plans-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1200px){.plans-grid{grid-template-columns:repeat(4,1fr)}}
+
+.plan-card{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;padding:1.75rem;position:relative;display:flex;flex-direction:column;transition:.25s;height:100%}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 24px 60px -24px rgba(15,23,42,.15)}
+.plan-card.popular{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 15%,transparent)}
+.plan-card.popular::before{content:'POPULAIRE';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--ac);color:#fff;font-size:.6rem;font-weight:800;letter-spacing:.08em;padding:.3rem .75rem;border-radius:999px}
+
+.plan-name{font-size:1.1rem;font-weight:800;color:var(--ink);margin:0 0 .35rem}
+.plan-desc{font-size:.78rem;color:var(--mu);margin:0 0 1.25rem;line-height:1.5;min-height:2.5em}
+.plan-price{font-size:2rem;font-weight:800;color:var(--ink);line-height:1;margin-bottom:.25rem;letter-spacing:-.02em}
+.plan-price .currency{font-size:.9rem;font-weight:600;color:var(--mu);margin-left:.25rem}
+.plan-period{font-size:.72rem;color:var(--mu);margin-bottom:1.5rem}
+.plan-features{list-style:none;padding:0;margin:0 0 1.5rem;flex:1}
+.plan-features li{display:flex;align-items:flex-start;gap:.6rem;font-size:.82rem;color:var(--mu);padding:.4rem 0;line-height:1.5}
+.plan-features li i{color:var(--ok);flex-shrink:0;margin-top:.2rem;font-size:.75rem}
+.plan-features li.disabled{opacity:.4}
+.plan-features li.disabled i{color:var(--mu)}
+
+.faq-item{background:var(--sf);border:1px solid var(--bd);border-radius:.85rem;overflow:hidden;margin-bottom:.75rem}
+.faq-q{width:100%;text-align:left;padding:1.15rem 1.35rem;background:none;border:none;cursor:pointer;font-family:inherit;display:flex;justify-content:space-between;align-items:center;gap:1rem;color:var(--ink);font-weight:700;font-size:.92rem}
+.faq-q:hover{background:color-mix(in srgb,var(--ac) 4%,transparent)}
+.faq-q i{color:var(--ac);transition:transform .3s}
+.faq-item.open .faq-q i{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 1.35rem;font-size:.85rem;color:var(--mu);line-height:1.65}
+.faq-item.open .faq-a{max-height:300px;padding:0 1.35rem 1.25rem}
+@media(max-width:640px){.plan-price{font-size:1.65rem}.plan-card{padding:1.35rem}}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Formules AfroPulse : Starter gratuit, Pro, Business, VIP. Sans engagement. 3 jours Premium offerts. Résiliable à tout moment.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/tarifs.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Tarifs AfroPulse — Formules transparentes">
+<meta property="og:description" content="Starter gratuit, Pro 5000 FCFA/mois, Business, VIP. Sans engagement.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/tarifs.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tarifs AfroPulse — Formules transparentes">
+<meta name="twitter:description" content="Starter gratuit, Pro 5000 FCFA/mois, Business, VIP. Sans engagement.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+  <section class="text-center mb-12 reveal">
+    <span class="chip mb-4"><i class="fa-solid fa-tag text-[10px]"></i><span data-i18n="pricing.chip">Tarifs</span></span>
+    <h1 class="hero-title" style="max-width:800px;margin-left:auto;margin-right:auto">
+      <span data-i18n="pricing.hero.title.1">Des offres</span>
+      <em data-i18n="pricing.hero.title.2">simples et transparentes.</em>
+    </h1>
+    <p class="hero-sub" style="margin-left:auto;margin-right:auto" data-i18n="pricing.hero.sub">
+      Commencez gratuitement, passez Premium quand vous êtes prêt. Sans engagement, résiliable à tout moment.
+    </p>
+
+    <div class="cycle-toggle" style="margin-top:1.5rem">
+      <button id="monthlyBtn" class="on" onclick="setCycle('monthly')" data-i18n="pricing.cycle.monthly">Mensuel</button>
+      <button id="yearlyBtn" onclick="setCycle('yearly')">
+        <span data-i18n="pricing.cycle.yearly">Annuel</span>
+        <span class="save-badge">-20%</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <div class="plans-grid" id="plansGrid">
+      <!-- Starter -->
+      <div class="plan-card">
+        <h3 class="plan-name" data-i18n="pricing.plan.starter.name">Starter</h3>
+        <p class="plan-desc" data-i18n="pricing.plan.starter.desc">Pour découvrir la plateforme et créer votre profil.</p>
+        <div class="plan-price" data-price-m="0" data-price-y="0">0<span class="currency">FCFA</span></div>
+        <div class="plan-period" data-i18n="pricing.period.free">Gratuit pour toujours</div>
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.starter.f1">Profil public illimité</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.starter.f2">Recherche de talents</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.starter.f3">Messagerie texte</span></li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i><span data-i18n="pricing.plan.starter.f4">Missions illimitées</span></li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i><span data-i18n="pricing.plan.starter.f5">Badge vérifié</span></li>
+          <li class="disabled"><i class="fa-solid fa-xmark"></i><span data-i18n="pricing.plan.starter.f6">Support prioritaire</span></li>
+        </ul>
+        <a href="signup.html" class="btn bo" style="width:100%;justify-content:center" data-i18n="pricing.plan.starter.btn">Commencer gratuitement</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="plan-card popular">
+        <h3 class="plan-name" data-i18n="pricing.plan.pro.name">Pro</h3>
+        <p class="plan-desc" data-i18n="pricing.plan.pro.desc">Pour les freelances et talents actifs.</p>
+        <div class="plan-price" data-price-m="5000" data-price-y="48000">5000<span class="currency">FCFA</span></div>
+        <div class="plan-period"><span data-i18n="pricing.period.month">par mois</span></div>
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f1">Tout Starter, plus :</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f2">Missions illimitées</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f3">Messages vocaux</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f4">Badge "Pro"</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f5">Analytics de profil</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.pro.f6">Support sous 24h</span></li>
+        </ul>
+        <a href="abonnement.html?plan=pro" class="btn bp" style="width:100%;justify-content:center" data-i18n="pricing.plan.pro.btn">Choisir Pro</a>
+      </div>
+
+      <!-- Business -->
+      <div class="plan-card">
+        <h3 class="plan-name" data-i18n="pricing.plan.business.name">Business</h3>
+        <p class="plan-desc" data-i18n="pricing.plan.business.desc">Pour les entreprises et agences en croissance.</p>
+        <div class="plan-price" data-price-m="15000" data-price-y="144000">15000<span class="currency">FCFA</span></div>
+        <div class="plan-period"><span data-i18n="pricing.period.month">par mois</span></div>
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f1">Tout Pro, plus :</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f2">Badge "Entreprise vérifiée"</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f3">5 comptes utilisateurs</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f4">Statistiques avancées</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f5">Support sous 2h</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.business.f6">Gestionnaire dédié</span></li>
+        </ul>
+        <a href="abonnement.html?plan=business" class="btn bp" style="width:100%;justify-content:center" data-i18n="pricing.plan.business.btn">Choisir Business</a>
+      </div>
+
+      <!-- VIP -->
+      <div class="plan-card">
+        <h3 class="plan-name" style="background:linear-gradient(135deg,var(--gd),var(--gd2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent" data-i18n="pricing.plan.vip.name">VIP</h3>
+        <p class="plan-desc" data-i18n="pricing.plan.vip.desc">Pour les grands comptes et institutions.</p>
+        <div class="plan-price" data-price-m="50000" data-price-y="480000">50000<span class="currency">FCFA</span></div>
+        <div class="plan-period"><span data-i18n="pricing.period.month">par mois</span></div>
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f1">Tout Business, plus :</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f2">Comptes utilisateurs illimités</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f3">API &amp; intégrations</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f4">Formation équipe</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f5">Support 24/7</span></li>
+          <li><i class="fa-solid fa-check"></i><span data-i18n="pricing.plan.vip.f6">Account manager dédié</span></li>
+        </ul>
+        <a href="abonnement.html?plan=vip" class="btn bo" style="width:100%;justify-content:center" data-i18n="pricing.plan.vip.btn">Contacter l'équipe</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="pricing.compare.title">Comparatif détaillé</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="pricing.compare.sub">
+      Voyez exactement ce que vous obtenez avec chaque formule.
+    </p>
+    <div class="tw" style="margin-top:2rem">
+      <table class="table">
+        <thead>
+          <tr>
+            <th data-i18n="pricing.compare.feature">Fonctionnalité</th>
+            <th style="text-align:center">Starter</th>
+            <th style="text-align:center">Pro</th>
+            <th style="text-align:center">Business</th>
+            <th style="text-align:center">VIP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-i18n="pricing.compare.p1">Profil public</td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td></tr>
+          <tr><td data-i18n="pricing.compare.p2">Missions actives</td><td style="text-align:center">1</td><td style="text-align:center">∞</td><td style="text-align:center">∞</td><td style="text-align:center">∞</td></tr>
+          <tr><td data-i18n="pricing.compare.p3">Messages vocaux</td><td style="text-align:center"><i class="fa-solid fa-xmark" style="color:var(--mu)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td></tr>
+          <tr><td data-i18n="pricing.compare.p4">Badge vérifié</td><td style="text-align:center"><i class="fa-solid fa-xmark" style="color:var(--mu)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td></tr>
+          <tr><td data-i18n="pricing.compare.p5">Analytics de profil</td><td style="text-align:center"><i class="fa-solid fa-xmark" style="color:var(--mu)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td><td style="text-align:center"><i class="fa-solid fa-check" style="color:var(--ok)"></i></td></tr>
+          <tr><td data-i18n="pricing.compare.p6">Comptes utilisateurs</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">5</td><td style="text-align:center">∞</td></tr>
+          <tr><td data-i18n="pricing.compare.p7">Support</td><td style="text-align:center"><span data-i18n="pricing.compare.support.email">Email</span></td><td style="text-align:center"><span data-i18n="pricing.compare.support.h24">24h</span></td><td style="text-align:center"><span data-i18n="pricing.compare.support.h2">2h</span></td><td style="text-align:center"><span data-i18n="pricing.compare.support.247">24/7</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="pricing.faq.title">Questions fréquentes</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="pricing.faq.sub">
+      Tout ce qu'il faut savoir avant de passer Premium.
+    </p>
+    <div style="max-width:720px;margin:2rem auto 0">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="pricing.faq.q1">Puis-je résilier à tout moment ?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-a" data-i18n="pricing.faq.a1">
+          Oui. Vous pouvez annuler votre abonnement à tout moment depuis votre espace personnel. Aucune commission, aucun frais de résiliation.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="pricing.faq.q2">Quels sont les moyens de paiement acceptés ?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-a" data-i18n="pricing.faq.a2">
+          Wave, Orange Money, carte bancaire (Visa, Mastercard) et Djamo. Les paiements sont sécurisés et instantanés.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="pricing.faq.q3">Y a-t-il un essai gratuit ?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-a" data-i18n="pricing.faq.a3">
+          Oui, 3 jours de Premium offerts à l'inscription, sans carte bancaire. Vous pouvez tester toutes les fonctionnalités avant de payer.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span data-i18n="pricing.faq.q4">Les prix sont-ils en FCFA uniquement ?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-a" data-i18n="pricing.faq.a4">
+          Les prix affichés sont en FCFA (XOF). Pour les paiements internationaux, la conversion est automatique au taux du jour.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="text-center py-12 rounded-2xl reveal" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd)">
+    <h2 class="section-title" style="margin-bottom:.75rem" data-i18n="pricing.final.title">Une question ?</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="pricing.final.sub">
+      Notre équipe vous répond en moins de 2h par WhatsApp.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="https://wa.me/2250150070083?text=Bonjour%20LMO%20SERVICES%2C%20j%27ai%20une%20question%20sur%20les%20tarifs%20AfroPulse." target="_blank" rel="noopener" class="btn bp btn-lg btn-shine">
+        <i class="fa-brands fa-whatsapp"></i><span data-i18n="pricing.final.contact">Contacter l'équipe</span>
+      </a>
+      <a href="signup.html" class="btn bo btn-lg" data-i18n="pricing.final.start">Créer un compte</a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/premium.js"></script>
+<script src="assets/premium-gate.js"></script>
+<script src="assets/wallet.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/autosave.js"></script>
+<script src="assets/voice-search.js"></script>
+<script src="assets/presence.js"></script>
+<script src="assets/sound.js"></script>
+<script src="assets/timezone.js"></script>
+<script src="assets/realtime.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+let cycle = 'monthly';
+
+function setCycle(c){
+  cycle = c;
+  document.getElementById('monthlyBtn').classList.toggle('on', c === 'monthly');
+  document.getElementById('yearlyBtn').classList.toggle('on', c === 'yearly');
+
+  document.querySelectorAll('[data-price-m]').forEach(el => {
+    const m = parseInt(el.dataset.priceM, 10);
+    const y = parseInt(el.dataset.priceY, 10);
+    const price = c === 'monthly' ? m : Math.round(y / 12);
+    el.innerHTML = price.toLocaleString('fr-FR') + '<span class="currency">FCFA</span>';
+  });
+
+  document.querySelectorAll('.plan-period').forEach(el => {
+    if(el.textContent.trim() === '' || el.dataset.keep) return;
+    const key = c === 'monthly' ? 'pricing.period.month' : 'pricing.period.year';
+    const def = c === 'monthly' ? 'par mois' : 'par an';
+    el.innerHTML = `<span data-i18n="${key}">${I18n?.t?.(key) || def}</span>`;
+  });
+}
+
+function toggleFaq(btn){
+  const item = btn.parentElement;
+  item.classList.toggle('open');
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+addEventListener('DOMContentLoaded', () => {
+  initReveal();
+  setCycle('monthly');
+
+  if(typeof I18n !== 'undefined' && I18n.onChange){
+    I18n.onChange(() => setCycle(cycle));
+  }
+});
+</script>
+</body>
+</html>

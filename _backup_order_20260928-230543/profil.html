@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mon profil, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.profil-wrap{max-width:800px;margin:0 auto;padding:1.5rem 1rem 5rem;position:relative}
+.profil-head{text-align:center;margin-bottom:2rem}
+.profil-title{font-size:1.75rem;font-weight:800;color:var(--ink);margin:0 0 .35rem;letter-spacing:-.02em}
+.profil-sub{font-size:.88rem;color:var(--mu);margin:0}
+
+.avatar-block{
+  display:flex;align-items:center;gap:1.25rem;
+  padding:1.25rem;background:var(--sf);border:1px solid var(--bd);
+  border-radius:1rem;margin-bottom:1.25rem;flex-wrap:wrap;
+}
+.avatar-preview{
+  width:90px;height:90px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--ac),var(--gd));
+  color:#fff;font-weight:800;font-size:1.85rem;
+  display:grid;place-items:center;overflow:hidden;
+  border:3px solid var(--sf);box-shadow:0 12px 30px -10px rgba(0,0,0,.2);
+}
+.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.avatar-info{flex:1;min-width:200px}
+.avatar-name{font-size:1.1rem;font-weight:800;color:var(--ink);margin:0 0 .25rem}
+.avatar-role{font-size:.78rem;color:var(--mu);margin:0}
+.avatar-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+.form-block{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.5rem;margin-bottom:1rem}
+.form-block-title{font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 1.25rem;display:flex;align-items:center;gap:.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--bd)}
+.form-block-title i{color:var(--ac)}
+
+.form-row{margin-bottom:1rem}
+.lbl{display:block;font-size:.75rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.req{color:var(--er)}
+.input,textarea.input,select.input{
+  width:100%;padding:.75rem .9rem;border:1.5px solid var(--bd);border-radius:.65rem;
+  background:var(--bg);color:var(--ink);font-family:inherit;font-size:.88rem;
+  outline:none;transition:.15s;
+}
+.input:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 12%,transparent)}
+textarea.input{resize:vertical;min-height:90px;line-height:1.5}
+.form-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
+@media(min-width:600px){.form-grid{grid-template-columns:1fr 1fr}}
+.form-hint{font-size:.7rem;color:var(--mu);margin:.35rem 0 0;line-height:1.5}
+
+.tags-input{
+  display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem;
+  border:1.5px solid var(--bd);border-radius:.65rem;background:var(--bg);
+  min-height:48px;align-items:center;
+}
+.tag-item{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-size:.75rem;font-weight:700;padding:.3rem .65rem;
+  border-radius:999px;background:color-mix(in srgb,var(--ac) 12%,transparent);
+  color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent);
+}
+.tag-remove{background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:.65rem;opacity:.7}
+.tag-remove:hover{opacity:1}
+.tags-input input{
+  flex:1;min-width:120px;border:none;background:none;color:var(--ink);
+  font-family:inherit;font-size:.82rem;outline:none;padding:.35rem .5rem;
+}
+
+.file-upload{
+  display:flex;align-items:center;gap:.85rem;
+  padding:1rem;border:2px dashed var(--bd);border-radius:.75rem;
+  background:var(--bg);cursor:pointer;transition:.15s;
+}
+.file-upload:hover{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 3%,transparent)}
+.file-upload.has-file{border-style:solid;border-color:var(--ok);background:color-mix(in srgb,var(--ok) 5%,transparent)}
+.file-icon{
+  width:44px;height:44px;border-radius:.65rem;flex-shrink:0;
+  display:grid;place-items:center;font-size:1.1rem;
+  background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac);
+}
+.file-upload.has-file .file-icon{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.file-body{flex:1;min-width:0}
+.file-title{font-size:.82rem;font-weight:700;color:var(--ink);margin:0 0 .15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-sub{font-size:.7rem;color:var(--mu);margin:0}
+
+.btn-save{
+  width:100%;padding:1rem;border-radius:.75rem;
+  background:var(--ac);color:#fff;border:none;
+  font-family:inherit;font-size:.95rem;font-weight:800;
+  cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  box-shadow:0 12px 30px -10px color-mix(in srgb,var(--ac) 55%,transparent);
+  margin-top:1rem;
+}
+.btn-save:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 40px -12px color-mix(in srgb,var(--ac) 60%,transparent)}
+.btn-save:disabled{opacity:.55;cursor:wait}
+
+.reliability-card{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));
+  border:1px solid var(--bd);border-radius:1rem;padding:1.25rem;margin-bottom:1rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.reliability-score{
+  width:70px;height:70px;border-radius:50%;flex-shrink:0;
+  display:grid;place-items:center;font-size:1.5rem;font-weight:800;
+  background:var(--sf);border:3px solid var(--ok);color:var(--ok);
+}
+.reliability-info{flex:1;min-width:180px}
+.reliability-title{font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .25rem}
+.reliability-text{font-size:.78rem;color:var(--mu);margin:0;line-height:1.5}
+
+.msg-ok{
+  padding:.85rem 1rem;border-radius:.65rem;margin-bottom:1rem;
+  background:color-mix(in srgb,var(--ok) 10%,transparent);
+  color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent);
+  font-size:.82rem;font-weight:600;display:none;align-items:center;gap:.5rem;
+}
+.msg-ok.on{display:flex}
+.msg-er{
+  padding:.85rem 1rem;border-radius:.65rem;margin-bottom:1rem;
+  background:color-mix(in srgb,var(--er) 10%,transparent);
+  color:var(--er);border:1px solid color-mix(in srgb,var(--er) 25%,transparent);
+  font-size:.82rem;font-weight:600;display:none;align-items:center;gap:.5rem;
+}
+.msg-er.on{display:flex}
+.hidden{display:none!important}
+</style>
+
+<!-- SEO — noindex -->
+<meta name="robots" content="noindex, nofollow">
+<!-- /SEO -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="profil-wrap">
+
+  <div class="profil-head reveal">
+    <h1 class="profil-title" data-i18n="profile.title">Mon profil</h1>
+    <p class="profil-sub" data-i18n="profile.sub">Complétez votre profil pour inspirer confiance et multiplier vos chances.</p>
+  </div>
+
+  <div class="msg-ok" id="msgOk"><i class="fa-solid fa-circle-check"></i><span></span></div>
+  <div class="msg-er" id="msgEr"><i class="fa-solid fa-circle-exclamation"></i><span></span></div>
+
+  <!-- SCORE FIABILITÉ -->
+  <div class="reliability-card reveal">
+    <div class="reliability-score" id="reliabilityScore">—</div>
+    <div class="reliability-info">
+      <h3 class="reliability-title" id="reliabilityTitle">—</h3>
+      <p class="reliability-text" data-i18n="profile.reliability.text">Complétez votre profil (avatar, CV, LinkedIn, RCCM) pour augmenter votre score.</p>
+    </div>
+  </div>
+
+  <!-- AVATAR -->
+  <div class="avatar-block reveal">
+    <div class="avatar-preview" id="avatarPreview">—</div>
+    <div class="avatar-info">
+      <p class="avatar-name" id="avatarName">—</p>
+      <p class="avatar-role" id="avatarRole">—</p>
+    </div>
+    <div class="avatar-actions">
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(event)">
+      <button class="btn bp btn-sm" onclick="document.getElementById('avatarInput').click()">
+        <i class="fa-solid fa-camera"></i><span data-i18n="profile.changeAvatar">Changer</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- INFOS PERSO -->
+  <form id="profileForm" onsubmit="saveProfile(event)">
+
+    <div class="form-block reveal">
+      <h3 class="form-block-title"><i class="fa-solid fa-user"></i><span data-i18n="profile.section.identity">Identité</span></h3>
+
+      <div class="form-row">
+        <label class="lbl" for="fullName"><span data-i18n="profile.field.fullName">Nom complet</span> <span class="req">*</span></label>
+        <input id="fullName" class="input" type="text" required placeholder="Ex : Ladji Ouattara">
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="lbl" for="jobTitle" data-i18n="profile.field.jobTitle">Métier / Poste</label>
+          <input id="jobTitle" class="input" type="text" placeholder="Ex : Développeur Full Stack">
+        </div>
+        <div class="form-row">
+          <label class="lbl" for="phone" data-i18n="profile.field.phone">Téléphone</label>
+          <input id="phone" class="input" type="tel" placeholder="+225 07 58 00 00 00">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="lbl" for="bio" data-i18n="profile.field.bio">Bio</label>
+        <textarea id="bio" class="input" placeholder="Décrivez votre parcours, vos ambitions…"></textarea>
+        <p class="form-hint" data-i18n="profile.field.bio.hint">Max 500 caractères. Soignez votre présentation, c'est ce que verront les clients.</p>
+      </div>
+    </div>
+
+    <div class="form-block reveal">
+      <h3 class="form-block-title"><i class="fa-solid fa-briefcase"></i><span data-i18n="profile.section.skills">Compétences</span></h3>
+
+      <div class="form-row">
+        <label class="lbl" data-i18n="profile.field.skills">Compétences (max 10)</label>
+        <div class="tags-input" id="tagsInput">
+          <input id="tagsInputField" type="text" placeholder="Tapez + Entrée" onkeydown="handleTagInput(event)">
+        </div>
+        <p class="form-hint" data-i18n="profile.field.skills.hint">Appuyez sur Entrée après chaque compétence.</p>
+      </div>
+
+      <div class="form-row">
+        <label class="lbl" for="linkedin" data-i18n="profile.field.linkedin">Profil LinkedIn</label>
+        <input id="linkedin" class="input" type="url" placeholder="https://linkedin.com/in/…">
+      </div>
+    </div>
+
+    <div class="form-block reveal">
+      <h3 class="form-block-title"><i class="fa-solid fa-file-pdf"></i><span data-i18n="profile.section.documents">Documents</span></h3>
+
+      <div class="form-row">
+        <label class="lbl" data-i18n="profile.field.cv">CV (PDF, max 5 Mo)</label>
+        <input type="file" id="cvInput" accept=".pdf,image/*" style="display:none" onchange="uploadCv(event)">
+        <div class="file-upload" id="cvZone" onclick="document.getElementById('cvInput').click()">
+          <div class="file-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+          <div class="file-body">
+            <p class="file-title" id="cvTitle" data-i18n="profile.cv.upload">Cliquez pour uploader votre CV</p>
+            <p class="file-sub" data-i18n="profile.cv.hint">PDF ou image · max 5 Mo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-save reveal" id="saveBtn">
+      <i class="fa-solid fa-floppy-disk"></i><span data-i18n="profile.save">Enregistrer les modifications</span>
+    </button>
+
+  </form>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+function T(key, fallback){
+  if(typeof I18n !== 'undefined' && I18n.t){
+    const v = I18n.t(key);
+    if(v && v !== key) return v;
+  }
+  return fallback;
+}
+const esc = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = n => (n||'?').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+
+let PROFILE = null;
+let SKILLS = [];
+
+function showMsg(type, text){
+  const ok = $('msgOk'); const er = $('msgEr');
+  ok.classList.remove('on'); er.classList.remove('on');
+  if(type === 'ok'){ ok.querySelector('span').textContent = text; ok.classList.add('on'); setTimeout(() => ok.classList.remove('on'), 4000); }
+  else if(type === 'er'){ er.querySelector('span').textContent = text; er.classList.add('on'); }
+}
+
+/* ═══ TAGS ═══ */
+function renderTags(){
+  const box = $('tagsInput');
+  // Supprime les anciens tags (pas le champ input)
+  box.querySelectorAll('.tag-item').forEach(t => t.remove());
+
+  SKILLS.forEach((s, i) => {
+    const el = document.createElement('span');
+    el.className = 'tag-item';
+    el.innerHTML = `${esc(s)}<button type="button" class="tag-remove" onclick="removeTag(${i})"><i class="fa-solid fa-xmark"></i></button>`;
+    box.insertBefore(el, box.firstChild);
+  });
+}
+function handleTagInput(e){
+  if(e.key === 'Enter' || e.key === ','){
+    e.preventDefault();
+    const v = e.target.value.trim().replace(/,$/, '');
+    if(!v) return;
+    if(SKILLS.length >= 10){ showMsg('er', T('profile.error.maxSkills', 'Maximum 10 compétences.')); return; }
+    if(SKILLS.includes(v)){ e.target.value = ''; return; }
+    SKILLS.push(v);
+    e.target.value = '';
+    renderTags();
+  } else if(e.key === 'Backspace' && !e.target.value && SKILLS.length){
+    SKILLS.pop();
+    renderTags();
+  }
+}
+function removeTag(i){
+  SKILLS.splice(i, 1);
+  renderTags();
+}
+
+/* ═══ AVATAR ═══ */
+function renderAvatar(){
+  const av = $('avatarPreview');
+  const name = PROFILE?.full_name || 'Utilisateur';
+  if(PROFILE?.avatar_url){
+    av.innerHTML = `<img src="${esc(PROFILE.avatar_url)}" alt="">`;
+  }else{
+    av.textContent = initials(name);
+  }
+  $('avatarName').textContent = name;
+  $('avatarRole').textContent = PROFILE?.job_title || (PROFILE?.role === 'entreprise' ? T('dash.role.company', 'Entreprise') : T('dash.role.individual', 'Particulier'));
+}
+
+async function uploadAvatar(e){
+  const file = e.target.files?.[0];
+  if(!file) return;
+  try{
+    const compressed = await ImageTools.compress(file, { maxWidth: 400, maxHeight: 400, quality: 0.85 });
+    const blob = compressed.blob || compressed;
+    const { url } = await Auth.uploadFile(new File([blob], 'avatar.jpg', { type: 'image/jpeg' }), 'avatar');
+    await Auth.updateProfile({ avatar_url: url });
+    PROFILE.avatar_url = url;
+    renderAvatar();
+    showMsg('ok', T('profile.avatar.updated', 'Avatar mis à jour !'));
+  }catch(err){
+    showMsg('er', err.message || 'Erreur avatar');
+  }
+}
+
+/* ═══ CV ═══ */
+async function uploadCv(e){
+  const file = e.target.files?.[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ showMsg('er', 'Fichier trop volumineux (max 5 Mo).'); return; }
+
+  try{
+    $('cvTitle').textContent = T('profile.cv.uploading', 'Upload en cours…');
+    const { url } = await Auth.uploadFile(file, 'cv');
+    await Auth.updateProfile({ cv_url: url });
+    PROFILE.cv_url = url;
+    $('cvZone').classList.add('has-file');
+    $('cvTitle').textContent = file.name;
+    showMsg('ok', T('profile.cv.updated', 'CV mis à jour !'));
+  }catch(err){
+    showMsg('er', err.message || 'Erreur CV');
+    $('cvTitle').textContent = T('profile.cv.upload', 'Cliquez pour uploader votre CV');
+  }
+}
+
+/* ═══ CHARGE ═══ */
+async function loadProfile(){
+  const user = Auth.getUser();
+  PROFILE = Auth.getProfile() || await DB.getProfileById(user.id);
+  if(!PROFILE){ showMsg('er', 'Profil introuvable'); return; }
+
+  $('fullName').value = PROFILE.full_name || '';
+  $('jobTitle').value = PROFILE.job_title || '';
+  $('phone').value = PROFILE.phone || '';
+  $('bio').value = PROFILE.bio || '';
+  $('linkedin').value = PROFILE.linkedin || '';
+
+  SKILLS = (PROFILE.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+  renderTags();
+  renderAvatar();
+
+  if(PROFILE.cv_url){
+    $('cvZone').classList.add('has-file');
+    $('cvTitle').textContent = T('profile.cv.uploaded', 'CV déjà uploadé (cliquez pour remplacer)');
+  }
+
+  // Fiabilité
+  try{
+    const { score } = await DB.getReliabilityScore(user.id);
+    const lvl = DB.getReliabilityLevel(score);
+    $('reliabilityScore').textContent = score;
+    $('reliabilityScore').style.borderColor = lvl.color;
+    $('reliabilityScore').style.color = lvl.color;
+    $('reliabilityTitle').textContent = `${lvl.label} · ${score}/100`;
+  }catch(e){}
+}
+
+/* ═══ SAVE ═══ */
+async function saveProfile(e){
+  e.preventDefault();
+  const btn = $('saveBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enregistrement…';
+
+  try{
+    const fields = {
+      full_name: $('fullName').value.trim(),
+      job_title: $('jobTitle').value.trim() || null,
+      phone: $('phone').value.trim() || null,
+      bio: $('bio').value.trim() || null,
+      linkedin: $('linkedin').value.trim() || null,
+      skills: SKILLS.join(', ')
+    };
+
+    if(!fields.full_name || fields.full_name.length < 2){
+      throw new Error(T('signup.error.name', 'Entrez votre nom complet.'));
+    }
+    if(fields.bio && fields.bio.length > 500){
+      throw new Error('Bio trop longue (max 500 caractères).');
+    }
+
+    await Auth.updateProfile(fields);
+    showMsg('ok', T('profile.saved', 'Profil enregistré !'));
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }catch(err){
+    showMsg('er', err.message || 'Erreur');
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+}
+
+addEventListener('DOMContentLoaded', async () => {
+  initReveal();
+  await new Promise(r => setTimeout(r, 400));
+
+  if(!Auth?.isLogged?.()){
+    location.href = 'login.html?next=profil.html';
+    return;
+  }
+
+  await loadProfile();
+});
+</script>
+</body>
+</html>

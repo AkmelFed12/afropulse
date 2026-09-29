@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preuve de paiement — AfroPulse</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://afro-pulse.netlify.app/preuve-paiement.html">
+
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b5fff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    .grid-bg {
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--clr-ink) 3%, transparent) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: .5;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .proof-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 4rem;
+      position: relative;
+    }
+    .proof-head { text-align: center; margin-bottom: 1.5rem; }
+    .proof-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      letter-spacing: -.02em;
+      margin: 0 0 .35rem;
+    }
+    .proof-sub { font-size: .88rem; color: var(--clr-muted); margin: 0; }
+
+    .order-block {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1.15rem;
+      padding: 1.35rem;
+      margin-bottom: 1rem;
+    }
+    .order-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .order-ref {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      font-size: .78rem;
+      font-weight: 700;
+      padding: .35rem .7rem;
+      border-radius: .5rem;
+      background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+      color: var(--clr-primary);
+      border: 1px solid color-mix(in srgb, var(--clr-primary) 22%, transparent);
+      cursor: pointer;
+      transition: .15s;
+    }
+    .order-ref:hover { background: color-mix(in srgb, var(--clr-primary) 15%, transparent); }
+    .order-edit {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--clr-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .order-edit:hover { color: var(--clr-primary); }
+
+    .order-rows { display: flex; flex-direction: column; gap: .5rem; }
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: .75rem;
+      font-size: .83rem;
+    }
+    .order-row-label { color: var(--clr-muted); flex-shrink: 0; }
+    .order-row-value { color: var(--clr-ink); font-weight: 700; text-align: right; word-break: break-word; }
+    .order-row-value.method { display: inline-flex; align-items: center; gap: .45rem; }
+    .order-row-value.method img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      border-radius: 4px;
+      background: #fff;
+      padding: 1px;
+      border: 1px solid var(--clr-border);
+      flex-shrink: 0;
+    }
+    .order-total {
+      margin-top: .85rem;
+      padding-top: .85rem;
+      border-top: 1px solid var(--clr-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .95rem;
+      font-weight: 800;
+    }
+    .order-total .amount {
+      color: var(--clr-primary);
+      font-size: 1.15rem;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+    }
+
+    .step-block {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1.15rem;
+      padding: 1.35rem;
+      margin-bottom: 1rem;
+    }
+    .step-head {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .5rem;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--clr-primary) 15%, transparent);
+      color: var(--clr-primary);
+      display: grid;
+      place-items: center;
+      font-size: .75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0;
+    }
+    .step-hint {
+      font-size: .75rem;
+      color: var(--clr-muted);
+      margin: 0 0 1rem;
+      padding-left: 2.1rem;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--clr-border);
+      border-radius: 1rem;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: var(--clr-bg);
+      cursor: pointer;
+      transition: .22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-zone:hover {
+      border-color: var(--clr-primary);
+      background: color-mix(in srgb, var(--clr-primary) 3%, transparent);
+    }
+    .upload-zone.dragover {
+      border-color: var(--clr-primary);
+      background: color-mix(in srgb, var(--clr-primary) 6%, transparent);
+      transform: scale(1.01);
+    }
+    .upload-zone.has-file {
+      border-style: solid;
+      border-color: var(--clr-ok);
+      background: color-mix(in srgb, var(--clr-ok) 5%, transparent);
+      padding: 1.25rem;
+    }
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--clr-primary) 10%, transparent);
+      color: var(--clr-primary);
+      font-size: 1.5rem;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      transition: .3s;
+    }
+    .upload-zone:hover .upload-icon { transform: scale(1.1) rotate(-5deg); }
+    .upload-zone.has-file .upload-icon {
+      background: color-mix(in srgb, var(--clr-ok) 15%, transparent);
+      color: var(--clr-ok);
+      font-size: 1.35rem;
+    }
+    .upload-title {
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .35rem;
+    }
+    .upload-sub {
+      font-size: .8rem;
+      color: var(--clr-muted);
+      margin: 0 0 .65rem;
+    }
+    .upload-hint {
+      font-size: .7rem;
+      color: var(--clr-muted);
+      margin: 0;
+    }
+
+    .file-preview {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      text-align: left;
+    }
+    .file-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: .65rem;
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      color: var(--clr-primary);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .file-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--clr-ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin: 0 0 .15rem;
+    }
+    .file-meta {
+      font-size: .7rem;
+      color: var(--clr-muted);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .file-meta .ok {
+      color: var(--clr-ok);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+    }
+    .file-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+    .file-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: .5rem;
+      background: var(--clr-bg);
+      border: 1px solid var(--clr-border);
+      color: var(--clr-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: .75rem;
+      transition: .15s;
+    }
+    .file-btn:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .file-btn.danger:hover { border-color: var(--clr-error); color: var(--clr-error); }
+
+    .upload-progress {
+      margin-top: 1rem;
+      padding: .85rem 1rem;
+      border-radius: .65rem;
+      background: color-mix(in srgb, var(--clr-primary) 6%, transparent);
+      border: 1px solid color-mix(in srgb, var(--clr-primary) 20%, transparent);
+      display: none;
+    }
+    .upload-progress.on { display: block; }
+    .progress-bar {
+      height: 5px;
+      border-radius: 3px;
+      background: var(--clr-bg);
+      overflow: hidden;
+      margin-top: .5rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--clr-primary), var(--clr-gold));
+      width: 0%;
+      transition: width .3s ease;
+      border-radius: 3px;
+    }
+    .progress-label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--clr-ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .note-row { margin-top: 1rem; }
+
+    .btn-send {
+      width: 100%;
+      padding: 1rem;
+      border-radius: .85rem;
+      background: var(--clr-primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      transition: .2s;
+      box-shadow: 0 12px 32px -10px color-mix(in srgb, var(--clr-primary) 55%, transparent);
+      margin-top: 1.5rem;
+    }
+    .btn-send:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -12px color-mix(in srgb, var(--clr-primary) 60%, transparent);
+    }
+    .btn-send:disabled { opacity: .6; cursor: wait; }
+
+    .error-msg {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .85rem 1rem;
+      border-radius: .65rem;
+      background: color-mix(in srgb, var(--clr-error) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--clr-error) 25%, transparent);
+      color: var(--clr-error);
+      font-size: .8rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    .error-msg i { flex-shrink: 0; margin-top: .1rem; }
+    .hidden { display: none !important; }
+
+    .success-block {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: 1.25rem;
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--clr-ok) 12%, transparent);
+      color: var(--clr-ok);
+      font-size: 2rem;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1.25rem;
+      animation: successPop .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes successPop {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--clr-ink);
+      margin: 0 0 .5rem;
+    }
+    .success-sub {
+      font-size: .88rem;
+      color: var(--clr-muted);
+      line-height: 1.6;
+      margin: 0 0 1.5rem;
+    }
+
+    .ticket {
+      background: var(--clr-bg);
+      border: 1px dashed var(--clr-border);
+      border-radius: .85rem;
+      padding: 1.15rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .ticket-title {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--clr-muted);
+      margin: 0 0 .65rem;
+    }
+    .ticket-ref {
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      font-size: .85rem;
+      font-weight: 800;
+      color: var(--clr-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem;
+      word-break: break-all;
+    }
+    .ticket-copy {
+      background: none;
+      border: 1px solid var(--clr-border);
+      color: var(--clr-muted);
+      padding: .3rem .55rem;
+      border-radius: .4rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: .7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      flex-shrink: 0;
+      transition: .15s;
+    }
+    .ticket-copy:hover { border-color: var(--clr-primary); color: var(--clr-primary); }
+    .ticket-meta {
+      font-size: .72rem;
+      color: var(--clr-muted);
+      margin-top: .65rem;
+      line-height: 1.5;
+    }
+
+    .redirect-count {
+      font-size: .78rem;
+      color: var(--clr-muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+    }
+    .redirect-count strong {
+      color: var(--clr-ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .success-actions {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .success-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    @media (max-width: 520px) {
+      .proof-title { font-size: 1.35rem; }
+      .order-block, .step-block { padding: 1.15rem; }
+      .upload-zone { padding: 1.85rem 1rem; }
+      .success-block { padding: 1.75rem 1.15rem; }
+    }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="brand" aria-label="AfroPulse — Accueil">
+        <span class="brand__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/>
+          </svg>
+        </span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Navigation principale">
+        <a href="index.html" data-i18n="nav.home">Accueil</a>
+        <a href="talents.html" data-i18n="nav.talents">Talents</a>
+        <a href="missions.html" data-i18n="nav.missions">Missions</a>
+        <a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a>
+      </nav>
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Basculer le thème">
+          <i data-theme-icon class="fa-solid fa-moon"></i>
+        </button>
+        <div id="authSlot" style="display:flex;gap:.5rem;align-items:center"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative">
+    <div class="grid-bg" aria-hidden="true"></div>
+
+    <div id="missingScreen" class="proof-wrap hidden">
+      <div class="success-block">
+        <div class="success-icon" style="background:color-mix(in srgb,var(--clr-gold) 12%,transparent);color:var(--clr-gold)">
+          <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        </div>
+        <h1 class="success-title" data-i18n="proof.missing.title">Session expirée</h1>
+        <p class="success-sub" data-i18n="proof.missing.sub">Aucune commande en cours. Recommencez le paiement.</p>
+        <div class="success-actions">
+          <a href="abonnement.html" class="btn btn--primary" data-i18n="proof.missing.btn">Retour à l'abonnement</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="proofScreen" class="proof-wrap">
+
+      <div class="proof-head">
+        <span class="chip" style="display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .85rem;border-radius:999px;background:color-mix(in srgb,var(--clr-primary) 10%,transparent);border:1px solid color-mix(in srgb,var(--clr-primary) 22%,transparent);color:var(--clr-primary);font-size:.78rem;font-weight:700;margin-bottom:.75rem">
+          <i class="fa-solid fa-receipt" style="font-size:.7rem" aria-hidden="true"></i>
+          <span data-i18n="proof.chip">Étape 2 sur 2</span>
+        </span>
+        <h1 class="proof-title" data-i18n="proof.title">Preuve de paiement</h1>
+        <p class="proof-sub" data-i18n="proof.sub">Envoyez la capture d'écran de votre paiement. L'équipe valide manuellement sous 30 min.</p>
+      </div>
+
+      <div class="order-block">
+        <div class="order-head">
+          <button type="button" class="order-ref" onclick="copyRef()">
+            <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
+            <span id="refLabel">AP-PRO-XXXX</span>
+            <i class="fa-regular fa-copy" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="order-edit" onclick="backToPayment()">
+            <i class="fa-solid fa-pen" aria-hidden="true"></i>
+            <span data-i18n="proof.back">Modifier</span>
+          </button>
+        </div>
+
+        <div class="order-rows">
+          <div class="order-row">
+            <span class="order-row-label" data-i18n="proof.field.plan">Formule</span>
+            <span class="order-row-value" id="orPlan">Pro</span>
+          </div>
+          <div class="order-row">
+            <span class="order-row-label" data-i18n="proof.field.cycle">Cycle</span>
+            <span class="order-row-value" id="orCycle">Mensuel</span>
+          </div>
+          <div class="order-row">
+            <span class="order-row-label" data-i18n="proof.field.method">Moyen de paiement</span>
+            <span class="order-row-value method" id="orMethod"></span>
+          </div>
+          <div class="order-row">
+            <span class="order-row-label" data-i18n="proof.field.customer">Client</span>
+            <span class="order-row-value" id="orCustomer">—</span>
+          </div>
+          <div class="order-row">
+            <span class="order-row-label" data-i18n="proof.field.date">Date</span>
+            <span class="order-row-value" id="orDate">—</span>
+          </div>
+        </div>
+
+        <div class="order-total">
+          <span data-i18n="proof.field.total">Total payé</span>
+          <span class="amount" id="orTotal">5 050 FCFA</span>
+        </div>
+      </div>
+
+      <form id="proofForm" onsubmit="sendProof(event)" novalidate>
+
+        <section class="step-block">
+          <div class="step-head">
+            <div class="step-num">2</div>
+            <h3 class="step-title" data-i18n="proof.step2.title">Votre preuve de paiement</h3>
+          </div>
+          <p class="step-hint" data-i18n="proof.step2.hint">Capture d'écran de la transaction Wave, Orange Money, Djamo ou de votre relevé bancaire.</p>
+
+          <div class="upload-zone" id="uploadZone" onclick="openFilePicker()" role="button" tabindex="0" aria-label="Cliquez ou glissez un fichier">
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg,application/pdf" hidden onchange="handleFile(event)">
+
+            <div id="uploadEmpty">
+              <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i></div>
+              <h4 class="upload-title" data-i18n="proof.upload.title">Glissez votre capture ici</h4>
+              <p class="upload-sub" data-i18n="proof.upload.sub">ou cliquez pour choisir un fichier</p>
+              <p class="upload-hint" data-i18n="proof.upload.hint">JPG, PNG ou PDF · max 5 Mo</p>
+            </div>
+
+            <div id="uploadPreview" class="hidden">
+              <div class="file-preview">
+                <div class="file-thumb" id="fileThumb">
+                  <i class="fa-solid fa-file-image" aria-hidden="true"></i>
+                </div>
+                <div class="file-info">
+                  <p class="file-name" id="fileName">capture.png</p>
+                  <p class="file-meta" id="fileMeta">
+                    <span class="ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> <span data-i18n="proof.upload.ready">Fichier prêt</span></span>
+                    <span>·</span>
+                    <span id="fileSize">250 Ko</span>
+                  </p>
+                </div>
+                <div class="file-actions">
+                  <button type="button" class="file-btn" onclick="event.stopPropagation();openFilePicker()" aria-label="Changer le fichier">
+                    <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" class="file-btn danger" onclick="event.stopPropagation();removeFile()" aria-label="Supprimer le fichier">
+                    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="upload-progress" id="uploadProgress">
+            <div class="progress-label">
+              <span id="progressLabel" data-i18n="proof.upload.compressing">Compression…</span>
+              <span id="progressPct">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+
+          <div class="note-row">
+            <label for="note" class="lbl" data-i18n="proof.note.label">Note additionnelle (optionnel)</label>
+            <textarea id="note" class="input" data-i18n-placeholder="proof.note.placeholder" placeholder="Ex : Payé depuis le numéro 07 XX XX XX XX"></textarea>
+          </div>
+        </section>
+
+        <p id="error" class="error-msg hidden" role="alert">
+          <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+          <span></span>
+        </p>
+
+        <button type="submit" id="sendBtn" class="btn-send">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          <span data-i18n="proof.submit">Envoyer ma preuve</span>
+        </button>
+
+      </form>
+    </div>
+
+    <div id="successScreen" class="proof-wrap hidden">
+      <div class="success-block">
+        <div class="success-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></div>
+        <h1 class="success-title" data-i18n="proof.success.title">Preuve envoyée !</h1>
+        <p class="success-sub" data-i18n="proof.success.sub">L'équipe AfroPulse vérifie votre paiement. Vous recevrez une notification dès validation (max 30 min).</p>
+
+        <div class="ticket">
+          <div class="ticket-title" data-i18n="proof.success.ticket">Votre ticket</div>
+          <div class="ticket-ref">
+            <span id="ticketRef">AP-PRO-XXXX</span>
+            <button type="button" class="ticket-copy" onclick="copyRef()">
+              <i class="fa-regular fa-copy" aria-hidden="true"></i>
+              <span data-i18n="proof.success.copy">Copier</span>
+            </button>
+          </div>
+          <div class="ticket-meta">
+            <div><strong id="ticketPlan">Pro</strong> · <span id="ticketTotal">5 050 FCFA</span></div>
+            <div id="ticketDate">—</div>
+          </div>
+        </div>
+
+        <div class="redirect-count">
+          <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>
+          <span data-i18n="proof.success.redirect">Redirection dans</span>
+          <strong id="countdown">5</strong>
+          <span>s</span>
+        </div>
+
+        <div class="success-actions">
+          <a id="waLink" href="#" target="_blank" rel="noopener" class="btn btn--primary">
+            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+            <span data-i18n="proof.success.whatsapp">Envoyer aussi sur WhatsApp</span>
+          </a>
+          <a href="dashboard.html" class="btn btn--ghost">
+            <i class="fa-solid fa-chart-simple" aria-hidden="true"></i>
+            <span data-i18n="proof.success.dashboard">Aller au tableau de bord</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/image-tools.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function T(key, fallback) {
+      if (typeof I18n !== 'undefined' && I18n.t) {
+        const v = I18n.t(key);
+        if (v && v !== key) return v;
+      }
+      return fallback;
+    }
+
+    function methodLogo(method) {
+      const logos = {
+        wave: 'assets/wave.png',
+        orange: 'assets/orange.png',
+        card: 'assets/card.jpg',
+        djamo: 'assets/djamo.png'
+      };
+      return logos[method] || logos.card;
+    }
+
+    let intent = null;
+    let selectedFile = null;
+    let compressedBlob = null;
+
+    function fmt(n) {
+      const lang = (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR';
+      return Number(n).toLocaleString(lang) + ' FCFA';
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      const lang = (typeof I18n !== 'undefined' && I18n.get() === 'en') ? 'en-US' : 'fr-FR';
+      return d.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function fmtSize(bytes) {
+      if (bytes < 1024) return bytes + ' o';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' Ko';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+    }
+
+    function loadIntent() {
+      const params = new URLSearchParams(location.search);
+      const refFromUrl = params.get('ref');
+
+      try {
+        const raw = sessionStorage.getItem('ap-payment-intent');
+        if (raw) {
+          intent = JSON.parse(raw);
+          if (refFromUrl && !intent.ref) intent.ref = refFromUrl;
+          return true;
+        }
+      } catch (e) {}
+
+      if (refFromUrl) {
+        intent = {
+          ref: refFromUrl,
+          plan: 'pro',
+          cycle: 'monthly',
+          amount: 5000,
+          method: 'wave',
+          methodLabel: 'Wave',
+          fee: 50,
+          total: 5050,
+          customer: { name: 'Client', phone: '', email: '' },
+          createdAt: new Date().toISOString()
+        };
+        return true;
+      }
+      return false;
+    }
+
+    function renderIntent() {
+      if (!intent) return;
+
+      $('refLabel').textContent = intent.ref;
+      $('ticketRef').textContent = intent.ref;
+
+      const planName = intent.plan.charAt(0).toUpperCase() + intent.plan.slice(1);
+      $('orPlan').textContent = planName;
+      $('ticketPlan').textContent = planName;
+
+      $('orCycle').textContent = intent.cycle === 'yearly'
+        ? T('pricing.cycle.yearly', 'Annuel')
+        : T('pricing.cycle.monthly', 'Mensuel');
+
+      const methodName = intent.methodLabel || intent.method;
+      $('orMethod').innerHTML = `
+        <img src="${methodLogo(intent.method)}" alt="" loading="lazy">
+        <span>${methodName}</span>`;
+
+      $('orCustomer').textContent = intent.customer?.name || '—';
+      $('orDate').textContent = fmtDate(intent.createdAt);
+      $('ticketDate').textContent = fmtDate(intent.createdAt);
+
+      $('orTotal').textContent = fmt(intent.total);
+      $('ticketTotal').textContent = fmt(intent.total);
+
+      const waMessage = encodeURIComponent(
+        `Bonjour AfroPulse 👋\n\n` +
+        `J'ai effectué un paiement et j'envoie ma preuve :\n\n` +
+        `📋 Référence : ${intent.ref}\n` +
+        `💎 Formule : ${planName} (${intent.cycle === 'yearly' ? 'annuel' : 'mensuel'})\n` +
+        `💳 Moyen : ${methodName}\n` +
+        `💰 Montant : ${fmt(intent.total)}\n` +
+        `👤 Client : ${intent.customer?.name || '—'}\n\n` +
+        `Merci de valider mon abonnement 🙏`
+      );
+      $('waLink').href = `https://wa.me/2250150070083?text=${waMessage}`;
+    }
+
+    function openFilePicker() { $('fileInput').click(); }
+    window.openFilePicker = openFilePicker;
+
+    function handleFile(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      processFile(file);
+    }
+    window.handleFile = handleFile;
+
+    function processFile(file) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+      if (!validTypes.includes(file.type)) {
+        showError(T('proof.error.fileType', 'Format non supporté. Utilisez JPG, PNG ou PDF.'));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showError(T('proof.error.fileTooBig', 'Fichier trop volumineux (max 5 Mo).'));
+        return;
+      }
+
+      clearError();
+      selectedFile = file;
+
+      $('uploadZone').classList.add('has-file');
+      $('uploadEmpty').classList.add('hidden');
+      $('uploadPreview').classList.remove('hidden');
+
+      $('fileName').textContent = file.name;
+      $('fileSize').textContent = fmtSize(file.size);
+
+      const thumb = $('fileThumb');
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          thumb.innerHTML = `<img src="${e.target.result}" alt="">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        thumb.innerHTML = `<i class="fa-solid fa-file-pdf" aria-hidden="true"></i>`;
+      }
+
+      if (file.type.startsWith('image/') && typeof ImageTools !== 'undefined') {
+        compressImage(file);
+      } else {
+        compressedBlob = file;
+      }
+    }
+
+    async function compressImage(file) {
+      const prog = $('uploadProgress');
+      const bar = $('progressFill');
+      const pct = $('progressPct');
+
+      prog.classList.add('on');
+      bar.style.width = '0%';
+      pct.textContent = '0%';
+
+      try {
+        const result = await ImageTools.compress(file, {
+          maxWidth: 1600,
+          maxHeight: 1600,
+          quality: 0.82,
+          onProgress: (p) => {
+            bar.style.width = p + '%';
+            pct.textContent = p + '%';
+          }
+        });
+
+        compressedBlob = result.blob || result;
+
+        bar.style.width = '100%';
+        pct.textContent = '100%';
+
+        const newSize = compressedBlob.size || file.size;
+        if (newSize < file.size) {
+          $('fileSize').textContent = fmtSize(newSize) + ' (compressé)';
+        }
+
+        setTimeout(() => prog.classList.remove('on'), 800);
+      } catch (e) {
+        console.warn('[compress] error:', e);
+        compressedBlob = file;
+        prog.classList.remove('on');
+      }
+    }
+
+    function removeFile() {
+      selectedFile = null;
+      compressedBlob = null;
+      $('fileInput').value = '';
+      $('uploadZone').classList.remove('has-file');
+      $('uploadEmpty').classList.remove('hidden');
+      $('uploadPreview').classList.add('hidden');
+      $('fileThumb').innerHTML = '<i class="fa-solid fa-file-image" aria-hidden="true"></i>';
+      $('uploadProgress').classList.remove('on');
+    }
+    window.removeFile = removeFile;
+
+    // Drag & drop
+    document.addEventListener('DOMContentLoaded', () => {
+      const zone = $('uploadZone');
+      if (!zone) return;
+
+      ['dragenter', 'dragover'].forEach(evt => {
+        zone.addEventListener(evt, e => {
+          e.preventDefault();
+          zone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(evt => {
+        zone.addEventListener(evt, e => {
+          e.preventDefault();
+          zone.classList.remove('dragover');
+        });
+      });
+      zone.addEventListener('drop', e => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file) processFile(file);
+      });
+      zone.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openFilePicker();
+        }
+      });
+    });
+
+    function showError(msg) {
+      const el = $('error');
+      el.querySelector('span').textContent = msg;
+      el.classList.remove('hidden');
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearError() {
+      const el = $('error');
+      el.classList.add('hidden');
+      el.querySelector('span').textContent = '';
+    }
+
+    function buildTicket(ref) {
+      if (!ref) return 'AP-TICKET-' + Date.now().toString(36).toUpperCase();
+      const parts = ref.split('-');
+      if (parts.length >= 3) return 'AP-TICKET-' + parts.slice(2).join('-');
+      return 'AP-TICKET-' + ref;
+    }
+
+    async function sendProof(e) {
+      e.preventDefault();
+      clearError();
+
+      if (!compressedBlob && !selectedFile) {
+        return showError(T('proof.error.noFile', 'Veuillez ajouter une capture.'));
+      }
+
+      const user = Auth?.getUser?.();
+      if (!user) return showError(T('pay.error.login', 'Connectez-vous pour continuer.'));
+
+      const btn = $('sendBtn');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i><span>${T('proof.submitting', 'Envoi…')}</span>`;
+
+      try {
+        const fileToUpload = compressedBlob || selectedFile;
+        const ext = (fileToUpload.name?.split('.').pop() || (fileToUpload.type?.includes('pdf') ? 'pdf' : 'jpg')).toLowerCase();
+        const filename = `${user.id}/proof-${intent.ref}-${Date.now()}.${ext}`;
+
+        const { error: upErr } = await DB.client.storage
+          .from('uploads')
+          .upload(filename, fileToUpload, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: fileToUpload.type || 'image/jpeg'
+          });
+
+        if (upErr) throw upErr;
+
+        const { data: { publicUrl } } = DB.client.storage.from('uploads').getPublicUrl(filename);
+
+        const payload = {
+          user_id: user.id,
+          ref: intent.ref,
+          ticket: buildTicket(intent.ref),
+          plan: intent.plan,
+          cycle: intent.cycle,
+          amount: intent.amount,
+          fee: intent.fee,
+          total: intent.total,
+          payment_method: intent.method,
+          payment_method_label: intent.methodLabel,
+          customer_name: intent.customer?.name,
+          customer_phone: intent.customer?.phone,
+          customer_email: intent.customer?.email,
+          proof_url: publicUrl,
+          proof_filename: filename,
+          note: $('note').value.trim() || null,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        };
+
+        if (typeof DB.createPremiumRequest === 'function') {
+          await DB.createPremiumRequest(payload);
+        }
+
+        try {
+          await DB.notifyAdmin?.({
+            type: 'premium_request',
+            ref: intent.ref,
+            ticket: payload.ticket,
+            plan: intent.plan,
+            user_id: user.id,
+            amount: intent.total
+          });
+        } catch (e) {}
+
+        $('proofScreen').classList.add('hidden');
+        $('successScreen').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        startCountdown();
+
+        try { sessionStorage.removeItem('ap-payment-intent'); } catch (e) {}
+      } catch (err) {
+        console.error('[sendProof] error:', err);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        showError(err.message || T('proof.error.send', "Erreur lors de l'envoi. Réessayez."));
+      }
+    }
+    window.sendProof = sendProof;
+
+    function startCountdown() {
+      let n = 5;
+      const el = $('countdown');
+      if (el) el.textContent = n;
+
+      const timer = setInterval(() => {
+        n--;
+        if (el) el.textContent = n;
+        if (n <= 0) {
+          clearInterval(timer);
+          location.href = 'dashboard.html';
+        }
+      }, 1000);
+    }
+
+    function copyRef() {
+      const ref = intent?.ref || $('refLabel').textContent;
+      if (!ref) return;
+      navigator.clipboard.writeText(ref).then(() => {
+        UI.toast(T('proof.success.copied', 'Référence copiée !'), 'success');
+      }).catch(() => {});
+    }
+    window.copyRef = copyRef;
+
+    function backToPayment() {
+      if (!intent) return location.href = 'abonnement.html';
+      const params = new URLSearchParams({
+        plan: intent.plan,
+        cycle: intent.cycle,
+        amount: intent.amount
+      });
+      location.href = 'paiement.html?' + params.toString();
+    }
+    window.backToPayment = backToPayment;
+
+    addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 400));
+
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      if (typeof Auth !== 'undefined' && Auth.isLogged && !Auth.isLogged()) {
+        setTimeout(() => {
+          location.href = 'login.html?next=' + encodeURIComponent(location.pathname + location.search);
+        }, 800);
+        return;
+      }
+
+      const ok = loadIntent();
+      if (!ok) {
+        $('missingScreen').classList.remove('hidden');
+        $('proofScreen').classList.add('hidden');
+        return;
+      }
+
+      $('missingScreen').classList.add('hidden');
+      $('proofScreen').classList.remove('hidden');
+
+      renderIntent();
+
+      if (typeof I18n !== 'undefined' && I18n.onChange) {
+        I18n.onChange(() => renderIntent());
+      }
+    });
+  </script>
+</body>
+</html>

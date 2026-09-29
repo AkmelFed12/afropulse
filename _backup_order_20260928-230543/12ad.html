@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+body{background:var(--bg);min-height:100vh}
+
+/* PIN GATE */
+#pinGate{position:fixed;inset:0;z-index:9999;background:var(--bg);display:grid;place-items:center;padding:1.5rem}
+.pin-box{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;padding:2.5rem 2rem;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 60px -20px rgba(0,0,0,.3)}
+.pin-icon{width:72px;height:72px;border-radius:50%;margin:0 auto 1.25rem;background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er);font-size:1.85rem;display:grid;place-items:center}
+.pin-title{font-size:1.35rem;font-weight:800;color:var(--ink);margin:0 0 .35rem}
+.pin-sub{font-size:.85rem;color:var(--mu);margin:0 0 1.75rem}
+.pin-input{width:100%;padding:1rem;text-align:center;font-size:1.5rem;letter-spacing:.5em;font-weight:800;border:2px solid var(--bd);border-radius:.75rem;background:var(--bg);color:var(--ink);font-family:ui-monospace,monospace;outline:none;transition:.15s}
+.pin-input:focus{border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 15%,transparent)}
+.pin-btn{width:100%;margin-top:1rem;padding:1rem;background:var(--ac);color:#fff;border:none;border-radius:.75rem;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
+.pin-btn:hover{transform:translateY(-1px);box-shadow:0 12px 30px -10px color-mix(in srgb,var(--ac) 55%,transparent)}
+.pin-error{color:var(--er);font-size:.78rem;margin-top:.75rem;font-weight:600;display:none}
+.pin-error.on{display:block;animation:shake .35s}
+.pin-hint{color:var(--mu);font-size:.7rem;margin-top:1rem;line-height:1.5}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* LAYOUT */
+.adm-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+@media(max-width:900px){.adm-layout{grid-template-columns:1fr}}
+.adm-sidebar{background:var(--sf);border-right:1px solid var(--bd);padding:1.25rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+@media(max-width:900px){.adm-sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:100;transform:translateX(-100%);transition:transform .25s ease}.adm-sidebar.open{transform:translateX(0)}}
+.adm-brand{display:flex;align-items:center;gap:.6rem;padding:.5rem;margin-bottom:1.25rem;font-weight:800;color:var(--ink);font-size:1.05rem;border-bottom:1px solid var(--bd);padding-bottom:1rem}
+.adm-brand i{color:var(--er);font-size:1.15rem}
+.adm-nav{display:flex;flex-direction:column;gap:.2rem}
+.nav-section{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);padding:.85rem .75rem .35rem}
+.nav-link{display:flex;align-items:center;gap:.75rem;padding:.7rem .75rem;border-radius:.55rem;color:var(--mu);font-size:.85rem;font-weight:600;text-decoration:none;cursor:pointer;border:none;background:none;font-family:inherit;width:100%;text-align:left;transition:.15s;position:relative}
+.nav-link:hover{background:color-mix(in srgb,var(--ac) 6%,transparent);color:var(--ink)}
+.nav-link.on{background:var(--ac);color:#fff}
+.nav-link i{width:18px;text-align:center;font-size:.95rem}
+.nav-link .count{margin-left:auto;font-size:.68rem;font-weight:800;background:color-mix(in srgb,var(--er) 15%,transparent);color:var(--er);padding:.15rem .5rem;border-radius:999px}
+.nav-link.on .count{background:rgba(255,255,255,.25);color:#fff}
+
+.adm-main{padding:1.5rem 1.75rem 4rem;max-width:1400px}
+@media(max-width:900px){.adm-main{padding:1.25rem 1rem 5rem}}
+.adm-topbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.adm-page-title{font-size:1.5rem;font-weight:800;color:var(--ink);margin:0;letter-spacing:-.02em}
+.adm-page-sub{font-size:.85rem;color:var(--mu);margin:.25rem 0 0}
+.menu-toggle{display:none;width:44px;height:44px;border-radius:.6rem;background:var(--sf);border:1px solid var(--bd);color:var(--ink);cursor:pointer;font-size:1.1rem;align-items:center;justify-content:center}
+@media(max-width:900px){.menu-toggle{display:inline-flex}}
+.topbar-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.topbar-btn{padding:.6rem .9rem;border-radius:.6rem;background:var(--sf);border:1px solid var(--bd);color:var(--mu);font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:.15s;text-decoration:none}
+.topbar-btn:hover{border-color:var(--ac);color:var(--ac)}
+.topbar-btn.primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.topbar-btn.primary:hover{background:color-mix(in srgb,var(--ac) 85%,#000);color:#fff}
+.topbar-btn.spinning i{animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.section{display:none;animation:fadeIn .25s}
+.section.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.stats-grid{display:grid;gap:.85rem;grid-template-columns:repeat(2,1fr);margin-bottom:1.5rem}
+@media(min-width:768px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:var(--sf);border:1px solid var(--bd);border-radius:.9rem;padding:1.15rem;cursor:default;transition:.15s}
+.stat-card.clickable{cursor:pointer}
+.stat-card.clickable:hover{border-color:var(--ac);transform:translateY(-2px)}
+.stat-label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem}
+.stat-value{font-size:1.75rem;font-weight:800;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat-value.warn{color:var(--gd)}
+.stat-value.ok{color:var(--ok)}
+.stat-value.er{color:var(--er)}
+.stat-value.ac{color:var(--ac)}
+
+.toolbar{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.search-input{flex:1;min-width:220px;padding:.65rem .9rem;border:1.5px solid var(--bd);border-radius:.6rem;background:var(--sf);color:var(--ink);font-family:inherit;font-size:.82rem;outline:none;transition:.15s}
+.search-input:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 12%,transparent)}
+
+.list-stack{display:flex;flex-direction:column;gap:.75rem}
+.list-card{background:var(--sf);border:1px solid var(--bd);border-radius:.9rem;padding:1.1rem 1.25rem;transition:.15s}
+.list-card:hover{border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}
+.list-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.list-title{font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .25rem}
+.list-sub{font-size:.78rem;color:var(--mu);margin:0}
+.list-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem}
+.chip-mini{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;padding:.25rem .55rem;border-radius:999px;background:var(--bg);border:1px solid var(--bd);color:var(--mu)}
+.chip-mini.ok{background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 25%,transparent)}
+.chip-mini.warn{background:color-mix(in srgb,var(--gd) 10%,transparent);color:var(--gd);border-color:color-mix(in srgb,var(--gd) 25%,transparent)}
+.chip-mini.er{background:color-mix(in srgb,var(--er) 10%,transparent);color:var(--er);border-color:color-mix(in srgb,var(--er) 25%,transparent)}
+.chip-mini.ac{background:color-mix(in srgb,var(--ac) 10%,transparent);color:var(--ac);border-color:color-mix(in srgb,var(--ac) 25%,transparent)}
+
+.list-actions{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--bd)}
+.act{padding:.5rem .85rem;border-radius:.55rem;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--ink);display:inline-flex;align-items:center;gap:.4rem;transition:.15s;text-decoration:none}
+.act:hover{border-color:var(--ac);color:var(--ac)}
+.act.ok{background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 25%,transparent)}
+.act.ok:hover{background:var(--ok);color:#fff}
+.act.er{background:color-mix(in srgb,var(--er) 10%,transparent);color:var(--er);border-color:color-mix(in srgb,var(--er) 25%,transparent)}
+.act.er:hover{background:var(--er);color:#fff}
+
+.empty{background:var(--sf);border:1px dashed var(--bd);border-radius:.9rem;padding:2.5rem 1.5rem;text-align:center}
+.empty i{font-size:1.75rem;color:var(--mu);opacity:.5;display:block;margin-bottom:.75rem}
+.empty-title{font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .35rem}
+.empty-sub{font-size:.82rem;color:var(--mu);margin:0}
+
+.sk{height:90px;border-radius:.9rem;background:linear-gradient(90deg,var(--sf) 0%,color-mix(in srgb,var(--ac) 4%,var(--sf)) 50%,var(--sf) 100%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.premium-cta{background:linear-gradient(135deg,color-mix(in srgb,var(--gd) 8%,transparent),color-mix(in srgb,var(--ac) 6%,transparent));border:1px solid color-mix(in srgb,var(--gd) 25%,transparent);border-radius:1rem;padding:1.5rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.premium-cta-icon{width:56px;height:56px;border-radius:.85rem;flex-shrink:0;background:linear-gradient(135deg,var(--gd),var(--gd2));color:#fff;font-size:1.35rem;display:grid;place-items:center;box-shadow:0 12px 30px -10px color-mix(in srgb,var(--gd) 55%,transparent)}
+.premium-cta-body{flex:1;min-width:220px}
+.premium-cta-title{font-size:1.05rem;font-weight:800;color:var(--ink);margin:0 0 .25rem;display:flex;align-items:center;gap:.6rem}
+.premium-cta-text{font-size:.82rem;color:var(--mu);margin:0;line-height:1.5}
+.premium-cta-badge{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--er);color:#fff;padding:.2rem .55rem;border-radius:999px}
+
+/* SETTINGS */
+.settings-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.5rem;margin-bottom:1rem;max-width:640px}
+.settings-title{font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .35rem;display:flex;align-items:center;gap:.55rem}
+.settings-title i{color:var(--ac)}
+.settings-sub{font-size:.82rem;color:var(--mu);margin:0 0 1.25rem;line-height:1.55}
+.field-row{margin-bottom:1rem}
+.field-lbl{display:block;font-size:.75rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.field-input{width:100%;padding:.75rem .9rem;border:1.5px solid var(--bd);border-radius:.65rem;background:var(--bg);color:var(--ink);font-family:inherit;font-size:.88rem;outline:none;transition:.15s;letter-spacing:.15em;text-align:center}
+.field-input:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 12%,transparent)}
+.field-input.error{border-color:var(--er);box-shadow:0 0 0 3px color-mix(in srgb,var(--er) 12%,transparent)}
+.field-btn{width:100%;padding:.9rem;background:var(--ac);color:#fff;border:none;border-radius:.65rem;font-family:inherit;font-weight:800;font-size:.9rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
+.field-btn:hover{transform:translateY(-1px);box-shadow:0 12px 30px -10px color-mix(in srgb,var(--ac) 55%,transparent)}
+.field-btn:disabled{opacity:.55;cursor:wait}
+.field-btn.danger{background:var(--er)}
+.field-btn.danger:hover{box-shadow:0 12px 30px -10px color-mix(in srgb,var(--er) 55%,transparent)}
+.field-msg{font-size:.8rem;font-weight:600;margin-top:.75rem;padding:.65rem .85rem;border-radius:.55rem;display:none}
+.field-msg.on{display:block}
+.field-msg.ok{background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent)}
+.field-msg.er{background:color-mix(in srgb,var(--er) 10%,transparent);color:var(--er);border:1px solid color-mix(in srgb,var(--er) 25%,transparent)}
+.pin-rules{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem;font-size:.7rem}
+.pin-rule{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .5rem;border-radius:999px;background:var(--bg);border:1px solid var(--bd);color:var(--mu);transition:.15s}
+.pin-rule i{font-size:.5rem}
+.pin-rule.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 25%,transparent);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+
+.toast-container{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:.75rem 1.1rem;border-radius:.65rem;font-size:.82rem;font-weight:600;box-shadow:0 12px 30px -8px rgba(0,0,0,.4);animation:toastIn .3s ease-out;pointer-events:auto;display:flex;align-items:center;gap:.5rem;max-width:90vw}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.toast.success{background:var(--ok);color:#fff}
+.toast.error{background:var(--er);color:#fff}
+.hidden{display:none!important}
+</style>
+
+<!-- SEO — noindex -->
+<meta name="robots" content="noindex, nofollow">
+<!-- /SEO -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body>
+
+<div id="pinGate">
+  <div class="pin-box">
+    <div class="pin-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <h1 class="pin-title">Accès restreint</h1>
+    <p class="pin-sub">Entrez votre code PIN administrateur</p>
+    <input type="password" id="pinInput" class="pin-input" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <button class="pin-btn" onclick="checkPin()"><i class="fa-solid fa-unlock"></i> Déverrouiller</button>
+    <p class="pin-error" id="pinError">Code incorrect</p>
+    <p class="pin-hint" id="pinHint" style="display:none">
+      <i class="fa-solid fa-circle-info"></i> PIN par défaut : <strong>1234</strong>
+    </p>
+  </div>
+</div>
+
+<div class="adm-layout" id="admLayout" style="display:none">
+
+  <aside class="adm-sidebar" id="admSidebar">
+    <div class="adm-brand">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Admin AfroPulse</span>
+    </div>
+
+    <nav class="adm-nav">
+      <div class="nav-section">Vue d'ensemble</div>
+      <button class="nav-link on" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <i class="fa-solid fa-chart-simple"></i><span>Tableau de bord</span>
+      </button>
+
+      <div class="nav-section">Modération</div>
+      <button class="nav-link" data-tab="premium" onclick="switchTab('premium')">
+        <i class="fa-solid fa-crown"></i><span>Premium</span>
+        <span class="count" id="navPremiumCount" style="display:none">0</span>
+      </button>
+      <button class="nav-link" data-tab="rccm" onclick="switchTab('rccm')">
+        <i class="fa-solid fa-building-shield"></i><span>Vérif. RCCM</span>
+        <span class="count" id="navRccmCount" style="display:none">0</span>
+      </button>
+      <button class="nav-link" data-tab="withdrawals" onclick="switchTab('withdrawals')">
+        <i class="fa-solid fa-money-bill-transfer"></i><span>Retraits</span>
+        <span class="count" id="navWdCount" style="display:none">0</span>
+      </button>
+      <button class="nav-link" data-tab="claims" onclick="switchTab('claims')">
+        <i class="fa-solid fa-triangle-exclamation"></i><span>Litiges</span>
+        <span class="count" id="navClaimsCount" style="display:none">0</span>
+      </button>
+
+      <div class="nav-section">Utilisateurs</div>
+      <button class="nav-link" data-tab="users" onclick="switchTab('users')">
+        <i class="fa-solid fa-users"></i><span>Utilisateurs</span>
+      </button>
+      <button class="nav-link" data-tab="missions" onclick="switchTab('missions')">
+        <i class="fa-solid fa-bullhorn"></i><span>Missions</span>
+      </button>
+      <button class="nav-link" data-tab="contracts" onclick="switchTab('contracts')">
+        <i class="fa-solid fa-file-signature"></i><span>Contrats</span>
+      </button>
+
+      <div class="nav-section">Contenu</div>
+      <button class="nav-link" data-tab="plans" onclick="switchTab('plans')">
+        <i class="fa-solid fa-tags"></i><span>Plans</span>
+      </button>
+      <button class="nav-link" data-tab="faqs" onclick="switchTab('faqs')">
+        <i class="fa-solid fa-circle-question"></i><span>FAQs</span>
+      </button>
+      <button class="nav-link" data-tab="testimonials" onclick="switchTab('testimonials')">
+        <i class="fa-solid fa-quote-left"></i><span>Témoignages</span>
+      </button>
+
+      <div class="nav-section">Système</div>
+      <button class="nav-link" data-tab="analytics" onclick="switchTab('analytics')">
+        <i class="fa-solid fa-chart-line"></i><span>Statistiques</span>
+      </button>
+      <button class="nav-link" data-tab="settings" onclick="switchTab('settings')">
+        <i class="fa-solid fa-gear"></i><span>Paramètres</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="adm-main">
+
+    <div class="adm-topbar">
+      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div>
+          <h1 class="adm-page-title" id="pageTitle">Tableau de bord</h1>
+          <p class="adm-page-sub" id="pageSub">Vue d'ensemble de la plateforme</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="Theme.toggle()"><i class="fa-solid fa-circle-half-stroke"></i> Thème</button>
+        <button class="topbar-btn" id="refreshBtn" onclick="refreshCurrent()"><i class="fa-solid fa-rotate"></i> Actualiser</button>
+        <button class="topbar-btn" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Verrouiller</button>
+      </div>
+    </div>
+
+    <section class="section on" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card clickable" onclick="switchTab('users')">
+          <div class="stat-label"><i class="fa-solid fa-users"></i>Membres</div>
+          <div class="stat-value" id="statUsers">—</div>
+        </div>
+        <div class="stat-card clickable" onclick="switchTab('missions')">
+          <div class="stat-label"><i class="fa-solid fa-bullhorn"></i>Missions</div>
+          <div class="stat-value ac" id="statMissions">—</div>
+        </div>
+        <div class="stat-card clickable" onclick="switchTab('premium')">
+          <div class="stat-label"><i class="fa-solid fa-crown"></i>Premium actifs</div>
+          <div class="stat-value ok" id="statPremium">—</div>
+        </div>
+        <div class="stat-card clickable" onclick="switchTab('withdrawals')">
+          <div class="stat-label"><i class="fa-solid fa-money-bill-transfer"></i>Retraits attente</div>
+          <div class="stat-value warn" id="statWithdrawals">—</div>
+        </div>
+      </div>
+
+      <div class="premium-cta">
+        <div class="premium-cta-icon"><i class="fa-solid fa-crown"></i></div>
+        <div class="premium-cta-body">
+          <h3 class="premium-cta-title">
+            Demandes Premium
+            <span class="premium-cta-badge" id="dashPremiumBadge" style="display:none">0</span>
+          </h3>
+          <p class="premium-cta-text">Gérez les demandes d'abonnement, vérifiez les preuves de paiement et activez les comptes Premium.</p>
+        </div>
+        <a href="12ad-premium.html" class="topbar-btn primary">
+          <i class="fa-solid fa-arrow-right"></i> Ouvrir l'admin Premium
+        </a>
+      </div>
+
+      <h2 style="font-size:1rem;font-weight:800;color:var(--ink);margin:1.5rem 0 .75rem">Derniers inscrits</h2>
+      <div class="list-stack" id="dashLatestUsers">
+        <div class="sk"></div><div class="sk"></div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-premium">
+      <div class="premium-cta">
+        <div class="premium-cta-icon"><i class="fa-solid fa-crown"></i></div>
+        <div class="premium-cta-body">
+          <h3 class="premium-cta-title">
+            Admin Premium complet
+            <span class="premium-cta-badge" id="premiumTabBadge" style="display:none">0</span>
+          </h3>
+          <p class="premium-cta-text">Toute la gestion des abonnements est sur une page dédiée : validation des preuves, approbation, rejet, notifications automatiques.</p>
+        </div>
+        <a href="12ad-premium.html" class="topbar-btn primary">
+          <i class="fa-solid fa-external-link-alt"></i> Ouvrir
+        </a>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-clock"></i>En attente</div>
+          <div class="stat-value warn" id="pStatPending">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-circle-check"></i>Approuvées</div>
+          <div class="stat-value ok" id="pStatApproved">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-circle-xmark"></i>Rejetées</div>
+          <div class="stat-value er" id="pStatRejected">—</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:1rem;font-weight:800;color:var(--ink);margin:1.5rem 0 .75rem">Demandes récentes</h2>
+      <div class="list-stack" id="premiumRecent"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-rccm">
+      <div class="toolbar">
+        <input type="text" class="search-input" id="searchRccm" placeholder="Rechercher par entreprise, RCCM…" oninput="applyRccmFilter()">
+      </div>
+      <div class="list-stack" id="rccmList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-withdrawals">
+      <div class="toolbar">
+        <input type="text" class="search-input" id="searchWd" placeholder="Rechercher…" oninput="applyWdFilter()">
+      </div>
+      <div class="list-stack" id="wdList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-claims">
+      <div class="list-stack" id="claimsList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-users">
+      <div class="toolbar">
+        <input type="text" class="search-input" id="searchUsers" placeholder="Rechercher par nom, email, ville…" oninput="applyUsersFilter()">
+      </div>
+      <div class="list-stack" id="usersList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-missions">
+      <div class="list-stack" id="missionsList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-contracts">
+      <div class="list-stack" id="contractsList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-plans">
+      <div class="list-stack" id="plansList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-faqs">
+      <div class="list-stack" id="faqsList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-testimonials">
+      <div class="list-stack" id="testimonialsList"><div class="sk"></div></div>
+    </section>
+
+    <section class="section" id="tab-analytics">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-eye"></i>Vues totales</div>
+          <div class="stat-value ac" id="statViews">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-user-check"></i>Visiteurs uniques</div>
+          <div class="stat-value" id="statUnique">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-calendar-day"></i>Aujourd'hui</div>
+          <div class="stat-value" id="statToday">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fa-solid fa-coins"></i>Revenu Premium</div>
+          <div class="stat-value ok" id="statRevenue">—</div>
+        </div>
+      </div>
+      <div class="list-card">
+        <h3 class="list-title" style="margin-bottom:.75rem">Top pages</h3>
+        <div id="topPages"><div class="sk" style="height:40px"></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-settings">
+      <div class="settings-card">
+        <h2 class="settings-title"><i class="fa-solid fa-key"></i> Modifier le code PIN</h2>
+        <p class="settings-sub">Le PIN protège l'accès à l'admin. Choisis un code à 4-8 chiffres que tu retiendras.</p>
+
+        <div class="field-row">
+          <label class="field-lbl" for="pinCurrent">PIN actuel</label>
+          <input type="password" id="pinCurrent" class="field-input" maxlength="8" inputmode="numeric" placeholder="••••" autocomplete="off">
+        </div>
+
+        <div class="field-row">
+          <label class="field-lbl" for="pinNew">Nouveau PIN</label>
+          <input type="password" id="pinNew" class="field-input" maxlength="8" inputmode="numeric" placeholder="••••" autocomplete="off" oninput="checkPinRules()">
+          <div class="pin-rules">
+            <span class="pin-rule" data-rule="length"><i class="fa-solid fa-circle"></i>4-8 chiffres</span>
+            <span class="pin-rule" data-rule="digits"><i class="fa-solid fa-circle"></i>Uniquement chiffres</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-lbl" for="pinConfirm">Confirmer le nouveau PIN</label>
+          <input type="password" id="pinConfirm" class="field-input" maxlength="8" inputmode="numeric" placeholder="••••" autocomplete="off">
+        </div>
+
+        <button class="field-btn" id="pinSaveBtn" onclick="saveNewPin()">
+          <i class="fa-solid fa-floppy-disk"></i> Enregistrer le nouveau PIN
+        </button>
+
+        <div class="field-msg" id="pinMsg"></div>
+      </div>
+
+      <div class="settings-card">
+        <h2 class="settings-title" style="color:var(--er)"><i class="fa-solid fa-triangle-exclamation" style="color:var(--er)"></i> Zone sensible</h2>
+        <p class="settings-sub">Ces actions modifient la configuration de sécurité. Utilise-les uniquement en cas de besoin.</p>
+
+        <button class="field-btn danger" onclick="resetPin()">
+          <i class="fa-solid fa-rotate-left"></i> Réinitialiser le PIN par défaut (1234)
+        </button>
+        <p style="font-size:.72rem;color:var(--mu);margin-top:.65rem;line-height:1.5">
+          <i class="fa-solid fa-circle-info"></i> Le PIN sera remis à <strong>1234</strong> au prochain rechargement.
+        </p>
+      </div>
+
+      <div class="settings-card">
+        <h2 class="settings-title"><i class="fa-solid fa-circle-info"></i> Informations système</h2>
+        <p class="settings-sub">Détails de ta session et de la configuration.</p>
+
+        <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.82rem">
+          <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+            <span style="color:var(--mu)">Version admin</span>
+            <span style="color:var(--ink);font-weight:700">v2.1</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+            <span style="color:var(--mu)">PIN défini le</span>
+            <span style="color:var(--ink);font-weight:700" id="pinSetDate">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.5rem 0">
+            <span style="color:var(--mu)">Dernier déverrouillage</span>
+            <span style="color:var(--ink);font-weight:700" id="lastUnlock">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ═══ PIN ═══ */
+const PIN_KEY = 'ap-admin-pin-hash';
+const PIN_DATE_KEY = 'ap-admin-pin-date';
+const LAST_UNLOCK_KEY = 'ap-admin-last-unlock';
+const DEFAULT_PIN = '1234';
+const PIN_SALT = '|afropulse-admin-salt-v2';
+
+function fallbackHash(str){
+  let h1 = 0x811c9dc5, h2 = 0xc9dc5118;
+  for(let i = 0; i < str.length; i++){
+    const c = str.charCodeAt(i);
+    h1 ^= c; h1 = Math.imul(h1, 0x01000193);
+    h2 ^= c + i; h2 = Math.imul(h2, 0x01000193);
+  }
+  const hex = (n) => (n >>> 0).toString(16).padStart(8, '0');
+  return 'fb_' + hex(h1) + hex(h2);
+}
+
+async function hashPin(pin){
+  const input = pin + PIN_SALT;
+  if(window.crypto && window.crypto.subtle && window.crypto.subtle.digest){
+    try{
+      const buf = new TextEncoder().encode(input);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return 'sha_' + Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }catch(e){ console.warn('[admin] crypto.subtle fail, fallback'); }
+  }
+  return fallbackHash(input);
+}
+
+function getStoredPinHash(){ return localStorage.getItem(PIN_KEY); }
+function getPinSetDate(){
+  const d = localStorage.getItem(PIN_DATE_KEY);
+  if(!d) return '—';
+  try{ return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){ return '—'; }
+}
+function getLastUnlock(){
+  const d = localStorage.getItem(LAST_UNLOCK_KEY);
+  if(!d) return '—';
+  try{ return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){ return '—'; }
+}
+async function savePin(pin){
+  const hash = await hashPin(pin);
+  localStorage.setItem(PIN_KEY, hash);
+  localStorage.setItem(PIN_DATE_KEY, new Date().toISOString());
+}
+
+async function checkPin(){
+  const input = $('pinInput');
+  const pin = input.value.trim();
+  if(!pin) return;
+
+  let storedHash = getStoredPinHash();
+
+  if(!storedHash){
+    if(pin === DEFAULT_PIN){
+      await savePin(DEFAULT_PIN);
+      localStorage.setItem(LAST_UNLOCK_KEY, new Date().toISOString());
+      unlockAdmin();
+      toast('Connecté avec PIN par défaut. Change-le dans Paramètres.', 'info');
+      return;
+    }
+    $('pinError').textContent = 'PIN incorrect. Essaie le PIN par défaut : 1234';
+    $('pinError').classList.add('on');
+    input.value = ''; input.focus();
+    setTimeout(() => $('pinError').classList.remove('on'), 3000);
+    return;
+  }
+
+  const inputHash = await hashPin(pin);
+  if(inputHash === storedHash){
+    localStorage.setItem(LAST_UNLOCK_KEY, new Date().toISOString());
+    unlockAdmin();
+    return;
+  }
+
+  $('pinError').textContent = 'Code incorrect';
+  $('pinError').classList.add('on');
+  input.value = ''; input.focus();
+  setTimeout(() => $('pinError').classList.remove('on'), 2000);
+}
+
+function unlockAdmin(){
+  sessionStorage.setItem('ap-admin-unlocked', '1');
+  $('pinGate').style.display = 'none';
+  $('admLayout').style.display = '';
+  initAdmin();
+}
+
+function logoutAdmin(){
+  sessionStorage.removeItem('ap-admin-unlocked');
+  location.reload();
+}
+
+if(!getStoredPinHash()){
+  const hint = $('pinHint');
+  if(hint) hint.style.display = 'block';
+}
+
+$('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPin(); });
+
+if(sessionStorage.getItem('ap-admin-unlocked') === '1'){
+  $('pinGate').style.display = 'none';
+  $('admLayout').style.display = '';
+  addEventListener('DOMContentLoaded', () => initAdmin());
+}
+
+/* ═══ TOAST ═══ */
+function toast(msg, type = 'info'){
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+  el.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i><span>${msg}</span>`;
+  $('toastContainer').appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s, transform .3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+/* ═══ UTILS ═══ */
+function esc(s){ return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(iso){ if(!iso) return '—'; return new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }); }
+function fmtMoney(n){ return Number(n || 0).toLocaleString('fr-FR') + ' FCFA'; }
+
+/* ═══ NAV ═══ */
+const TABS = {
+  dashboard: { title: 'Tableau de bord', sub: "Vue d'ensemble de la plateforme" },
+  premium: { title: 'Premium', sub: "Gestion des demandes d'abonnement" },
+  rccm: { title: 'Vérifications RCCM', sub: 'Validez les entreprises' },
+  withdrawals: { title: 'Retraits', sub: 'Demandes de retrait du portefeuille' },
+  claims: { title: 'Litiges', sub: 'Signalements et réclamations' },
+  users: { title: 'Utilisateurs', sub: 'Tous les membres de la plateforme' },
+  missions: { title: 'Missions', sub: 'Missions publiées par les entreprises' },
+  contracts: { title: 'Contrats', sub: 'Contrats signés entre les parties' },
+  plans: { title: 'Plans', sub: "Formules d'abonnement actives" },
+  faqs: { title: 'FAQs', sub: 'Questions fréquentes' },
+  testimonials: { title: 'Témoignages', sub: 'Avis publiés' },
+  analytics: { title: 'Statistiques', sub: 'Trafic et performances' },
+  settings: { title: 'Paramètres', sub: 'Sécurité et configuration' }
+};
+
+function switchTab(tab){
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('on'));
+  const sec = $('tab-' + tab);
+  if(sec) sec.classList.add('on');
+  const btn = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+  if(btn) btn.classList.add('on');
+  const info = TABS[tab] || {};
+  $('pageTitle').textContent = info.title || tab;
+  $('pageSub').textContent = info.sub || '';
+  closeSidebar();
+  loadTabData(tab);
+}
+
+function toggleSidebar(){ $('admSidebar').classList.toggle('open'); }
+function closeSidebar(){ $('admSidebar').classList.remove('open'); }
+
+/* ═══ DATA ═══ */
+let DATA = { users: [], missions: [], premium: [], rccm: [], withdrawals: [], claims: [], contracts: [], plans: [], faqs: [], testimonials: [] };
+
+async function initAdmin(){
+  if(!DB.isRemote()){ toast('DB indisponible', 'error'); return; }
+  if(typeof Theme !== 'undefined') Theme.init();
+
+  const setDate = $('pinSetDate');
+  const lastUnlock = $('lastUnlock');
+  if(setDate) setDate.textContent = getPinSetDate();
+  if(lastUnlock) lastUnlock.textContent = getLastUnlock();
+
+  await Promise.all([loadDashboardCounters(), loadLatestUsers(), loadPremiumSummary()]);
+  setInterval(loadDashboardCounters, 30000);
+}
+
+function refreshCurrent(){
+  const btn = $('refreshBtn');
+  btn.classList.add('spinning');
+  const tab = document.querySelector('.nav-link.on')?.dataset.tab || 'dashboard';
+  loadTabData(tab);
+  setTimeout(() => btn.classList.remove('spinning'), 600);
+}
+
+function loadTabData(tab){
+  switch(tab){
+    case 'dashboard': loadDashboardCounters(); loadLatestUsers(); loadPremiumSummary(); break;
+    case 'premium': loadPremiumSummary(); break;
+    case 'rccm': loadRccm(); break;
+    case 'withdrawals': loadWithdrawals(); break;
+    case 'claims': loadClaims(); break;
+    case 'users': loadUsers(); break;
+    case 'missions': loadMissions(); break;
+    case 'contracts': loadContracts(); break;
+    case 'plans': loadPlans(); break;
+    case 'faqs': loadFaqs(); break;
+    case 'testimonials': loadTestimonials(); break;
+    case 'analytics': loadAnalytics(); break;
+    case 'settings': updateSettingsDates(); break;
+  }
+}
+
+/* ✅ safeCount — accepte la colonne de sélection par table */
+async function safeCount(table, filter, selectCol = 'id'){
+  try{
+    let q = DB.client.from(table).select(selectCol, { count:'exact', head:true });
+    if(filter) q = q.eq(filter.col, filter.val);
+    const { count, error } = await q;
+    if(error) return { count: 0, error: error.message };
+    return { count: count || 0, error: null };
+  }catch(e){
+    return { count: 0, error: e.message };
+  }
+}
+
+async function loadDashboardCounters(){
+  // ✅ user_premium utilise 'user_id' comme PK
+  const [usersRes, missionsRes, premiumRes, wdRes, rccmRes, claimsRes] = await Promise.all([
+    safeCount('profiles', null, 'id'),
+    safeCount('missions', { col: 'status', val: 'active' }, 'id'),
+    safeCount('user_premium', { col: 'status', val: 'active' }, 'user_id'),
+    safeCount('withdrawals', { col: 'status', val: 'pending' }, 'id'),
+    safeCount('rccm', { col: 'status', val: 'en_attente' }, 'id'),
+    safeCount('claims', { col: 'status', val: 'pending' }, 'id')
+  ]);
+
+  $('statUsers').textContent = usersRes.error ? '—' : usersRes.count;
+  $('statMissions').textContent = missionsRes.error ? '—' : missionsRes.count;
+  $('statPremium').textContent = premiumRes.error ? '—' : premiumRes.count;
+  $('statWithdrawals').textContent = wdRes.error ? '—' : wdRes.count;
+
+  setBadge('navRccmCount', rccmRes.count || 0);
+  setBadge('navWdCount', wdRes.count || 0);
+  setBadge('navClaimsCount', claimsRes.count || 0);
+
+  const errors = [usersRes, missionsRes, premiumRes, wdRes, rccmRes, claimsRes].filter(r => r.error).map(r => r.error);
+  if(errors.length) console.debug('[admin] counters errors:', errors);
+}
+
+async function loadPremiumSummary(){
+  try{
+    const { data, error } = await DB.client.from('premium_requests').select('*').order('created_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.premium = data || [];
+
+    const pending = DATA.premium.filter(r => r.status === 'pending').length;
+    const approved = DATA.premium.filter(r => r.status === 'approved').length;
+    const rejected = DATA.premium.filter(r => r.status === 'rejected').length;
+
+    setBadge('navPremiumCount', pending);
+    setBadge('dashPremiumBadge', pending);
+    setBadge('premiumTabBadge', pending);
+
+    $('pStatPending').textContent = pending;
+    $('pStatApproved').textContent = approved;
+    $('pStatRejected').textContent = rejected;
+
+    const recent = DATA.premium.slice(0, 3);
+    const container = $('premiumRecent');
+    if(!container) return;
+
+    if(!recent.length){
+      container.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i><h3 class="empty-title">Aucune demande</h3><p class="empty-sub">Les demandes apparaîtront ici.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = recent.map(r => `
+      <div class="list-card">
+        <div class="list-card-head">
+          <div>
+            <h3 class="list-title">${esc(r.customer_name || 'Client')}</h3>
+            <p class="list-sub">${esc(r.customer_email || '')} · ${fmtDate(r.created_at)}</p>
+            <div class="list-meta">
+              <span class="chip-mini ac"><i class="fa-solid fa-crown"></i>${esc((r.plan || 'pro').toUpperCase())}</span>
+              <span class="chip-mini">${esc(r.payment_method_label || r.payment_method || '—')}</span>
+              <span class="chip-mini">${fmtMoney(r.total || r.amount || 0)}</span>
+            </div>
+          </div>
+          <span class="chip-mini ${r.status === 'approved' ? 'ok' : r.status === 'rejected' ? 'er' : 'warn'}">
+            ${r.status === 'approved' ? 'Approuvée' : r.status === 'rejected' ? 'Rejetée' : 'En attente'}
+          </span>
+        </div>
+      </div>`).join('');
+  }catch(e){ console.warn('[admin] premium summary', e); }
+}
+
+function setBadge(id, count){
+  const el = $(id);
+  if(!el) return;
+  if(count > 0){ el.textContent = count > 99 ? '99+' : count; el.style.display = ''; }
+  else{ el.style.display = 'none'; }
+}
+
+async function loadLatestUsers(){
+  try{
+    const { data, error } = await DB.client.from('profiles').select('id,full_name,email,role,city,created_at,avatar_url').order('created_at', { ascending: false }).limit(5);
+    if(error) throw error;
+    const container = $('dashLatestUsers');
+    if(!container) return;
+
+    if(!data || !data.length){
+      container.innerHTML = `<div class="empty"><i class="fa-solid fa-user-plus"></i><h3 class="empty-title">Aucun membre</h3><p class="empty-sub">Les nouveaux inscrits apparaîtront ici.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = data.map(u => {
+      const ini = (u.full_name || '?').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+      const avatar = u.avatar_url
+        ? `<img src="${esc(u.avatar_url)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0" alt="">`
+        : `<div style="width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);display:grid;place-items:center;font-weight:800;font-size:.75rem;flex-shrink:0">${ini}</div>`;
+      return `
+        <div class="list-card" style="padding:.85rem 1.1rem">
+          <div style="display:flex;align-items:center;gap:.85rem">
+            ${avatar}
+            <div style="flex:1;min-width:0">
+              <h3 class="list-title" style="font-size:.88rem">${esc(u.full_name || 'Sans nom')}</h3>
+              <p class="list-sub" style="font-size:.72rem">${esc(u.email || '')}${u.city ? ' · ' + esc(u.city) : ''}</p>
+            </div>
+            <span class="chip-mini ${u.role === 'entreprise' ? 'ac' : ''}">${esc(u.role || 'particulier')}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }catch(e){ console.warn('[admin] latest users', e); }
+}
+
+async function loadUsers(){
+  $('usersList').innerHTML = '<div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('profiles').select('id,full_name,email,role,city,phone,created_at,avatar_url,job_title,company_name').order('created_at', { ascending: false }).limit(200);
+    if(error) throw error;
+    DATA.users = data || [];
+    renderUsers(DATA.users);
+  }catch(e){
+    console.warn('[admin] users', e);
+    $('usersList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderUsers(list){
+  const c = $('usersList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i><h3 class="empty-title">Aucun utilisateur</h3></div>`; return; }
+  c.innerHTML = list.map(u => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(u.full_name || 'Sans nom')}</h3>
+          <p class="list-sub">${esc(u.email || '')}${u.phone ? ' · ' + esc(u.phone) : ''}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${u.role === 'entreprise' ? 'ac' : ''}">${esc(u.role || 'particulier')}</span>
+            ${u.city ? `<span class="chip-mini"><i class="fa-solid fa-location-dot"></i>${esc(u.city)}</span>` : ''}
+            ${u.company_name ? `<span class="chip-mini ac"><i class="fa-solid fa-building"></i>${esc(u.company_name)}</span>` : ''}
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(u.created_at)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="list-actions">
+        <a href="profil-public.html?id=${encodeURIComponent(u.id)}" target="_blank" class="act"><i class="fa-solid fa-eye"></i>Voir profil</a>
+        <a href="mailto:${esc(u.email)}" class="act"><i class="fa-solid fa-envelope"></i>Contacter</a>
+      </div>
+    </div>`).join('');
+}
+
+function applyUsersFilter(){
+  const q = $('searchUsers').value.toLowerCase().trim();
+  if(!q) return renderUsers(DATA.users);
+  const list = DATA.users.filter(u =>
+    (u.full_name || '').toLowerCase().includes(q) ||
+    (u.email || '').toLowerCase().includes(q) ||
+    (u.city || '').toLowerCase().includes(q) ||
+    (u.company_name || '').toLowerCase().includes(q)
+  );
+  renderUsers(list);
+}
+
+async function loadRccm(){
+  $('rccmList').innerHTML = '<div class="sk"></div><div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('rccm').select('*').order('created_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.rccm = data || [];
+    renderRccm(DATA.rccm);
+  }catch(e){
+    $('rccmList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderRccm(list){
+  const c = $('rccmList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-building-shield"></i><h3 class="empty-title">Aucune vérification en attente</h3></div>`; return; }
+  c.innerHTML = list.map(r => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(r.company || '—')}</h3>
+          <p class="list-sub">RCCM : ${esc(r.rccm || '—')}${r.cc ? ' · CC : ' + esc(r.cc) : ''}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${r.status === 'valide' ? 'ok' : r.status === 'rejete' ? 'er' : 'warn'}">${esc(r.status || 'en_attente')}</span>
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(r.created_at)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="list-actions">
+        ${r.document_url ? `<a href="${esc(r.document_url)}" target="_blank" class="act"><i class="fa-solid fa-file-pdf"></i>Voir document</a>` : ''}
+        <button class="act ok" onclick="approveRccm('${r.id}')"><i class="fa-solid fa-check"></i>Valider</button>
+        <button class="act er" onclick="rejectRccm('${r.id}')"><i class="fa-solid fa-xmark"></i>Rejeter</button>
+      </div>
+    </div>`).join('');
+}
+
+function applyRccmFilter(){
+  const q = $('searchRccm').value.toLowerCase().trim();
+  if(!q) return renderRccm(DATA.rccm);
+  const list = DATA.rccm.filter(r => (r.company || '').toLowerCase().includes(q) || (r.rccm || '').toLowerCase().includes(q));
+  renderRccm(list);
+}
+
+async function approveRccm(id){
+  if(!confirm('Valider ce RCCM ?')) return;
+  try{
+    const { error } = await DB.client.from('rccm').update({ status: 'valide' }).eq('id', id);
+    if(error) throw error;
+    toast('RCCM validé', 'success');
+    loadRccm();
+  }catch(e){ toast('Erreur : ' + e.message, 'error'); }
+}
+
+async function rejectRccm(id){
+  if(!confirm('Rejeter ce RCCM ?')) return;
+  try{
+    const { error } = await DB.client.from('rccm').update({ status: 'rejete' }).eq('id', id);
+    if(error) throw error;
+    toast('RCCM rejeté', 'success');
+    loadRccm();
+  }catch(e){ toast('Erreur : ' + e.message, 'error'); }
+}
+
+async function loadWithdrawals(){
+  $('wdList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('withdrawals').select('*').order('requested_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.withdrawals = data || [];
+    renderWithdrawals(DATA.withdrawals);
+  }catch(e){
+    $('wdList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderWithdrawals(list){
+  const c = $('wdList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-money-bill-transfer"></i><h3 class="empty-title">Aucune demande de retrait</h3></div>`; return; }
+  c.innerHTML = list.map(w => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${fmtMoney(w.amount)}</h3>
+          <p class="list-sub">${esc(w.method || '—')} · ${esc(w.phone || w.account || '')}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${w.status === 'paid' ? 'ok' : w.status === 'rejected' ? 'er' : 'warn'}">${esc(w.status || 'pending')}</span>
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(w.requested_at)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="list-actions">
+        <button class="act ok" onclick="markWdPaid('${w.id}')"><i class="fa-solid fa-check"></i>Marquer payé</button>
+        <button class="act er" onclick="markWdRejected('${w.id}')"><i class="fa-solid fa-xmark"></i>Rejeter</button>
+      </div>
+    </div>`).join('');
+}
+
+function applyWdFilter(){
+  const q = $('searchWd').value.toLowerCase().trim();
+  if(!q) return renderWithdrawals(DATA.withdrawals);
+  const list = DATA.withdrawals.filter(w => (w.method || '').toLowerCase().includes(q) || (w.phone || '').toLowerCase().includes(q));
+  renderWithdrawals(list);
+}
+
+async function markWdPaid(id){
+  if(!confirm('Marquer ce retrait comme payé ?')) return;
+  try{
+    const { error } = await DB.client.from('withdrawals').update({ status: 'paid', reviewed_at: new Date().toISOString() }).eq('id', id);
+    if(error) throw error;
+    toast('Retrait marqué comme payé', 'success');
+    loadWithdrawals();
+  }catch(e){ toast('Erreur : ' + e.message, 'error'); }
+}
+
+async function markWdRejected(id){
+  if(!confirm('Rejeter ce retrait ?')) return;
+  try{
+    const { error } = await DB.client.from('withdrawals').update({ status: 'rejected', reviewed_at: new Date().toISOString() }).eq('id', id);
+    if(error) throw error;
+    toast('Retrait rejeté', 'success');
+    loadWithdrawals();
+  }catch(e){ toast('Erreur : ' + e.message, 'error'); }
+}
+
+async function loadClaims(){
+  $('claimsList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('claims').select('*').order('created_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.claims = data || [];
+    renderClaims(DATA.claims);
+  }catch(e){
+    $('claimsList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderClaims(list){
+  const c = $('claimsList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Aucun litige</h3></div>`; return; }
+  c.innerHTML = list.map(cl => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(cl.subject || 'Signalement')}</h3>
+          <p class="list-sub">${esc(cl.description || '')}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${cl.status === 'resolved' ? 'ok' : cl.status === 'rejected' ? 'er' : 'warn'}">${esc(cl.status || 'pending')}</span>
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(cl.created_at)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadMissions(){
+  $('missionsList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('missions').select('*').order('created_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.missions = data || [];
+    renderMissions(DATA.missions);
+  }catch(e){
+    $('missionsList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderMissions(list){
+  const c = $('missionsList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-bullhorn"></i><h3 class="empty-title">Aucune mission</h3></div>`; return; }
+  c.innerHTML = list.map(m => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(m.title || '—')}</h3>
+          <p class="list-sub">${esc(m.business_name || '')} · ${esc(m.category || '')}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${m.status === 'active' ? 'ok' : ''}">${esc(m.status || 'active')}</span>
+            <span class="chip-mini">${esc(m.budget || '—')}</span>
+            ${m.location ? `<span class="chip-mini"><i class="fa-solid fa-location-dot"></i>${esc(m.location)}</span>` : ''}
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(m.created_at)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadContracts(){
+  $('contractsList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('contracts').select('*').order('created_at', { ascending: false }).limit(100);
+    if(error) throw error;
+    DATA.contracts = data || [];
+    renderContracts(DATA.contracts);
+  }catch(e){
+    $('contractsList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderContracts(list){
+  const c = $('contractsList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-file-signature"></i><h3 class="empty-title">Aucun contrat</h3></div>`; return; }
+  c.innerHTML = list.map(ct => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(ct.title || 'Contrat')}</h3>
+          <p class="list-sub">${fmtMoney(ct.amount || 0)}</p>
+          <div class="list-meta">
+            <span class="chip-mini ${ct.status === 'completed' ? 'ok' : ct.status === 'cancelled' ? 'er' : 'warn'}">${esc(ct.status || 'pending')}</span>
+            <span class="chip-mini"><i class="fa-regular fa-calendar"></i>${fmtDate(ct.created_at)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadPlans(){
+  $('plansList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('premium_plans').select('*').order('display_order', { ascending: true });
+    if(error) throw error;
+    DATA.plans = data || [];
+    renderPlans(DATA.plans);
+  }catch(e){
+    $('plansList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderPlans(list){
+  const c = $('plansList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-tags"></i><h3 class="empty-title">Aucun plan</h3></div>`; return; }
+  c.innerHTML = list.map(p => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(p.name || '—')}</h3>
+          <p class="list-sub">${esc(p.description || '')}</p>
+          <div class="list-meta">
+            <span class="chip-mini ac">${fmtMoney(p.price_monthly || 0)}/mois</span>
+            <span class="chip-mini">${fmtMoney(p.price_yearly || 0)}/an</span>
+            <span class="chip-mini ${p.active ? 'ok' : 'er'}">${p.active ? 'Actif' : 'Inactif'}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadFaqs(){
+  $('faqsList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('faqs').select('*').order('display_order', { ascending: true });
+    if(error) throw error;
+    DATA.faqs = data || [];
+    renderFaqs(DATA.faqs);
+  }catch(e){
+    $('faqsList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderFaqs(list){
+  const c = $('faqsList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-circle-question"></i><h3 class="empty-title">Aucune FAQ</h3></div>`; return; }
+  c.innerHTML = list.map(f => `
+    <div class="list-card">
+      <h3 class="list-title">${esc(f.question || '—')}</h3>
+      <p class="list-sub" style="margin-top:.4rem">${esc(f.answer || '')}</p>
+      <div class="list-meta">
+        <span class="chip-mini ${f.active ? 'ok' : 'er'}">${f.active ? 'Active' : 'Inactive'}</span>
+      </div>
+    </div>`).join('');
+}
+
+async function loadTestimonials(){
+  $('testimonialsList').innerHTML = '<div class="sk"></div>';
+  try{
+    const { data, error } = await DB.client.from('testimonials').select('*').order('display_order', { ascending: true });
+    if(error) throw error;
+    DATA.testimonials = data || [];
+    renderTestimonials(DATA.testimonials);
+  }catch(e){
+    $('testimonialsList').innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><h3 class="empty-title">Erreur</h3><p class="empty-sub">${esc(e.message)}</p></div>`;
+  }
+}
+
+function renderTestimonials(list){
+  const c = $('testimonialsList');
+  if(!list.length){ c.innerHTML = `<div class="empty"><i class="fa-solid fa-quote-left"></i><h3 class="empty-title">Aucun témoignage</h3></div>`; return; }
+  c.innerHTML = list.map(t => `
+    <div class="list-card">
+      <div class="list-card-head">
+        <div style="flex:1;min-width:220px">
+          <h3 class="list-title">${esc(t.name || '—')}</h3>
+          <p class="list-sub">${esc(t.role || '')}${t.city ? ' · ' + esc(t.city) : ''}</p>
+          <p class="list-sub" style="margin-top:.5rem;font-style:italic">« ${esc(t.quote || '')} »</p>
+          <div class="list-meta">
+            <span class="chip-mini ${t.published ? 'ok' : 'warn'}">${t.published ? 'Publié' : 'Brouillon'}</span>
+            <span class="chip-mini">${'★'.repeat(t.rating || 5)}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function loadAnalytics(){
+  try{
+    const [analytics, stats] = await Promise.all([
+      DB.getAnalytics ? DB.getAnalytics(7) : Promise.resolve({ total:0, uniqueVisitors:0, topPages:[], daily:[] }),
+      DB.getAdminStats ? DB.getAdminStats() : Promise.resolve({ revenue:[] })
+    ]);
+
+    $('statViews').textContent = analytics.total || 0;
+    $('statUnique').textContent = analytics.uniqueVisitors || 0;
+    $('statToday').textContent = (analytics.daily?.[analytics.daily.length-1]?.views) || 0;
+
+    const revenue = (stats.revenue || []).reduce((s, r) => s + Number(r.total || 0), 0);
+    $('statRevenue').textContent = fmtMoney(revenue).replace(' FCFA', '');
+
+    const c = $('topPages');
+    if(!analytics.topPages?.length){ c.innerHTML = '<p class="list-sub">Aucune donnée</p>'; return; }
+    c.innerHTML = analytics.topPages.slice(0, 8).map(p => `
+      <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd);font-size:.82rem">
+        <span style="color:var(--ink);font-weight:600">${esc(p.path)}</span>
+        <span style="color:var(--ac);font-weight:800">${p.count}</span>
+      </div>`).join('');
+  }catch(e){ console.warn('[admin] analytics', e); }
+}
+
+/* ═══ PARAMÈTRES — PIN ═══ */
+function updateSettingsDates(){
+  const d1 = $('pinSetDate'); const d2 = $('lastUnlock');
+  if(d1) d1.textContent = getPinSetDate();
+  if(d2) d2.textContent = getLastUnlock();
+}
+
+function checkPinRules(){
+  const v = $('pinNew').value;
+  const rules = { length: v.length >= 4 && v.length <= 8, digits: /^\d+$/.test(v) };
+  document.querySelectorAll('.pin-rule').forEach(el => el.classList.toggle('ok', !!rules[el.dataset.rule]));
+}
+
+function setPinMsg(msg, type){
+  const el = $('pinMsg');
+  el.textContent = msg;
+  el.className = 'field-msg on ' + type;
+  if(!msg) el.className = 'field-msg';
+}
+
+async function saveNewPin(){
+  const current = $('pinCurrent').value.trim();
+  const newPin = $('pinNew').value.trim();
+  const confirm = $('pinConfirm').value.trim();
+
+  ['pinCurrent', 'pinNew', 'pinConfirm'].forEach(id => $(id).classList.remove('error'));
+  setPinMsg('', '');
+
+  if(!current){ $('pinCurrent').classList.add('error'); return setPinMsg('Entrez votre PIN actuel.', 'er'); }
+
+  const currentHash = await hashPin(current);
+  const storedHash = getStoredPinHash();
+
+  if(!storedHash){
+    if(current !== DEFAULT_PIN){ $('pinCurrent').classList.add('error'); return setPinMsg('PIN actuel incorrect.', 'er'); }
+  } else if(currentHash !== storedHash){
+    $('pinCurrent').classList.add('error');
+    return setPinMsg('PIN actuel incorrect.', 'er');
+  }
+
+  if(newPin.length < 4 || newPin.length > 8){ $('pinNew').classList.add('error'); return setPinMsg('Le nouveau PIN doit contenir 4 à 8 chiffres.', 'er'); }
+  if(!/^\d+$/.test(newPin)){ $('pinNew').classList.add('error'); return setPinMsg('Le PIN doit contenir uniquement des chiffres.', 'er'); }
+  if(newPin === current){ $('pinNew').classList.add('error'); return setPinMsg("Le nouveau PIN doit être différent de l'actuel.", 'er'); }
+  if(newPin !== confirm){ $('pinConfirm').classList.add('error'); return setPinMsg('Les deux PIN ne correspondent pas.', 'er'); }
+
+  const btn = $('pinSaveBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enregistrement…';
+
+  try{
+    await savePin(newPin);
+    setPinMsg('✅ PIN modifié avec succès !', 'ok');
+    toast('PIN mis à jour', 'success');
+    $('pinCurrent').value = ''; $('pinNew').value = ''; $('pinConfirm').value = '';
+    document.querySelectorAll('.pin-rule').forEach(el => el.classList.remove('ok'));
+    updateSettingsDates();
+  }catch(e){
+    setPinMsg('Erreur : ' + e.message, 'er');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+async function resetPin(){
+  if(!confirm('Réinitialiser le PIN à 1234 ? Cette action est immédiate.')) return;
+  try{
+    await savePin(DEFAULT_PIN);
+    toast('PIN réinitialisé à 1234', 'success');
+    updateSettingsDates();
+    setPinMsg('PIN remis à 1234.', 'ok');
+  }catch(e){ toast('Erreur : ' + e.message, 'error'); }
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeSidebar();
+  if(e.key === 'r' && (e.ctrlKey || e.metaKey) && sessionStorage.getItem('ap-admin-unlocked') === '1'){
+    e.preventDefault();
+    refreshCurrent();
+  }
+});
+</script>
+</body>
+</html>

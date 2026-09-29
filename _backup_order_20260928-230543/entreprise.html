@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entreprises, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.rccm-box{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--gd) 8%,transparent),color-mix(in srgb,var(--ac) 5%,transparent));
+  border:1px solid color-mix(in srgb,var(--gd) 30%,transparent);
+  border-radius:1.25rem;
+  padding:2rem;
+  display:flex;
+  gap:1.5rem;
+  align-items:center;
+  flex-wrap:wrap;
+  margin:2rem 0;
+}
+.rccm-icon{
+  width:64px;height:64px;border-radius:1rem;
+  background:linear-gradient(135deg,var(--gd),var(--gd2));
+  color:#fff;font-size:1.5rem;
+  display:grid;place-items:center;flex-shrink:0;
+  box-shadow:0 12px 32px -8px rgba(184,134,11,.5);
+}
+/* ✅ Encart sécurité */
+.security-notice{
+  background:color-mix(in srgb,var(--ac) 6%,transparent);
+  border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);
+  border-radius:1rem;
+  padding:1.25rem 1.5rem;
+  margin:1.5rem 0;
+  display:flex;
+  gap:1rem;
+  align-items:flex-start;
+}
+.security-notice-icon{
+  width:44px;height:44px;border-radius:.75rem;
+  background:color-mix(in srgb,var(--ac) 15%,transparent);
+  color:var(--ac);
+  display:grid;place-items:center;
+  font-size:1.1rem;
+  flex-shrink:0;
+}
+.security-notice-content{flex:1;min-width:0}
+.security-notice-title{
+  font-weight:800;
+  font-size:.95rem;
+  color:var(--ink);
+  margin-bottom:.35rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.security-notice-text{
+  font-size:.82rem;
+  color:var(--mu);
+  line-height:1.6;
+}
+.security-notice-text strong{color:var(--ink);font-weight:700}
+.security-points{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  margin-top:.75rem;
+}
+.security-point{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  font-size:.7rem;
+  font-weight:700;
+  padding:.25rem .6rem;
+  border-radius:999px;
+  background:var(--bg);
+  color:var(--ac);
+  border:1px solid color-mix(in srgb,var(--ac) 20%,transparent);
+}
+@media(max-width:640px){
+  .rccm-box{padding:1.25rem;gap:1rem;text-align:center;justify-content:center}
+  .rccm-box > div{text-align:center}
+  .security-notice{padding:1rem 1.15rem;flex-direction:column;align-items:center;text-align:center}
+  .security-notice-title{justify-content:center}
+}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Publiez vos missions, recevez des candidatures qualifiées, travaillez avec des freelances vérifiés. Contrats sécurisés, paiement local.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/entreprise.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Recrutez les meilleurs talents d'Afrique — AfroPulse">
+<meta property="og:description" content="Publiez vos missions, recevez des candidatures qualifiées.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/entreprise.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recrutez les meilleurs talents d'Afrique — AfroPulse">
+<meta name="twitter:description" content="Publiez vos missions, recevez des candidatures qualifiées.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+  <section class="text-center mb-16 reveal">
+    <span class="chip mb-4"><i class="fa-solid fa-building text-[10px]"></i><span data-i18n="ent.chip">Pour les entreprises</span></span>
+    <h1 class="hero-title" style="max-width:900px;margin-left:auto;margin-right:auto">
+      <span data-i18n="ent.hero.title">Recrutez les meilleurs</span><br>
+      <em data-i18n="ent.hero.title2">talents d'Afrique.</em>
+    </h1>
+    <p class="hero-sub" style="margin-left:auto;margin-right:auto" data-i18n="ent.hero.sub">
+      Publiez vos missions, recevez des candidatures qualifiées et travaillez
+      avec des freelances vérifiés. Paiement sécurisé, contrat numérique.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="#" id="ctaPrimary" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-plus"></i><span data-i18n="ent.publish">Publier une mission</span>
+      </a>
+      <a href="talents.html" class="btn bo btn-lg" data-i18n="ent.explore">
+        Explorer les talents
+      </a>
+    </div>
+  </section>
+
+  <section class="rccm-box reveal">
+    <div class="rccm-icon"><i class="fa-solid fa-file-shield"></i></div>
+    <div style="flex:1;min-width:220px">
+      <h3 style="font-size:1.15rem;font-weight:800;color:var(--ink);margin:0 0 .35rem" data-i18n="ent.rccm.title">
+        Badge RCCM — Confiance vérifiée
+      </h3>
+      <p style="font-size:.85rem;color:var(--mu);margin:0;line-height:1.6" data-i18n="ent.rccm.text">
+        Téléchargez votre RCCM et recevez un badge officiel. Vos annonces
+        seront marquées "Entreprise vérifiée" et bénéficieront de plus de visibilité.
+      </p>
+    </div>
+    <a href="profil.html" class="btn bg-gold btn-sm">
+      <i class="fa-solid fa-upload"></i><span data-i18n="ent.rccm.verify">Vérifier mon entreprise</span>
+    </a>
+  </section>
+
+  <!-- ✅ NOUVEAU : Encart sécurité avant upload RCCM -->
+  <section class="security-notice reveal">
+    <div class="security-notice-icon">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+    <div class="security-notice-content">
+      <div class="security-notice-title">
+        <i class="fa-solid fa-shield-halved" style="color:var(--ac)"></i>
+        <span data-i18n="ent.rccm.security.title">Vos documents sont protégés</span>
+      </div>
+      <p class="security-notice-text" data-i18n="ent.rccm.security.text">
+        Votre RCCM est <strong>chiffré</strong>, stocké dans un espace <strong>privé</strong>, et ne sera <strong>jamais partagé</strong>. Seuls nos administrateurs peuvent y accéder pour la vérification. Vous pouvez demander sa suppression à tout moment.
+      </p>
+      <div class="security-points">
+        <span class="security-point"><i class="fa-solid fa-shield-halved"></i>Chiffré</span>
+        <span class="security-point"><i class="fa-solid fa-user-lock"></i>Espace privé</span>
+        <span class="security-point"><i class="fa-solid fa-eye-slash"></i>Jamais partagé</span>
+        <span class="security-point"><i class="fa-solid fa-trash-can"></i>Suppression sur demande</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="ent.why.title">Pourquoi choisir AfroPulse</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="ent.why.sub">
+      Une plateforme conçue pour les réalités des entreprises africaines.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Talents vérifiés</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Filtrez par compétence, ville, pays, disponibilité.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-bullhorn"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Publication illimitée</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Publiez vos missions gratuitement. Budget, durée et lieu.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-file-signature"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Contrats sécurisés</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Signature électronique, preuve de paiement.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><i class="fa-solid fa-credit-card"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Paiement local</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Wave, Orange Money, virement bancaire.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-chart-line"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Statistiques</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Suivez les vues de vos annonces et recrutements.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-headset"></i></div>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--ink);margin:0 0 .5rem">Support prioritaire</h3>
+        <p style="font-size:.85rem;color:var(--mu);line-height:1.6;margin:0">
+          Un gestionnaire dédié pour Business et VIP.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20 reveal">
+    <h2 class="section-title text-center" data-i18n="ent.process.title">Votre recrutement en 4 étapes</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="ent.process.sub">
+      De la publication au paiement, tout est intégré.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><b style="font-size:.95rem">1</b></div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .4rem">Publiez</h3>
+        <p style="font-size:.82rem;color:var(--mu);line-height:1.6;margin:0">
+          Décrivez la mission, le budget, les compétences.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><b style="font-size:.95rem">2</b></div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .4rem">Recevez des candidatures</h3>
+        <p style="font-size:.82rem;color:var(--mu);line-height:1.6;margin:0">
+          Les talents du réseau postulent directement.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><b style="font-size:.95rem">3</b></div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .4rem">Signez le contrat</h3>
+        <p style="font-size:.82rem;color:var(--mu);line-height:1.6;margin:0">
+          Contrat numérique signé par les deux parties.
+        </p>
+      </div>
+      <div class="feature-card card-lift">
+        <div class="feature-icon" style="background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac)"><b style="font-size:.95rem">4</b></div>
+        <h3 style="font-size:.95rem;font-weight:800;color:var(--ink);margin:0 0 .4rem">Payez et validez</h3>
+        <p style="font-size:.82rem;color:var(--mu);line-height:1.6;margin:0">
+          Le paiement est libéré à validation de la mission.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="text-center py-12 rounded-2xl reveal" style="background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));border:1px solid var(--bd)">
+    <h2 class="section-title" style="margin-bottom:.75rem" data-i18n="ent.cta.title">Commencez à recruter</h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto;text-align:center" data-i18n="ent.cta.sub">
+      3 jours Premium offerts. Aucun engagement, aucune carte bancaire.
+    </p>
+    <div class="flex flex-wrap gap-3 justify-center" id="ctaFinal">
+      <a href="signup.html" class="btn bp btn-lg btn-shine">
+        <i class="fa-solid fa-rocket"></i><span data-i18n="ent.cta.start">Créer un compte entreprise</span>
+      </a>
+      <a href="login.html" class="btn bo btn-lg" data-i18n="ent.cta.have">J'ai déjà un compte</a>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/premium.js"></script>
+<script src="assets/premium-gate.js"></script>
+<script src="assets/wallet.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/image-tools.js"></script>
+<script src="assets/autosave.js"></script>
+<script src="assets/voice-search.js"></script>
+<script src="assets/presence.js"></script>
+<script src="assets/sound.js"></script>
+<script src="assets/timezone.js"></script>
+<script src="assets/realtime.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+function adaptAuthUI(){
+  const user = (typeof Auth !== 'undefined' && Auth) ? Auth.getUser() : null;
+  const primary = document.getElementById('ctaPrimary');
+  const final = document.getElementById('ctaFinal');
+  const profile = Auth?.getProfile();
+  const isEntreprise = profile?.role === 'entreprise';
+
+  if(user){
+    if(primary){
+      primary.href = isEntreprise ? 'publier-mission.html' : 'dashboard.html';
+      primary.innerHTML = isEntreprise
+        ? '<i class="fa-solid fa-plus"></i><span data-i18n="ent.publish">Publier une mission</span>'
+        : '<i class="fa-solid fa-chart-simple"></i><span data-i18n="index.dashboard">Tableau de bord</span>';
+    }
+    if(final){
+      final.innerHTML = isEntreprise
+        ? `<a href="publier-mission.html" class="btn bp btn-lg btn-shine"><i class="fa-solid fa-plus"></i><span data-i18n="ent.publish">Publier une mission</span></a>
+           <a href="dashboard.html" class="btn bo btn-lg" data-i18n="index.dashboard">Tableau de bord</a>`
+        : `<a href="dashboard.html" class="btn bp btn-lg btn-shine"><i class="fa-solid fa-chart-simple"></i><span data-i18n="index.dashboard">Tableau de bord</span></a>
+           <a href="talents.html" class="btn bo btn-lg" data-i18n="ent.explore">Explorer les talents</a>`;
+    }
+    if(typeof I18n !== 'undefined') I18n.applyAll();
+  }
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+addEventListener('DOMContentLoaded', () => {
+  adaptAuthUI();
+  initReveal();
+  if(typeof Auth !== 'undefined') Auth.onChange(() => adaptAuthUI());
+});
+</script>
+</body>
+</html>

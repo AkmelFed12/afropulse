@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connexion, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;position:relative}
+.auth-card{width:100%;max-width:420px;background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;padding:2rem;position:relative;z-index:1}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:1.5rem}
+.auth-title{font-size:1.5rem;font-weight:800;color:var(--ink);text-align:center;margin:0 0 .35rem;letter-spacing:-.02em}
+.auth-sub{font-size:.85rem;color:var(--mu);text-align:center;margin:0 0 1.75rem}
+.pwd-wrap{position:relative}
+.pwd-toggle{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu);cursor:pointer;padding:.25rem}
+.pwd-toggle:hover{color:var(--ac)}
+.auth-footer{text-align:center;font-size:.82rem;color:var(--mu);margin-top:1.5rem}
+.auth-footer a{color:var(--ac);font-weight:600}
+.notice{padding:.9rem 1.1rem;border-radius:.75rem;margin-bottom:1.25rem;font-size:.8rem;display:flex;align-items:flex-start;gap:.7rem;line-height:1.5}
+.notice.warn{background:color-mix(in srgb,var(--gd) 8%,transparent);border:1px solid color-mix(in srgb,var(--gd) 30%,transparent);color:var(--ink)}
+.notice.warn i{color:var(--gd);flex-shrink:0;margin-top:.15rem;font-size:1rem}
+.notice.warn .title{font-weight:800;margin-bottom:.25rem;color:var(--ink);font-size:.85rem}
+.notice.warn .sub{color:var(--mu);font-size:.75rem}
+.notice.warn button{background:none;border:none;color:var(--ac);font-weight:700;cursor:pointer;padding:0;font-size:.75rem;font-family:inherit;text-decoration:underline;margin-top:.5rem;display:inline-flex;align-items:center;gap:.3rem}
+.notice.warn button:hover{color:var(--ac2)}
+.notice.warn button:disabled{opacity:.5;cursor:wait}
+.fgt{text-align:right;margin-top:-.5rem;margin-bottom:.85rem}
+.fgt a{font-size:.75rem;color:var(--mu);text-decoration:none}
+.fgt a:hover{color:var(--ac)}
+.hidden{display:none!important}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Connectez-vous à votre compte AfroPulse pour accéder à votre tableau de bord, vos missions et vos contrats.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/login.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Se connecter — AfroPulse">
+<meta property="og:description" content="Accédez à votre espace AfroPulse.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/login.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Se connecter — AfroPulse">
+<meta name="twitter:description" content="Accédez à votre espace AfroPulse.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="auth-wrap">
+
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo">
+      <span class="site-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
+      </span>
+      <span style="font-weight:800;color:var(--ink);font-size:1.1rem">Afro<span style="color:var(--ac)">Pulse</span></span>
+    </a>
+
+    <h1 class="auth-title" data-i18n="login.title">Content de vous revoir</h1>
+    <p class="auth-sub" data-i18n="login.sub">Connectez-vous pour accéder à votre espace</p>
+
+    <div id="verifyNotice" class="notice warn hidden">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div style="flex:1">
+        <div class="title" data-i18n="login.verify.title">Votre email n'est pas encore confirmé</div>
+        <div class="sub" data-i18n="login.verify.sub">Vérifiez votre boîte de réception (et vos spams) puis cliquez sur le lien de confirmation.</div>
+        <button id="resendBtn" type="button">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span data-i18n="login.verify.resend">Renvoyer l'email de confirmation</span>
+        </button>
+      </div>
+    </div>
+
+    <form id="form" onsubmit="doLogin(event)">
+      <div class="form-row">
+        <label for="email" class="lbl" data-i18n="login.email">Adresse email</label>
+        <input id="email" type="email" class="input" required autocomplete="email" placeholder="vous@exemple.com">
+      </div>
+
+      <div class="form-row">
+        <label for="password" class="lbl" data-i18n="login.password">Mot de passe</label>
+        <div class="pwd-wrap">
+          <input id="password" type="password" class="input" required autocomplete="current-password" placeholder="••••••••" style="padding-right:2.75rem">
+          <button type="button" class="pwd-toggle" onclick="togglePwd()" aria-label="Afficher">
+            <i id="pwdIcon" class="fa-solid fa-eye text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="fgt">
+        <a href="forgot-password.html" data-i18n="login.forgot">Mot de passe oublié ?</a>
+      </div>
+
+      <p id="error" class="hidden text-xs" style="color:var(--er);margin-bottom:.75rem"></p>
+
+      <button type="submit" id="submitBtn" class="btn bp btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i><span data-i18n="login.submit">Se connecter</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <span data-i18n="login.noAccount">Pas encore de compte ?</span>
+      <a href="signup.html" data-i18n="login.signup">Créer un compte</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+let lastEmailForResend = '';
+
+function togglePwd(){
+  const i = $('password');
+  const ic = $('pwdIcon');
+  if(i.type === 'password'){ i.type = 'text'; ic.className = 'fa-solid fa-eye-slash text-xs'; }
+  else { i.type = 'password'; ic.className = 'fa-solid fa-eye text-xs'; }
+}
+
+function getNextUrl(){
+  const p = new URLSearchParams(location.search);
+  const next = p.get('next');
+  if(next && !next.includes('login.html')) return next;
+  return 'dashboard.html';
+}
+
+async function doLogin(e){
+  e.preventDefault();
+  const btn = $('submitBtn');
+  const err = $('error');
+  const notice = $('verifyNotice');
+  err.classList.add('hidden');
+  notice.classList.add('hidden');
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  lastEmailForResend = email;
+
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>…';
+
+  try{
+    await Auth.login({ email, password });
+    UI.toast('OK', 'success');
+    setTimeout(() => location.href = getNextUrl(), 500);
+  }catch(ex){
+    const code = ex.code || '';
+    const msg = (ex.message || '').toLowerCase();
+
+    if(code === 'EMAIL_NOT_CONFIRMED' || msg.includes('not confirmed') || msg.includes('confirm')){
+      notice.classList.remove('hidden');
+      err.textContent = I18n.t('login.verify.title');
+      err.classList.remove('hidden');
+      notice.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }else{
+      err.textContent = ex.message || 'Erreur';
+      err.classList.remove('hidden');
+    }
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+async function resendConfirm(){
+  if(!lastEmailForResend){
+    lastEmailForResend = $('email').value.trim();
+  }
+  if(!lastEmailForResend) return;
+
+  const btn = $('resendBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>…</span>';
+
+  try{
+    await Auth.resendConfirmation(lastEmailForResend);
+    UI.toast(I18n.t('emailBanner.sent'), 'success');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i><span>OK</span>';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }, 4000);
+  }catch(e){
+    UI.toast(e.message || 'Erreur', 'error');
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 400));
+
+  if(typeof Auth !== 'undefined' && Auth.isLogged && Auth.isLogged()){
+    location.href = getNextUrl();
+    return;
+  }
+
+  const p = new URLSearchParams(location.search);
+  if(p.get('confirmed') === '1'){
+    UI.toast('OK', 'success');
+  }
+
+  $('resendBtn').addEventListener('click', resendConfirm);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <linearGradient id="h_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b5fff"/>
+      <stop offset="55%" stop-color="#0a3fb8"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+    <linearGradient id="h_pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0c000"/>
+    </linearGradient>
+    <linearGradient id="h_textPulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="#e0a800"/>
+    </linearGradient>
+    <radialGradient id="h_halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e0a800" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#e0a800" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="h_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Icon part (left) -->
+  <g transform="translate(20, 20)">
+    <circle cx="80" cy="80" r="78" fill="url(#h_bg)"/>
+    <circle cx="120" cy="45" r="45" fill="#ffffff" opacity="0.06"/>
+    <circle cx="35" cy="125" r="38" fill="#ffffff" opacity="0.05"/>
+
+    <!-- Réseau mini -->
+    <g stroke="#ffffff" stroke-width="0.6" opacity="0.25" stroke-linecap="round">
+      <line x1="50" y1="65" x2="75" y2="55"/>
+      <line x1="75" y1="55" x2="105" y2="60"/>
+      <line x1="105" y1="60" x2="120" y2="85"/>
+      <line x1="120" y1="85" x2="100" y2="110"/>
+      <line x1="100" y1="110" x2="70" y2="118"/>
+      <line x1="70" y1="118" x2="45" y2="105"/>
+      <line x1="45" y1="105" x2="50" y2="65"/>
+      <line x1="80" y1="85" x2="75" y2="55"/>
+      <line x1="80" y1="85" x2="120" y2="85"/>
+      <line x1="80" y1="85" x2="70" y2="118"/>
+    </g>
+
+    <g fill="#ffffff" opacity="0.7">
+      <circle cx="50" cy="65" r="1.8"/>
+      <circle cx="75" cy="55" r="1.8"/>
+      <circle cx="105" cy="60" r="1.8"/>
+      <circle cx="120" cy="85" r="1.8"/>
+      <circle cx="100" cy="110" r="1.8"/>
+      <circle cx="70" cy="118" r="1.8"/>
+      <circle cx="45" cy="105" r="1.8"/>
+      <circle cx="80" cy="85" r="2"/>
+    </g>
+
+    <!-- Pulse -->
+    <g filter="url(#h_glow)">
+      <path d="M 15 80
+               L 36 80
+               L 42 74
+               L 47 86
+               L 52 44
+               L 60 116
+               L 68 68
+               L 74 80
+               L 86 80
+               L 92 74
+               L 97 86
+               L 105 52
+               L 113 112
+               L 121 76
+               L 128 80
+               L 145 80"
+            fill="none"
+            stroke="url(#h_pulse)"
+            stroke-width="5.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+    </g>
+
+    <circle cx="52" cy="44" r="6" fill="url(#h_halo)"/>
+    <circle cx="52" cy="44" r="2.5" fill="#f0c000"/>
+    <circle cx="105" cy="52" r="5" fill="url(#h_halo)"/>
+    <circle cx="105" cy="52" r="2" fill="#f0c000"/>
+  </g>
+
+  <!-- Text -->
+  <g font-family="Inter, 'Segoe UI', system-ui, sans-serif" font-weight="800" letter-spacing="-1">
+    <text x="200" y="112" font-size="64" fill="#0b5fff">AFRO</text>
+    <text x="387" y="112" font-size="64" fill="url(#h_textPulse)">PULSE</text>
+  </g>
+  <text x="204" y="148"
+        font-family="Inter, system-ui, sans-serif"
+        font-weight="600"
+        font-size="14"
+        fill="#64748b"
+        letter-spacing="2.5">BY LMO SERVICES</text>
+</svg>

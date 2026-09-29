@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paiement, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.pay-wrap{max-width:680px;margin:0 auto;padding:1.5rem 1rem 4rem;position:relative}
+.pay-head{text-align:center;margin-bottom:1.5rem}
+.pay-title{font-size:1.65rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin:0 0 .35rem}
+.pay-sub{font-size:.88rem;color:var(--mu);margin:0}
+
+.plan-recap{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 6%,transparent),color-mix(in srgb,var(--gd) 4%,transparent));
+  border:1px solid var(--bd);border-radius:1.25rem;
+  padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.plan-recap::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--ac),var(--gd));
+}
+.plan-recap-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.plan-recap-name{font-size:1.15rem;font-weight:800;color:var(--ink);margin:0;display:flex;align-items:center;gap:.6rem}
+.plan-recap-badge{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:.3rem .65rem;border-radius:999px;background:var(--ac);color:#fff}
+.plan-recap-cycle{font-size:.75rem;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.plan-recap-detail{font-size:.82rem;color:var(--mu);line-height:1.6;margin:0}
+
+.step-block{background:var(--sf);border:1px solid var(--bd);border-radius:1.15rem;padding:1.35rem;margin-bottom:1rem}
+.step-head{display:flex;align-items:center;gap:.65rem;margin-bottom:1rem}
+.step-num{width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--ac) 15%,transparent);color:var(--ac);display:grid;place-items:center;font-size:.75rem;font-weight:800;flex-shrink:0}
+.step-title{font-size:.95rem;font-weight:800;color:var(--ink);margin:0;letter-spacing:-.01em}
+.step-hint{font-size:.75rem;color:var(--mu);margin:0 0 .85rem}
+
+.pm-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
+@media(min-width:520px){.pm-grid{grid-template-columns:repeat(2,1fr)}}
+.pm-option{
+  display:flex;align-items:center;gap:.85rem;
+  padding:1rem 1.15rem;border:2px solid var(--bd);border-radius:.85rem;
+  background:var(--bg);cursor:pointer;transition:.18s;
+  font-family:inherit;color:var(--ink);text-align:left;width:100%;
+  position:relative;
+}
+.pm-option:hover{border-color:var(--ac);transform:translateY(-2px)}
+.pm-option.on{
+  border-color:var(--ac);
+  background:color-mix(in srgb,var(--ac) 6%,transparent);
+  box-shadow:0 8px 20px -10px color-mix(in srgb,var(--ac) 45%,transparent);
+}
+.pm-option .pm-check{
+  position:absolute;top:.55rem;right:.55rem;
+  width:18px;height:18px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--ac);color:#fff;font-size:.6rem;
+  opacity:0;transform:scale(.5);transition:.2s;
+}
+.pm-option.on .pm-check{opacity:1;transform:scale(1)}
+.pm-icon{
+  width:48px;height:48px;border-radius:.7rem;
+  display:grid;place-items:center;flex-shrink:0;
+  background:#fff;
+  border:1px solid var(--bd);
+  overflow:hidden;
+  padding:5px;
+}
+.pm-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.pm-info{flex:1;min-width:0}
+.pm-name{font-size:.9rem;font-weight:800;color:var(--ink);line-height:1.2}
+.pm-fee{font-size:.7rem;color:var(--mu);margin-top:.15rem}
+
+.form-row{margin-bottom:1rem}
+.lbl{display:block;font-size:.75rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+.req{color:var(--er)}
+.input{
+  width:100%;padding:.75rem .9rem;border:1.5px solid var(--bd);border-radius:.65rem;
+  background:var(--bg);color:var(--ink);font-family:inherit;font-size:.88rem;
+  outline:none;transition:.15s;
+}
+.input:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 15%,transparent)}
+.input-error{border-color:var(--er)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--er) 15%,transparent)!important}
+.form-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
+@media(min-width:520px){.form-grid{grid-template-columns:1fr 1fr}}
+
+.total-block{
+  background:var(--ink);color:var(--bg);
+  border-radius:1.15rem;padding:1.35rem 1.5rem;
+  margin:1.5rem 0 1rem;
+  display:flex;flex-direction:column;gap:.65rem;
+}
+.total-row{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;opacity:.85}
+.total-row-final{font-size:1.05rem;font-weight:800;opacity:1;padding-top:.65rem;border-top:1px solid color-mix(in srgb,var(--bg) 20%,transparent);margin-top:.15rem}
+.total-amount{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+.btn-pay{
+  width:100%;padding:1rem;border-radius:.85rem;
+  background:var(--ac);color:#fff;border:none;cursor:pointer;
+  font-family:inherit;font-size:.95rem;font-weight:800;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  transition:.2s;box-shadow:0 12px 32px -10px color-mix(in srgb,var(--ac) 55%,transparent);
+}
+.btn-pay:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 40px -12px color-mix(in srgb,var(--ac) 60%,transparent)}
+.btn-pay:disabled{opacity:.6;cursor:wait}
+.btn-pay i{font-size:1rem}
+
+.secure-note{
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  margin-top:1rem;font-size:.75rem;color:var(--mu);
+}
+.secure-note i{color:var(--ok)}
+
+.error-msg{
+  display:flex;align-items:flex-start;gap:.6rem;
+  padding:.85rem 1rem;border-radius:.65rem;
+  background:color-mix(in srgb,var(--er) 8%,transparent);
+  border:1px solid color-mix(in srgb,var(--er) 25%,transparent);
+  color:var(--er);font-size:.8rem;font-weight:600;
+  line-height:1.4;margin-bottom:1rem;
+}
+.error-msg i{flex-shrink:0;margin-top:.1rem}
+.hidden{display:none!important}
+
+.redirect-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(15,23,42,.85);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;padding:1.5rem;
+}
+.redirect-overlay.on{display:flex}
+.redirect-box{
+  background:var(--sf);border-radius:1.25rem;padding:2.25rem 1.75rem;
+  max-width:400px;width:100%;text-align:center;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.4);
+}
+.redirect-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--ac),var(--gd));
+  color:#fff;font-size:1.75rem;
+  display:grid;place-items:center;margin:0 auto 1.25rem;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 40%,transparent)}50%{transform:scale(1.05);box-shadow:0 0 0 12px color-mix(in srgb,var(--ac) 0%,transparent)}}
+.redirect-title{font-size:1.15rem;font-weight:800;color:var(--ink);margin:0 0 .5rem}
+.redirect-sub{font-size:.85rem;color:var(--mu);line-height:1.5;margin:0}
+.redirect-method{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-top:1rem;padding:.5rem .9rem;border-radius:999px;
+  background:var(--bg);border:1px solid var(--bd);
+  font-size:.78rem;font-weight:700;color:var(--ink);
+}
+.redirect-method img{
+  width:22px;
+  height:22px;
+  object-fit:contain;
+  border-radius:4px;
+  background:#fff;
+  padding:1px;
+}
+
+@media(max-width:520px){
+  .pay-title{font-size:1.35rem}
+  .plan-recap{padding:1.15rem}
+  .step-block{padding:1.15rem}
+  .total-block{padding:1.15rem}
+  .pm-option{padding:.85rem 1rem}
+  .pm-icon{width:42px;height:42px}
+}
+</style>
+
+<!-- SEO — noindex -->
+<meta name="robots" content="noindex, nofollow">
+<!-- /SEO -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<main class="relative">
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="pay-wrap">
+
+  <div class="pay-head reveal">
+    <h1 class="pay-title" data-i18n="pay.title">Finaliser votre abonnement</h1>
+    <p class="pay-sub" data-i18n="pay.sub">Choisissez votre moyen de paiement, envoyez la preuve, on active sous 30 min.</p>
+  </div>
+
+  <div class="plan-recap reveal">
+    <div class="plan-recap-head">
+      <h2 class="plan-recap-name" id="planName">
+        <i class="fa-solid fa-crown" style="color:var(--gd)"></i>
+        <span id="planNameText">Pro</span>
+      </h2>
+      <span class="plan-recap-badge" id="planBadge">Populaire</span>
+    </div>
+    <div class="plan-recap-cycle" id="planCycle">Abonnement mensuel</div>
+    <p class="plan-recap-detail" id="planDesc">Accès complet aux missions, messagerie vocale, badge Pro.</p>
+  </div>
+
+  <form id="payForm" onsubmit="payer(event)" novalidate>
+
+    <div class="step-block reveal">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <h3 class="step-title" data-i18n="pay.step1.title">Choisissez votre moyen de paiement</h3>
+      </div>
+      <p class="step-hint" data-i18n="pay.step1.hint">Les frais de transaction sont indiqués pour chaque méthode.</p>
+
+      <div class="pm-grid" id="pmGrid"></div>
+    </div>
+
+    <div class="step-block reveal">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <h3 class="step-title" data-i18n="pay.step2.title">Vos coordonnées</h3>
+      </div>
+      <p class="step-hint" data-i18n="pay.step2.hint">Ces informations apparaîtront sur le reçu envoyé à l'équipe.</p>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="name" class="lbl"><span data-i18n="pay.field.name">Nom complet</span> <span class="req">*</span></label>
+          <input id="name" type="text" class="input" required autocomplete="name" placeholder="Ex : Ladji Ouattara">
+        </div>
+        <div class="form-row">
+          <label for="phone" class="lbl"><span data-i18n="pay.field.phone">Numéro de téléphone</span> <span class="req">*</span></label>
+          <input id="phone" type="tel" class="input" required autocomplete="tel" placeholder="+225 07 58 00 00 00">
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label for="email" class="lbl"><span data-i18n="pay.field.email">Email</span> <span class="req">*</span></label>
+        <input id="email" type="email" class="input" required autocomplete="email" placeholder="vous@exemple.com">
+      </div>
+    </div>
+
+    <p id="error" class="error-msg hidden">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span></span>
+    </p>
+
+    <div class="total-block reveal">
+      <div class="total-row">
+        <span data-i18n="pay.total.plan">Abonnement</span>
+        <span class="total-amount" id="totalPlan">5 000 FCFA</span>
+      </div>
+      <div class="total-row">
+        <span id="feeLabel">Frais transaction (1%)</span>
+        <span class="total-amount" id="totalFee">+50 FCFA</span>
+      </div>
+      <div class="total-row total-row-final">
+        <span data-i18n="pay.total.total">Total à payer</span>
+        <span class="total-amount" id="totalFinal">5 050 FCFA</span>
+      </div>
+    </div>
+
+    <button type="submit" id="payBtn" class="btn-pay reveal">
+      <i class="fa-solid fa-lock"></i>
+      <span data-i18n="pay.cta">Payer maintenant</span>
+    </button>
+
+    <div class="secure-note">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span data-i18n="pay.secure">Paiement vérifié manuellement sous 30 minutes.</span>
+    </div>
+
+  </form>
+
+</div>
+</main>
+
+<div id="redirectOverlay" class="redirect-overlay">
+  <div class="redirect-box">
+    <div class="redirect-icon"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+    <h3 class="redirect-title" data-i18n="pay.redirect.title">Redirection en cours…</h3>
+    <p class="redirect-sub" data-i18n="pay.redirect.sub">Vous allez être redirigé vers votre application de paiement. Suivez les instructions, puis revenez ici.</p>
+    <div class="redirect-method" id="redirectMethod"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function T(key, fallback){
+  if(typeof I18n !== 'undefined' && I18n.t) return I18n.t(key) || fallback;
+  return fallback;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGOS IMAGES
+   ═══════════════════════════════════════════════════════════ */
+function methodLogo(method){
+  const logos = {
+    wave: 'assets/wave.png',
+    orange: 'assets/orange.png',
+    card: 'assets/card.jpg',
+    djamo: 'assets/djamo.png'
+  };
+  return logos[method] || logos.card;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PLANS
+   ═══════════════════════════════════════════════════════════ */
+const PLANS = {
+  starter: {
+    name: 'Starter',
+    badge: null,
+    desc: 'Profil public illimité, recherche de talents, messagerie texte.',
+    prices: { monthly: 0, yearly: 0 }
+  },
+  pro: {
+    name: 'Pro',
+    badge: 'Populaire',
+    desc: 'Missions illimitées, messages vocaux, badge Pro, analytics.',
+    prices: { monthly: 5000, yearly: 48000 }
+  },
+  business: {
+    name: 'Business',
+    badge: null,
+    desc: 'Badge Entreprise vérifiée, 5 comptes utilisateurs, support 2h.',
+    prices: { monthly: 15000, yearly: 144000 }
+  },
+  vip: {
+    name: 'VIP',
+    badge: 'Premium',
+    desc: 'Comptes illimités, API, formation équipe, support 24/7.',
+    prices: { monthly: 50000, yearly: 480000 }
+  }
+};
+
+let currentPlan = 'pro';
+let currentCycle = 'monthly';
+let currentAmount = 5000;
+let currentMethod = 'wave';
+
+function fmt(n){
+  const lang = I18n?.get?.() === 'en' ? 'en-US' : 'fr-FR';
+  return Number(n).toLocaleString(lang) + ' FCFA';
+}
+
+function getPlanFromUrl(){
+  const p = new URLSearchParams(location.search);
+  const plan = (p.get('plan') || 'pro').toLowerCase();
+  const cycle = (p.get('cycle') || 'monthly').toLowerCase();
+  const amount = parseInt(p.get('amount'), 10);
+
+  if(!PLANS[plan]) return { plan: 'pro', cycle: 'monthly', amount: 5000 };
+
+  const validPlan = PLANS[plan];
+  const validCycle = ['monthly', 'yearly'].includes(cycle) ? cycle : 'monthly';
+  const validAmount = amount && amount > 0 ? amount : validPlan.prices[validCycle];
+
+  return { plan, cycle: validCycle, amount: validAmount };
+}
+
+function updatePlanUI(){
+  const plan = PLANS[currentPlan];
+  const isYearly = currentCycle === 'yearly';
+
+  $('planNameText').textContent = plan.name;
+  $('planCycle').textContent = isYearly ? T('pay.cycle.yearly', 'Abonnement annuel') : T('pay.cycle.monthly', 'Abonnement mensuel');
+  $('planDesc').textContent = plan.desc;
+
+  const badgeEl = $('planBadge');
+  if(plan.badge){
+    badgeEl.textContent = plan.badge;
+    badgeEl.style.display = '';
+  }else{
+    badgeEl.style.display = 'none';
+  }
+
+  $('totalPlan').textContent = fmt(currentAmount);
+
+  updateFees();
+}
+
+function renderMethods(){
+  const grid = $('pmGrid');
+  if(!grid) return;
+
+  const methods = (typeof DB !== 'undefined' && DB.getPaymentMethods)
+    ? DB.getPaymentMethods()
+    : [
+      { id:'wave', label:'Wave', color:'#1dc3f1', feeLabel:'1%' },
+      { id:'orange', label:'Orange Money', color:'#ff6600', feeLabel:'1%' },
+      { id:'card', label:'Carte bancaire', color:'#0b5fff', feeLabel:'3%' },
+      { id:'djamo', label:'Djamo', color:'#6f42c1', feeLabel:'3%' }
+    ];
+
+  grid.innerHTML = methods.map(m => `
+    <button type="button" class="pm-option ${m.id === currentMethod ? 'on' : ''}" data-method="${m.id}" onclick="selectMethod('${m.id}')">
+      <div class="pm-check"><i class="fa-solid fa-check"></i></div>
+      <div class="pm-icon">
+        <img src="${methodLogo(m.id)}" alt="${m.label}" loading="lazy">
+      </div>
+      <div class="pm-info">
+        <div class="pm-name">${m.label}</div>
+        <div class="pm-fee">${m.feeLabel ? `+${m.feeLabel} frais` : 'Sans frais'}</div>
+      </div>
+    </button>
+  `).join('');
+}
+
+function selectMethod(id){
+  currentMethod = id;
+  document.querySelectorAll('.pm-option').forEach(el => {
+    el.classList.toggle('on', el.dataset.method === id);
+  });
+  updateFees();
+}
+
+function updateFees(){
+  const calc = (typeof DB !== 'undefined' && DB.calculatePaymentFee)
+    ? DB.calculatePaymentFee(currentAmount, currentMethod)
+    : { fee: Math.round(currentAmount * 0.01), total: currentAmount + Math.round(currentAmount * 0.01), feeLabel: '1%', methodLabel: 'Wave' };
+
+  $('feeLabel').textContent = `${T('pay.total.fee', 'Frais transaction')} (${calc.feeLabel || '0%'})`;
+  $('totalFee').textContent = '+' + fmt(calc.fee);
+  $('totalFinal').textContent = fmt(calc.total);
+
+  const methodLabel = calc.methodLabel || 'Wave';
+  $('redirectMethod').innerHTML = `
+    <img src="${methodLogo(currentMethod)}" alt="" loading="lazy">
+    <span>${methodLabel}</span>`;
+}
+
+function clearErrors(){
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  const err = $('error');
+  err.classList.add('hidden');
+  err.querySelector('span').textContent = '';
+}
+
+function focusError(fieldId, msg){
+  const el = $(fieldId);
+  if(el){
+    el.classList.add('input-error');
+    el.focus();
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  const err = $('error');
+  err.querySelector('span').textContent = msg;
+  err.classList.remove('hidden');
+}
+
+async function payer(e){
+  e.preventDefault();
+  clearErrors();
+
+  const user = Auth?.getUser?.();
+  if(!user){
+    UI.toast(T('pay.error.login', 'Connectez-vous pour continuer.'), 'error');
+    setTimeout(() => location.href = 'login.html?next=' + encodeURIComponent(location.pathname + location.search), 800);
+    return;
+  }
+
+  const name = $('name').value.trim();
+  const phone = $('phone').value.trim();
+  const email = $('email').value.trim() || user.email;
+
+  if(!name || name.length < 2){
+    return focusError('name', T('pay.error.name', 'Entrez votre nom complet.'));
+  }
+  if(!phone || phone.replace(/\D/g, '').length < 8){
+    return focusError('phone', T('pay.error.phone', 'Entrez un numéro de téléphone valide.'));
+  }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    return focusError('email', T('pay.error.email', 'Entrez une adresse email valide.'));
+  }
+
+  const config = (typeof DB !== 'undefined' && DB.PAYMENT_CONFIG) ? DB.PAYMENT_CONFIG : {};
+  const link = config[currentMethod]?.link;
+  if(!link){
+    const err = $('error');
+    err.querySelector('span').textContent = T('pay.error.method', 'Méthode de paiement indisponible.');
+    err.classList.remove('hidden');
+    return;
+  }
+
+  const ref = 'AP-' + currentPlan.toUpperCase().slice(0, 3) + '-' + Date.now().toString(36).toUpperCase().slice(-6) + '-' + Math.random().toString(36).slice(2, 5).toUpperCase();
+
+  const calc = (typeof DB !== 'undefined' && DB.calculatePaymentFee)
+    ? DB.calculatePaymentFee(currentAmount, currentMethod)
+    : { fee: 0, total: currentAmount };
+
+  const intent = {
+    ref,
+    plan: currentPlan,
+    cycle: currentCycle,
+    amount: currentAmount,
+    method: currentMethod,
+    methodLabel: config[currentMethod]?.label || currentMethod,
+    fee: calc.fee,
+    total: calc.total,
+    customer: { name, phone, email },
+    userId: user.id,
+    createdAt: new Date().toISOString()
+  };
+
+  try{
+    sessionStorage.setItem('ap-payment-intent', JSON.stringify(intent));
+  }catch(err){}
+
+  $('payBtn').disabled = true;
+  $('redirectOverlay').classList.add('on');
+
+  setTimeout(() => {
+    window.open(link, '_blank', 'noopener');
+    setTimeout(() => {
+      location.href = 'preuve-paiement.html?ref=' + encodeURIComponent(ref);
+    }, 1800);
+  }, 1200);
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!els.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => io.observe(el));
+}
+
+function prefillFromUser(){
+  const u = Auth?.getUser?.();
+  const p = Auth?.getProfile?.();
+  if(!u) return;
+
+  if(p?.full_name && !$('name').value) $('name').value = p.full_name;
+  if(p?.phone && !$('phone').value) $('phone').value = p.phone;
+  if(u.email && !$('email').value) $('email').value = u.email;
+}
+
+addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 400));
+
+  const url = getPlanFromUrl();
+  currentPlan = url.plan;
+  currentCycle = url.cycle;
+  currentAmount = url.amount;
+
+  updatePlanUI();
+  renderMethods();
+  updateFees();
+  initReveal();
+  prefillFromUser();
+
+  if(typeof Auth !== 'undefined' && Auth.isLogged && !Auth.isLogged()){
+    setTimeout(() => {
+      UI.toast(T('pay.error.login', 'Connectez-vous pour continuer.'), 'error');
+      location.href = 'login.html?next=' + encodeURIComponent(location.pathname + location.search);
+    }, 1200);
+  }
+
+  if(typeof I18n !== 'undefined' && I18n.onChange){
+    I18n.onChange(() => {
+      updatePlanUI();
+      renderMethods();
+      updateFees();
+    });
+  }
+});
+</script>
+</body>
+</html>

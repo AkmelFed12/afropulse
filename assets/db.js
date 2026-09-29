@@ -23,26 +23,125 @@ const DB=(()=>{
   return{
     /* ─── Abonnements ─── */
     async saveSubscription(d){
-      if(!ready){const a=ls.get('ap_subscriptions');a.push(d);ls.set('ap_subscriptions',a);return d}
+      if(!ready){
+        const a=ls.get('ap_subscriptions');
+        a.push(d);
+        ls.set('ap_subscriptions',a);
+        return d;
+      }
       await wait();
-      const {data,error}=await client.from('subscriptions').insert({
-        user_name:d.name,plan_name:d.plan,
+      const {data:{user}}=await client.auth.getUser();
+      const insert={
+        user_id:user?.id||null,
+        user_name:d.name,
+        plan_name:d.plan,
         billing_cycle:d.cycle==='monthly'||d.cycle==='m'?'monthly':'yearly',
-        amount:d.amount,gateway:d.gateway,tx_reference:d.ref,status:'en_attente'
-      }).select().single();
-      if(error)throw error;return data;
+        amount:d.amount,
+        base_amount:d.baseAmount||d.amount,
+        fees:d.fees||0,
+        fee_rate:d.feeRate||0,
+        gateway:d.gateway,
+        tx_reference:d.ref,
+        status:'en_attente',
+        expires_at:null,
+        ref:d.ref,
+        name:d.name,
+        plan:d.plan,
+        cycle:d.cycle==='monthly'||d.cycle==='m'?'monthly':'yearly'
+      };
+      const {data,error}=await client.from('subscriptions').insert(insert).select().single();
+      if(error)throw error;
+      return data;
     },
+
     async getSubscriptions(){
       if(!ready)return ls.get('ap_subscriptions');
       await wait();
       const {data,error}=await client.from('subscriptions').select('*').order('created_at',{ascending:false});
       if(error)return [];
-      return data.map(x=>({id:x.id,ref:x.tx_reference,plan:x.plan_name,cycle:x.billing_cycle,amount:x.amount,gateway:x.gateway,name:x.user_name,status:x.status,createdAt:x.created_at}));
+      return data.map(x=>({
+        id:x.id,
+        ref:x.tx_reference||x.ref,
+        plan:x.plan_name||x.plan,
+        cycle:x.billing_cycle||x.cycle,
+        amount:x.amount,
+        baseAmount:x.base_amount,
+        fees:x.fees,
+        feeRate:x.fee_rate,
+        gateway:x.gateway,
+        name:x.user_name||x.name,
+        status:x.status,
+        expiresAt:x.expires_at,
+        createdAt:x.created_at
+      }));
     },
+
     async updateSubscriptionStatus(id,status){
-      if(!ready){const a=ls.get('ap_subscriptions');const i=a.findIndex(x=>x.ref===id||x.id===id);if(i>=0)a[i].status=status;ls.set('ap_subscriptions',a);return}
+      if(!ready){
+        const a=ls.get('ap_subscriptions');
+        const i=a.findIndex(x=>x.ref===id||x.id===id);
+        if(i>=0)a[i].status=status;
+        ls.set('ap_subscriptions',a);
+        return;
+      }
       await wait();
-      await client.from('subscriptions').update({status}).eq('id',id);
+      const updates={status};
+      if(status==='actif'){
+        const {data:sub}=await client.from('subscriptions').select('billing_cycle,cycle').eq('id',id).single();
+        const cycle=sub?.billing_cycle||sub?.cycle||'monthly';
+        const days=cycle==='yearly'?365:30;
+        updates.expires_at=new Date(Date.now()+days*24*3600*1000).toISOString();
+      }
+      await client.from('subscriptions').update(updates).eq('id',id);
+    },
+
+    async hasActiveSubscription(){
+      if(!ready)return false;
+      await wait();
+      const {data:{user}}=await client.auth.getUser();
+      if(!user)return false;
+      const {data,error}=await client
+        .from('subscriptions')
+        .select('id,expires_at,status')
+        .eq('user_id',user.id)
+        .eq('status','actif')
+        .limit(1);
+      if(error)return false;
+      if(!data||!data.length)return false;
+      const sub=data[0];
+      if(sub.expires_at && new Date(sub.expires_at)<new Date())return false;
+      return true;
+    },
+
+    async getMySubscription(){
+      if(!ready)return null;
+      await wait();
+      const {data:{user}}=await client.auth.getUser();
+      if(!user)return null;
+      const {data,error}=await client
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id',user.id)
+        .eq('status','actif')
+        .order('created_at',{ascending:false})
+        .limit(1);
+      if(error||!data||!data.length)return null;
+      const s=data[0];
+      if(s.expires_at && new Date(s.expires_at)<new Date())return null;
+      return {
+        id:s.id,
+        plan:s.plan_name||s.plan,
+        cycle:s.billing_cycle||s.cycle,
+        amount:s.amount,
+        baseAmount:s.base_amount,
+        fees:s.fees,
+        feeRate:s.fee_rate,
+        gateway:s.gateway,
+        ref:s.tx_reference||s.ref,
+        status:s.status,
+        expiresAt:s.expires_at,
+        createdAt:s.created_at
+      };
     },
 
     /* ─── RCCM ─── */
@@ -162,20 +261,14 @@ const DB=(()=>{
           .select('full_name,city,role,created_at')
           .order('created_at',{ascending:false})
           .limit(limit);
-        if(!error && data && data.length){
-          return data;
-        }
+        if(!error && data && data.length)return data;
         const r2=await client.from('profiles')
           .select('full_name,city,created_at')
           .order('created_at',{ascending:false})
           .limit(limit);
-        if(!r2.error && r2.data && r2.data.length){
-          return r2.data.map(x=>({...x,role:'particulier'}));
-        }
+        if(!r2.error && r2.data && r2.data.length)return r2.data.map(x=>({...x,role:'particulier'}));
         return [];
-      }catch(e){
-        return [];
-      }
+      }catch(e){return [];}
     },
 
     /* ─── Compteur en ligne ─── */
@@ -272,7 +365,7 @@ const DB=(()=>{
     async getProfileById(id){
       if(!ready)return null;
       await wait();
-      const {data,error}=await client.from('profiles').select('*').eq('id',id).single();
+      const {data,error}=await client.from('profiles').select('*').eq('id',id).maybeSingle();
       if(error)return null;return data;
     },
     async searchTalents({q='',country='',role='',limit=100}={}){
@@ -360,6 +453,25 @@ const DB=(()=>{
     },
 
     /* ─── Missions ─── */
+    async canPublishMission(){
+      if(!ready)return {allowed:false,reason:'no_db'};
+      await wait();
+      const {data:{user}}=await client.auth.getUser();
+      if(!user)return {allowed:false,reason:'not_logged'};
+
+      const p=await this.getProfileById(user.id);
+      if(!p||p.role!=='entreprise'){
+        return {allowed:false,reason:'not_business'};
+      }
+
+      const hasSub=await this.hasActiveSubscription();
+      if(!hasSub){
+        return {allowed:false,reason:'no_subscription'};
+      }
+
+      return {allowed:true};
+    },
+
     async saveMission(d){
       if(!ready){const a=ls.get('ap_missions');a.push({...d,id:Date.now().toString(),createdAt:new Date().toISOString()});ls.set('ap_missions',a);return d}
       await wait();
@@ -459,9 +571,18 @@ const DB=(()=>{
         return {count:r.length,average:Math.round(r.reduce((s,x)=>s+x.rating,0)/r.length*10)/10};
       }
       await wait();
-      const {data,error}=await client.from('ratings').select('*').eq('target_id',targetId).single();
-      if(error||!data)return {count:0,average:0};
-      return {count:data.reviews_count||0,average:Number(data.average_rating)||0};
+      try{
+        // maybeSingle() : ne plante pas si 0 ligne trouvée (fix 406)
+        const {data,error}=await client
+          .from('ratings')
+          .select('*')
+          .eq('target_id',targetId)
+          .maybeSingle();
+        if(error || !data)return {count:0,average:0};
+        return {count:data.reviews_count||0,average:Number(data.average_rating)||0};
+      }catch(e){
+        return {count:0,average:0};
+      }
     },
     async hasReviewed(authorId,targetId){
       if(!ready)return false;
@@ -699,15 +820,13 @@ const DB=(()=>{
       `)};
     },
 
-    /* ─── Contenu dynamique : témoignages ─── */
+    /* ─── Témoignages ─── */
     async getTestimonials(limit = 100){
       if(!ready) return [];
       await wait();
       const {data, error} = await client.from('testimonials')
-        .select('*')
-        .eq('published', true)
-        .order('display_order', {ascending:true})
-        .limit(limit);
+        .select('*').eq('published', true)
+        .order('display_order', {ascending:true}).limit(limit);
       if(error) return [];
       return data.map(x => ({
         id: x.id, name: x.author_name, role: x.author_role, city: x.author_city,
@@ -763,7 +882,7 @@ const DB=(()=>{
       if(error) throw error;
     },
 
-    /* ─── Contenu dynamique : formules ─── */
+    /* ─── Formules ─── */
     async getPlans(){
       if(!ready) return [];
       await wait();
@@ -825,7 +944,7 @@ const DB=(()=>{
       if(error) throw error;
     },
 
-    /* ─── Contenu dynamique : FAQ ─── */
+    /* ─── FAQ ─── */
     async getFaqs(){
       if(!ready) return [];
       await wait();
@@ -871,9 +990,11 @@ const DB=(()=>{
       if(error) throw error;
     },
 
-    /* ─── Analytics (Chantier N) ─── */
+    /* ─── Analytics ─── */
     async trackPageView(path){
       if(!ready) return;
+      if(this._trackingDisabled) return;
+
       await wait();
       try{
         let sid = sessionStorage.getItem('ap-session-id');
@@ -882,13 +1003,21 @@ const DB=(()=>{
           sessionStorage.setItem('ap-session-id', sid);
         }
         const { data:{ user } } = await client.auth.getUser();
-        await client.from('page_views').insert({
+        const { error } = await client.from('page_views').insert({
           path: path || location.pathname,
           referrer: document.referrer || null,
           user_id: user?.id || null,
           session_id: sid
         });
-      }catch(e){}
+        if(error){
+          if(error.code === '42P01' || error.code === '42703' || error.code === 'PGRST204'){
+            this._trackingDisabled = true;
+            console.info('[AfroPulse] Tracking désactivé : table page_views indisponible.');
+          }
+        }
+      }catch(e){
+        this._trackingDisabled = true;
+      }
     },
     async getAnalytics(days = 7){
       if(!ready) return { total:0, uniqueVisitors:0, topPages:[], daily:[] };
@@ -907,8 +1036,7 @@ const DB=(()=>{
         data.forEach(x => { byPage[x.path] = (byPage[x.path] || 0) + 1; });
         const topPages = Object.entries(byPage)
           .map(([path, count]) => ({ path, count }))
-          .sort((a,b) => b.count - a.count)
-          .slice(0, 8);
+          .sort((a,b) => b.count - a.count).slice(0, 8);
 
         const byDay = {};
         data.forEach(x => {
@@ -927,25 +1055,31 @@ const DB=(()=>{
       }
     },
 
-    /* ─── Badges (Chantier Q) ─── */
+    /* ─── Badges ─── */
     async getBadges(){
       if(!ready) return [];
       await wait();
-      const { data, error } = await client.from('badges')
-        .select('*').order('display_order', { ascending: true });
-      if(error) return [];
-      return data.map(x => ({
-        slug: x.slug, label: x.label, icon: x.icon,
-        color: x.color, description: x.description
-      }));
+      try{
+        const { data, error } = await client.from('badges')
+          .select('*').order('display_order', { ascending: true });
+        if(error) return [];
+        return (data || []).map(x => ({
+          slug: x.slug, label: x.label, icon: x.icon,
+          color: x.color, description: x.description
+        }));
+      }catch(e){
+        return [];
+      }
     },
     async getUserBadges(userId){
       if(!ready) return [];
       await wait();
-      const { data, error } = await client.from('user_badges')
-        .select('badge_slug, awarded_at').eq('user_id', userId);
-      if(error) return [];
-      return data;
+      try{
+        const { data, error } = await client.from('user_badges')
+          .select('badge_slug, awarded_at').eq('user_id', userId);
+        if(error) return [];
+        return data;
+      }catch(e){return [];}
     },
     async awardBadge(userId, badgeSlug){
       if(!ready) return;

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mes contrats — AfroPulse</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0b5fff">
+  <link rel="manifest" href="manifest.json">
+  <script>
+    (function () {
+      const stored = localStorage.getItem('ap-theme');
+      const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .cw { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1rem 5rem; }
+    .c-head { text-align: center; margin-bottom: 1.5rem; }
+    .c-title { font-size: 1.75rem; font-weight: 800; color: var(--ink); margin: 0 0 .35rem; letter-spacing: -.02em; }
+    .c-sub { font-size: .88rem; color: var(--muted); margin: 0; }
+    .filters { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; background: var(--surface); border: 1px solid var(--bd); border-radius: .85rem; padding: .45rem; }
+    .filter-btn { padding: .55rem .95rem; border: none; background: none; border-radius: .55rem; cursor: pointer; font-family: inherit; font-size: .78rem; font-weight: 700; color: var(--muted); transition: .15s; display: inline-flex; align-items: center; gap: .4rem; }
+    .filter-btn:hover { color: var(--ink); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    .filter-btn.on { background: var(--accent); color: #fff; }
+    .filter-btn .badge { font-size: .65rem; background: rgba(255,255,255,.25); padding: .1rem .4rem; border-radius: 999px; }
+    .count-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .72rem; font-weight: 700; padding: .4rem .8rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); margin-bottom: 1rem; }
+    .ctr-list { display: flex; flex-direction: column; gap: .85rem; }
+    .ctr-card { background: var(--surface); border: 1px solid var(--bd); border-radius: 1rem; padding: 1.25rem; transition: .2s; text-decoration: none; color: inherit; display: block; position: relative; overflow: hidden; }
+    .ctr-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: var(--bd); }
+    .ctr-card.status-pending::before { background: var(--gold); }
+    .ctr-card.status-active::before { background: var(--accent); }
+    .ctr-card.status-completed::before { background: var(--ok); }
+    .ctr-card.status-cancelled::before { background: var(--er); }
+    .ctr-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-xl); }
+    .ctr-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .ctr-card-title { font-size: 1rem; font-weight: 800; color: var(--ink); margin: 0 0 .25rem; line-height: 1.3; }
+    .ctr-card-ref { font-family: ui-monospace, monospace; font-size: .7rem; color: var(--muted); margin: 0; }
+    .ctr-card-status { display: inline-flex; align-items: center; gap: .35rem; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: .3rem .65rem; border-radius: 999px; flex-shrink: 0; }
+    .ctr-card-status.pending { background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--gold); }
+    .ctr-card-status.active { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+    .ctr-card-status.completed { background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--ok); }
+    .ctr-card-status.cancelled { background: color-mix(in srgb, var(--er) 12%, transparent); color: var(--er); }
+    .ctr-card-meta { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .78rem; color: var(--muted); margin-bottom: .75rem; }
+    .ctr-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding-top: .75rem; border-top: 1px solid var(--bd); flex-wrap: wrap; }
+    .ctr-amount { font-size: 1.15rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .ctr-view { font-size: .75rem; font-weight: 800; color: var(--accent); display: inline-flex; align-items: center; gap: .35rem; }
+    .empty-state { background: var(--surface); border: 1px dashed var(--bd); border-radius: 1rem; padding: 3rem 1.5rem; text-align: center; }
+    .empty-icon { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1.25rem; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent); font-size: 2rem; display: grid; place-items: center; }
+    .empty-title { font-size: 1.15rem; font-weight: 800; color: var(--ink); margin: 0 0 .5rem; }
+    .empty-sub { font-size: .85rem; color: var(--muted); margin: 0 auto 1.5rem; max-width: 420px; line-height: 1.6; }
+    .sk { height: 120px; border-radius: 1rem; background: linear-gradient(90deg, var(--surface) 0%, color-mix(in srgb, var(--accent) 4%, var(--surface)) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="dashboard.html" class="brand">
+        <span class="brand__icon"><img src="assets/favicon.svg" alt=""></span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <nav class="site-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="profil.html">Profil</a>
+        <a href="messages.html">Messages</a>
+        <a href="contrats.html" class="active">Contrats</a>
+      </nav>
+      <div class="site-actions">
+        <button class="icon-btn" onclick="Theme.toggle()" aria-label="Thème"><i data-theme-icon class="fa-solid fa-moon"></i></button>
+        <div id="authSlot"></div>
+        <button class="icon-btn menu-toggle" id="menuToggle" onclick="toggleMobileMenu()" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+  <aside class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="mobile-menu-head">
+      <a href="dashboard.html" class="brand">
+        <span class="brand__icon"><img src="assets/favicon.svg" alt=""></span>
+        <span class="brand__name">Afro<span class="accent">Pulse</span></span>
+      </a>
+      <button class="icon-btn" onclick="closeMobileMenu()" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="mobile-menu-nav">
+      <a href="dashboard.html"><i class="fa-solid fa-chart-simple"></i>Tableau de bord</a>
+      <a href="profil.html"><i class="fa-solid fa-user"></i>Mon profil</a>
+      <a href="messages.html"><i class="fa-solid fa-comments"></i>Messages</a>
+      <a href="contrats.html" class="active"><i class="fa-solid fa-file-signature"></i>Contrats</a>
+      <a href="abonnement.html"><i class="fa-solid fa-crown"></i>Abonnement</a>
+      <a href="portefeuille.html"><i class="fa-solid fa-wallet"></i>Portefeuille</a>
+    </nav>
+    <div class="mobile-menu-foot">
+      <a href="login.html" class="btn-block ghost"><i class="fa-solid fa-right-to-bracket"></i>Connexion</a>
+      <a href="signup.html" class="btn-block primary"><i class="fa-solid fa-user-plus"></i>Inscription</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="cw">
+      <div class="c-head">
+        <span class="chip"><i class="fa-solid fa-file-signature" style="font-size:.7rem"></i>Contrats</span>
+        <h1 class="c-title">Mes contrats</h1>
+        <p class="c-sub">Suivez vos collaborations, signez et validez vos missions.</p>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn on" data-filter="all" onclick="setFilter('all')"><i class="fa-solid fa-layer-group"></i>Tous <span class="badge" id="bAll">0</span></button>
+        <button class="filter-btn" data-filter="pending" onclick="setFilter('pending')"><i class="fa-solid fa-clock"></i>En attente <span class="badge" id="bPending">0</span></button>
+        <button class="filter-btn" data-filter="active" onclick="setFilter('active')"><i class="fa-solid fa-play"></i>En cours <span class="badge" id="bActive">0</span></button>
+        <button class="filter-btn" data-filter="completed" onclick="setFilter('completed')"><i class="fa-solid fa-check"></i>Terminés <span class="badge" id="bCompleted">0</span></button>
+        <button class="filter-btn" data-filter="cancelled" onclick="setFilter('cancelled')"><i class="fa-solid fa-xmark"></i>Annulés <span class="badge" id="bCancelled">0</span></button>
+      </div>
+
+      <div class="count-badge"><i class="fa-solid fa-file-signature"></i><span id="countLabel">—</span> contrat(s)</div>
+
+      <div class="ctr-list" id="ctrList">
+        <div class="sk"></div><div class="sk"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/env.js" defer></script>
+  <script src="assets/config.js" defer></script>
+  <script src="assets/db.js" defer></script>
+  <script src="assets/ui.js" defer></script>
+  <script src="assets/auth.js" defer></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/app.js" defer></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmtMoney = n => Number(n || 0).toLocaleString('fr-FR') + ' FCFA';
+    const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+    let ALL = [];
+    let FILTER = 'all';
+
+    async function load() {
+      try {
+        await DB.wait();
+        ALL = await DB.getMyContracts();
+        updateBadges();
+        apply();
+      } catch (e) {
+        $('ctrList').innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 class="empty-title">Erreur de chargement</h3></div>`;
+      }
+    }
+
+    function updateBadges() {
+      $('bAll').textContent = ALL.length;
+      $('bPending').textContent = ALL.filter(c => c.status === 'pending').length;
+      $('bActive').textContent = ALL.filter(c => c.status === 'active').length;
+      $('bCompleted').textContent = ALL.filter(c => c.status === 'completed').length;
+      $('bCancelled').textContent = ALL.filter(c => c.status === 'cancelled').length;
+    }
+
+    function setFilter(f) {
+      FILTER = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('on', b.dataset.filter === f));
+      apply();
+    }
+    window.setFilter = setFilter;
+
+    function apply() {
+      let list = ALL.slice();
+      if (FILTER !== 'all') list = list.filter(c => c.status === FILTER);
+      render(list);
+    }
+
+    function render(list) {
+      const box = $('ctrList');
+      $('countLabel').textContent = list.length;
+
+      if (!list.length) {
+        box.innerHTML = `<div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-file-signature"></i></div>
+          <h3 class="empty-title">Aucun contrat</h3>
+          <p class="empty-sub">Vos contrats apparaîtront ici.</p>
+          <a href="missions.html" class="btn btn--primary"><i class="fa-solid fa-bullhorn"></i>Voir les missions</a>
+        </div>`;
+        return;
+      }
+
+      const user = Auth.getUser();
+      const statusMap = {
+        pending: { label: 'En attente' },
+        active: { label: 'En cours' },
+        completed: { label: 'Terminé' },
+        cancelled: { label: 'Annulé' }
+      };
+
+      box.innerHTML = list.map(c => {
+        const isClient = c.client_id === user.id;
+        const otherName = isClient
+          ? (c.provider_name || 'Prestataire')
+          : (c.client_name || 'Client');
+        const st = statusMap[c.status] || { label: c.status };
+        return `
+          <a href="contrat-detail.html?id=${encodeURIComponent(c.id)}" class="ctr-card status-${esc(c.status || 'pending')}">
+            <div class="ctr-card-head">
+              <div style="flex:1;min-width:220px">
+                <h2 class="ctr-card-title">${esc(c.title || 'Contrat')}</h2>
+                <p class="ctr-card-ref">Référence : ${esc((c.id || '').slice(0, 8).toUpperCase())}</p>
+              </div>
+              <span class="ctr-card-status ${esc(c.status || 'pending')}">
+                <i class="fa-solid fa-circle" style="font-size:.5rem"></i>${esc(st.label)}
+              </span>
+            </div>
+            <div class="ctr-card-meta">
+              <span><i class="fa-solid fa-user"></i> ${esc(otherName)}</span>
+              <span><i class="fa-regular fa-calendar"></i> ${fmtDate(c.created_at)}</span>
+            </div>
+            <div class="ctr-card-footer">
+              <span class="ctr-amount">${fmtMoney(c.amount || 0)}</span>
+              <span class="ctr-view">Voir <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    addEventListener('DOMContentLoaded', async () => {
+      await new Promise(r => setTimeout(r, 400));
+      if (typeof I18n !== 'undefined' && I18n.init) I18n.init();
+
+      if (typeof Auth !== 'undefined' && Auth.ready) await Auth.ready();
+      if (!Auth?.isLogged?.()) {
+        UI.toast('Connectez-vous pour continuer.', 'error');
+        setTimeout(() => location.href = 'login.html?next=contrats.html', 600);
+        return;
+      }
+
+      await load();
+    });
+  </script>
+</body>
+</html>

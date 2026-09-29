@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Créer un compte, AfroPulse</title>
+<script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tailwind.css">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;position:relative}
+.auth-card{width:100%;max-width:460px;background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;padding:2rem;position:relative;z-index:1}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:1.5rem}
+.auth-title{font-size:1.5rem;font-weight:800;color:var(--ink);text-align:center;margin:0 0 .35rem;letter-spacing:-.02em}
+.auth-sub{font-size:.85rem;color:var(--mu);text-align:center;margin:0 0 1.75rem}
+.pwd-wrap{position:relative}
+.pwd-toggle{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu);cursor:pointer;padding:.25rem}
+.pwd-toggle:hover{color:var(--ac)}
+
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1rem}
+.role-opt{padding:1.15rem .85rem;border:2px solid var(--bd);border-radius:.85rem;background:var(--sf);cursor:pointer;text-align:center;transition:.2s;font-family:inherit;color:var(--ink);position:relative}
+.role-opt:hover{border-color:var(--ac);transform:translateY(-2px)}
+.role-opt.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 6%,transparent);box-shadow:0 8px 20px -10px color-mix(in srgb,var(--ac) 40%,transparent)}
+.role-opt i{display:block;font-size:1.35rem;margin-bottom:.5rem;color:var(--ac)}
+.role-opt .r-title{font-size:.88rem;font-weight:800;color:var(--ink)}
+.role-opt .r-sub{font-size:.68rem;color:var(--mu);margin-top:.15rem;line-height:1.3}
+.role-opt .role-check{position:absolute;top:.6rem;right:.6rem;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--ok);color:#fff;font-size:.65rem;opacity:0;transform:scale(.5);transition:.2s}
+.role-opt.on .role-check{opacity:1;transform:scale(1)}
+
+.company-fields{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s ease,margin-top .3s ease;opacity:0;margin-top:0}
+.company-fields.show{max-height:500px;opacity:1;margin-top:1rem}
+.company-notice{display:flex;align-items:flex-start;gap:.6rem;padding:.85rem 1rem;border-radius:.65rem;background:color-mix(in srgb,var(--gd) 8%,transparent);border:1px solid color-mix(in srgb,var(--gd) 25%,transparent);font-size:.75rem;color:var(--mu);line-height:1.5;margin-bottom:1rem}
+.company-notice i{color:var(--gd);flex-shrink:0;margin-top:.1rem}
+.company-notice strong{color:var(--ink);font-weight:700}
+
+.ref-banner{padding:.75rem 1rem;border-radius:.65rem;margin-bottom:1rem;font-size:.75rem;display:flex;align-items:center;gap:.6rem;background:color-mix(in srgb,var(--ok) 8%,transparent);border:1px solid color-mix(in srgb,var(--ok) 25%,transparent);color:var(--ink)}
+.ref-banner strong{color:var(--ok)}
+.auth-footer{text-align:center;font-size:.82rem;color:var(--mu);margin-top:1.5rem}
+.auth-footer a{color:var(--ac);font-weight:600}
+.terms-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.78rem;color:var(--mu);line-height:1.4;margin:1rem 0}
+.terms-row input{margin-top:.2rem;flex-shrink:0;width:16px;height:16px;accent-color:var(--ac)}
+.terms-row a{color:var(--ac);font-weight:600}
+.pending-box{text-align:center;padding:1rem 0}
+.pending-icon{width:72px;height:72px;border-radius:50%;margin:0 auto 1.25rem;display:grid;place-items:center;font-size:1.75rem;background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.pending-title{font-size:1.25rem;font-weight:800;color:var(--ink);margin:0 0 .5rem}
+.pending-text{font-size:.85rem;color:var(--mu);line-height:1.6;margin:0 0 1.5rem}
+.pending-text strong{color:var(--ink);word-break:break-all}
+.hidden{display:none!important}
+
+.pwd-hints{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem;font-size:.68rem}
+.pwd-hint{display:flex;align-items:center;gap:.25rem;color:var(--mu)}
+.pwd-hint.ok{color:var(--ok)}
+.pwd-hint i{font-size:.55rem}
+
+/* ✅ Highlight du champ en erreur */
+.input-error{
+  border-color: var(--er) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--er) 15%, transparent) !important;
+}
+</style>
+
+<!-- ═══ SEO — Auto-généré ═══ -->
+<meta name="description" content="Rejoignez AfroPulse gratuitement. 3 jours Premium offerts. Publiez vos missions ou créez votre profil talent en 2 minutes.">
+<meta name="keywords" content="afropulse, talents africains, freelance afrique, missions, entreprises africaines, réseau professionnel afrique">
+<meta name="author" content="LMO SERVICES">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://afro-pulse.netlify.app/signup.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AfroPulse">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Créer un compte — AfroPulse">
+<meta property="og:description" content="3 jours Premium offerts. Sans carte bancaire.">
+<meta property="og:url" content="https://afro-pulse.netlify.app/signup.html">
+<meta property="og:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Créer un compte — AfroPulse">
+<meta name="twitter:description" content="3 jours Premium offerts. Sans carte bancaire.">
+<meta name="twitter:image" content="https://afro-pulse.netlify.app/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="AfroPulse — Le réseau des talents africains">
+
+<!-- PWA -->
+<!-- ═══ /SEO ═══ -->
+<!-- ═══ Favicons + PWA ═══ -->
+
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<!-- Favicons SVG + PWA -->
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b5fff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AfroPulse">
+
+</head>
+<body class="font-sans">
+
+<div class="absolute inset-0 grid-bg pointer-events-none"></div>
+<div class="auth-wrap">
+
+  <div id="signupForm" class="auth-card">
+    <a href="index.html" class="auth-logo">
+      <span class="site-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ac)"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
+      </span>
+      <span style="font-weight:800;color:var(--ink);font-size:1.1rem">Afro<span style="color:var(--ac)">Pulse</span></span>
+    </a>
+
+    <h1 class="auth-title" data-i18n="signup.title">Créer un compte</h1>
+    <p class="auth-sub" data-i18n="signup.sub">🎁 3 jours Premium offerts à l'inscription</p>
+
+    <div id="refBanner" class="ref-banner hidden">
+      <i class="fa-solid fa-gift" style="color:var(--ok)"></i>
+      <span data-i18n="signup.ref">Vous êtes invité avec le code</span> <strong id="refCodeLabel"></strong>
+    </div>
+
+    <form id="form" onsubmit="doSignup(event)" novalidate>
+
+      <div class="form-row">
+        <label class="lbl" data-i18n="signup.role.label">Type de compte</label>
+        <div class="role-grid">
+          <button type="button" class="role-opt on" data-role="particulier" onclick="selectRole('particulier')">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <i class="fa-solid fa-user"></i>
+            <div class="r-title" data-i18n="signup.role.particulier">Particulier</div>
+            <div class="r-sub" data-i18n="signup.role.particulier.sub">Talent, freelance, étudiant</div>
+          </button>
+          <button type="button" class="role-opt" data-role="entreprise" onclick="selectRole('entreprise')">
+            <div class="role-check"><i class="fa-solid fa-check"></i></div>
+            <i class="fa-solid fa-building"></i>
+            <div class="r-title" data-i18n="signup.role.entreprise">Entreprise</div>
+            <div class="r-sub" data-i18n="signup.role.entreprise.sub">Startup, PME, agence, ONG</div>
+          </button>
+        </div>
+        <input type="hidden" id="role" value="particulier">
+      </div>
+
+      <div id="particulierFields">
+        <div class="form-row">
+          <label for="fullName" class="lbl" data-i18n="signup.field.fullName">Nom complet</label>
+          <input id="fullName" type="text" class="input" autocomplete="name" placeholder="Ex : Ladji Ouattara">
+        </div>
+      </div>
+
+      <div id="entrepriseFields" class="company-fields">
+        <div class="company-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <div data-i18n="signup.company.notice">
+            <strong>Compte entreprise</strong> — La raison sociale et le RCCM nous permettent de vérifier votre structure et de vous attribuer un badge de confiance.
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="companyName" class="lbl"><span data-i18n="signup.field.companyName">Raison sociale</span> <span class="req">*</span></label>
+          <input id="companyName" type="text" class="input" placeholder="Ex : LMO SERVICES SARL">
+        </div>
+        <div class="form-row">
+          <label for="managerName" class="lbl"><span data-i18n="signup.field.managerName">Nom du responsable</span> <span class="req">*</span></label>
+          <input id="managerName" type="text" class="input" autocomplete="name" placeholder="Ex : Ladji Ouattara">
+        </div>
+        <div class="form-row">
+          <label for="companyRccm" class="lbl">
+            <span data-i18n="signup.field.rccm">Numéro RCCM</span>
+            <span style="font-weight:400;color:var(--mu)" data-i18n="signup.field.rccm.optional">(optionnel)</span>
+          </label>
+          <input id="companyRccm" type="text" class="input" placeholder="Ex : CI-ABJ-2024-B-12345">
+          <p class="form-hint" data-i18n="signup.field.rccm.hint">Vous pourrez le fournir après l'inscription pour obtenir le badge vérifié.</p>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="email" class="lbl"><span data-i18n="signup.field.email">Adresse email</span> <span id="emailHint" style="font-weight:400;color:var(--mu)"></span></label>
+        <input id="email" type="email" class="input" required autocomplete="email" placeholder="vous@exemple.com">
+      </div>
+
+      <div class="form-row">
+        <label for="password" class="lbl" data-i18n="signup.field.password">Mot de passe</label>
+        <div class="pwd-wrap">
+          <input id="password" type="password" class="input" required minlength="8" autocomplete="new-password" placeholder="••••••••" style="padding-right:2.75rem">
+          <button type="button" class="pwd-toggle" onclick="togglePwd()" aria-label="Afficher">
+            <i id="pwdIcon" class="fa-solid fa-eye text-xs"></i>
+          </button>
+        </div>
+        <div class="pwd-hints">
+          <span class="pwd-hint" data-rule="length"><i class="fa-solid fa-circle"></i><span data-i18n="signup.pwd.8">8 caractères</span></span>
+          <span class="pwd-hint" data-rule="upper"><i class="fa-solid fa-circle"></i><span data-i18n="signup.pwd.upper">1 majuscule</span></span>
+          <span class="pwd-hint" data-rule="lower"><i class="fa-solid fa-circle"></i><span data-i18n="signup.pwd.lower">1 minuscule</span></span>
+          <span class="pwd-hint" data-rule="digit"><i class="fa-solid fa-circle"></i><span data-i18n="signup.pwd.digit">1 chiffre</span></span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="country" class="lbl"><span data-i18n="signup.field.country">Pays</span> <span class="req">*</span></label>
+          <select id="country" class="input" required></select>
+        </div>
+        <div class="form-row">
+          <label for="city" class="lbl"><span data-i18n="signup.field.city">Ville</span> <span class="req">*</span></label>
+          <select id="city" class="input" required disabled></select>
+        </div>
+      </div>
+
+      <label class="terms-row">
+        <input type="checkbox" id="terms" required>
+        <span>
+          <span data-i18n="signup.terms">J'accepte les</span>
+          <a href="conditions.html" target="_blank" data-i18n="signup.terms.cgu">conditions d'utilisation</a>
+          <span data-i18n="signup.terms.and">et la</span>
+          <a href="confidentialite.html" target="_blank" data-i18n="signup.terms.privacy">politique de confidentialité</a>.
+        </span>
+      </label>
+
+      <p id="error" class="hidden text-xs" style="color:var(--er);margin-bottom:.75rem"></p>
+
+      <button type="submit" id="submitBtn" class="btn bp btn-block">
+        <i class="fa-solid fa-user-plus"></i><span data-i18n="signup.submit">Créer mon compte</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <span data-i18n="signup.have">Déjà inscrit ?</span>
+      <a href="login.html" data-i18n="signup.login">Se connecter</a>
+    </div>
+  </div>
+
+  <div id="pendingScreen" class="auth-card hidden">
+    <div class="pending-box">
+      <div class="pending-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+      <h2 class="pending-title" data-i18n="signup.pending.title">Vérifiez votre email</h2>
+      <p class="pending-text">
+        <span data-i18n="signup.pending.text">Un lien de confirmation vient d'être envoyé à</span><br>
+        <strong id="pendingEmail"></strong>
+      </p>
+      <p class="pending-text" style="font-size:.78rem" data-i18n="signup.pending.hint">
+        Cliquez sur le lien dans l'email pour activer votre compte. Pensez à vérifier vos spams.
+      </p>
+      <button id="resendBtn" class="btn bo btn-block" onclick="doResend()" style="margin-bottom:.5rem">
+        <i class="fa-solid fa-rotate"></i><span data-i18n="signup.pending.resend">Renvoyer l'email</span>
+      </button>
+      <a href="login.html" class="btn bo btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i><span data-i18n="signup.pending.goLogin">Aller à la connexion</span>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/env.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/locations.js"></script>
+<script src="assets/referral.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function T(key, fallback){
+  if(typeof I18n !== 'undefined' && I18n.t) return I18n.t(key) || fallback;
+  return fallback;
+}
+
+function togglePwd(){
+  const i = $('password');
+  const ic = $('pwdIcon');
+  if(i.type === 'password'){ i.type = 'text'; ic.className = 'fa-solid fa-eye-slash text-xs'; }
+  else { i.type = 'password'; ic.className = 'fa-solid fa-eye text-xs'; }
+}
+
+function clearErrors(){
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+}
+
+function focusError(el, msg){
+  if(el) el.classList.add('input-error');
+  if(el){
+    el.focus();
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  const err = $('error');
+  err.textContent = msg;
+  err.classList.remove('hidden');
+}
+
+function selectRole(role){
+  $('role').value = role;
+
+  document.querySelectorAll('.role-opt').forEach(b => {
+    b.classList.toggle('on', b.dataset.role === role);
+  });
+
+  const particulierBlock = $('particulierFields');
+  const entrepriseBlock = $('entrepriseFields');
+  const emailHint = $('emailHint');
+
+  if(role === 'entreprise'){
+    particulierBlock.classList.add('hidden');
+    entrepriseBlock.classList.add('show');
+    emailHint.textContent = T('signup.field.email.pro', '(email professionnel de préférence)');
+    $('fullName').removeAttribute('required');
+    $('companyName').setAttribute('required', 'required');
+    $('managerName').setAttribute('required', 'required');
+  }else{
+    particulierBlock.classList.remove('hidden');
+    entrepriseBlock.classList.remove('show');
+    emailHint.textContent = '';
+    $('fullName').setAttribute('required', 'required');
+    $('companyName').removeAttribute('required');
+    $('managerName').removeAttribute('required');
+  }
+}
+
+function checkPassword(){
+  const v = $('password').value;
+  const rules = {
+    length: v.length >= 8,
+    upper:  /[A-Z]/.test(v),
+    lower:  /[a-z]/.test(v),
+    digit:  /\d/.test(v)
+  };
+  Object.entries(rules).forEach(([k, ok]) => {
+    const el = document.querySelector(`.pwd-hint[data-rule="${k}"]`);
+    if(el) el.classList.toggle('ok', ok);
+  });
+}
+
+async function doSignup(e){
+  e.preventDefault();
+  clearErrors();
+
+  const btn = $('submitBtn');
+  const err = $('error');
+  err.classList.add('hidden');
+
+  const role = $('role').value;
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const country = $('country').value;
+  const city = $('city').value;
+
+  let full_name, company_name, company_rccm;
+  if(role === 'entreprise'){
+    company_name = $('companyName').value.trim();
+    full_name = $('managerName').value.trim();
+    company_rccm = $('companyRccm').value.trim() || null;
+
+    if(!company_name || company_name.length < 2){
+      return focusError($('companyName'), T('signup.error.company', 'Entrez la raison sociale.'));
+    }
+    if(!full_name || full_name.length < 2){
+      return focusError($('managerName'), T('signup.error.manager', 'Entrez le nom du responsable.'));
+    }
+  }else{
+    full_name = $('fullName').value.trim();
+    if(!full_name || full_name.length < 2){
+      return focusError($('fullName'), T('signup.error.name', 'Entrez votre nom complet.'));
+    }
+  }
+
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    return focusError($('email'), T('signup.error.email', 'Entrez une adresse email valide.'));
+  }
+
+  // ✅ Validation stricte pays + ville
+  if(!country){
+    return focusError($('country'), T('signup.error.country', 'Sélectionnez un pays.'));
+  }
+  if(!city){
+    return focusError($('city'), T('signup.error.city', 'Sélectionnez une ville.'));
+  }
+
+  if(password.length < 8){
+    return focusError($('password'), T('signup.error.password', 'Mot de passe : 8 caractères minimum.'));
+  }
+
+  if(!$('terms').checked){
+    err.textContent = T('signup.error.terms', 'Vous devez accepter les conditions.');
+    err.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>…';
+
+  try{
+    const cityFull = Locations.format(country, city);
+
+    const payload = {
+      email,
+      password,
+      full_name,
+      city: cityFull,
+      role
+    };
+
+    if(role === 'entreprise'){
+      payload.company_name = company_name;
+      payload.company_rccm = company_rccm;
+    }
+
+    const res = await Auth.signup(payload);
+
+    if(typeof Referral !== 'undefined'){
+      const refCode = Referral.pendingCode?.();
+      if(refCode && res.user){
+        try{
+          await Referral.applyCode(refCode);
+          Referral.clearPendingCode?.();
+        }catch(e){}
+      }
+    }
+
+    if(res.needsConfirmation){
+      $('signupForm').classList.add('hidden');
+      $('pendingEmail').textContent = email;
+      $('pendingScreen').classList.remove('hidden');
+    }else{
+      UI.toast('OK', 'success');
+      setTimeout(() => location.href = 'dashboard.html', 800);
+    }
+  }catch(ex){
+    let msg = ex.message || 'Erreur';
+    const low = msg.toLowerCase();
+    if(low.includes('already registered') || low.includes('already exists') || low.includes('user already')){
+      msg = T('signup.error.exists', 'Cet email est déjà utilisé.');
+    }else if(low.includes('password')){
+      msg = T('signup.error.password', 'Mot de passe : 8 caractères minimum.');
+    }else if(low.includes('rate limit')){
+      msg = T('signup.error.rate', 'Trop de tentatives. Réessayez dans quelques minutes.');
+    }
+    err.textContent = msg;
+    err.classList.remove('hidden');
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+async function doResend(){
+  const btn = $('resendBtn');
+  const email = $('pendingEmail').textContent.trim();
+  if(!email) return;
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>…';
+  try{
+    await Auth.resendConfirmation(email);
+    UI.toast(T('emailBanner.sent'), 'success');
+  }catch(e){
+    UI.toast(e.message || 'Erreur', 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = original;
+}
+
+addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 400));
+
+  // ✅ Pas de pays par défaut
+  try{
+    await Locations.fillCountries($('country'));
+    await Locations.clearCities($('city'));
+  }catch(e){
+    console.warn('Locations indisponibles', e);
+  }
+
+  $('country').addEventListener('change', async () => {
+    const c = $('country').value;
+    clearErrors();
+    if(c){
+      await Locations.fillCities($('city'), c);
+    }else{
+      await Locations.clearCities($('city'));
+    }
+  });
+
+  $('city').addEventListener('change', () => clearErrors());
+
+  $('password').addEventListener('input', checkPassword);
+
+  if(typeof Referral !== 'undefined'){
+    const code = Referral.readUrlCode?.();
+    if(code){
+      $('refCodeLabel').textContent = code;
+      $('refBanner').classList.remove('hidden');
+    }
+  }
+
+  selectRole('particulier');
+
+  if(typeof I18n !== 'undefined' && I18n.onChange){
+    I18n.onChange(() => {
+      selectRole($('role').value);
+      I18n.applyAll();
+    });
+  }
+});
+</script>
+</body>
+</html>

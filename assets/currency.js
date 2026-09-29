@@ -1,72 +1,134 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   AfroPulse — Convertisseur de devises
-   ═══════════════════════════════════════════════════════════════════════ */
+   Currency — Taux de change EUR ↔ USD ↔ XOF (FCFA)
+   
+   Notes :
+   - Le XOF (Franc CFA) est arrimé à l'EUR par traité à 655,957 XOF = 1 EUR.
+     Ce taux est FIXE, il ne change jamais. Pas besoin d'API pour ça.
+   - Seul l'USD fluctue, on le récupère depuis l'API Frankfurter (BCE).
+   - Si l'API échoue, on garde un taux USD de secours.
+   
+   API : Frankfurter (api.frankfurter.dev)
+   Cache 24h · Fallback intégré
+═══════════════════════════════════════════════════════════════════════ */
 
-const Currency = (() => {
-  'use strict';
+const Currency=(()=>{
+  const API='https://api.frankfurter.dev/v1';
+  const CACHE_KEY='ap_currency_rates';
+  const TTL=24*60*60*1000; // 24h
 
-  const CACHE_KEY = 'ap-currency-rates';
-  const CACHE_TTL = 24 * 60 * 60 * 1000;
-  const API = 'https://api.frankfurter.app/latest?from=EUR&to=USD,XOF';
+  /* Taux fixe garanti par traité (BCEAO / UEMOA) */
+  const XOF_PER_EUR=655.957;
 
-  const FALLBACK = { EUR: 1, USD: 1.08, XOF: 655.957 };
-  let rates = { ...FALLBACK };
+  /* Taux USD de secours (approximatif, sera remplacé par l'API) */
+  const USD_FALLBACK=1.08;
 
+  let usdPerEur=USD_FALLBACK;
+
+  /* ─── Restaure le cache ─── */
   try{
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-    if(cached && Date.now() - cached.fetchedAt < CACHE_TTL){
-      rates = cached.rates;
+    const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');
+    if(c.timestamp && Date.now()-c.timestamp<TTL && c.usdPerEur){
+      usdPerEur=c.usdPerEur;
     }
   }catch(e){}
 
-  async function fetchRates(){
+  const saveCache=()=>{
     try{
-      const r = await fetch(API);
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      if(d && d.rates && d.rates.XOF && d.rates.USD){
-        rates = { EUR: 1, USD: d.rates.USD, XOF: d.rates.XOF };
-        try{
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ rates, fetchedAt: Date.now() }));
-        }catch(e){}
-      }
+      localStorage.setItem(CACHE_KEY,JSON.stringify({
+        timestamp:Date.now(),
+        usdPerEur
+      }));
     }catch(e){}
+  };
+
+  /* ─── Charge le taux USD/EUR depuis l'API ─── */
+  let fetchPromise=null;
+  async function fetchRates(){
+    if(fetchPromise)return fetchPromise;
+    fetchPromise=(async()=>{
+      try{
+        /* Vérifier si le cache est encore frais */
+        const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');
+        if(c.timestamp && Date.now()-c.timestamp<TTL && c.usdPerEur){
+          usdPerEur=c.usdPerEur;
+          return;
+        }
+
+        const controller=new AbortController();
+        const timeout=setTimeout(()=>controller.abort(),5000);
+
+        /* La nouvelle API utilise base= et symbols= */
+        const r=await fetch(`${API}/latest?base=EUR&symbols=USD`,{
+          signal:controller.signal
+        });
+        clearTimeout(timeout);
+
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const d=await r.json();
+        if(d?.rates?.USD){
+          usdPerEur=d.rates.USD;
+          saveCache();
+        }
+      }catch(e){
+        /* Silencieux : on garde le taux de secours */
+        console.info('[Currency] Utilisation du taux USD de secours');
+      }
+    })();
+    return fetchPromise;
   }
 
-  (async () => {
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-    if(!cached || Date.now() - cached.fetchedAt >= CACHE_TTL){
-      await fetchRates();
+  /* ─── Calcule les taux à la volée ─── */
+  function getRate(from,to){
+    if(from===to)return 1;
+
+    // EUR → autres
+    if(from==='EUR'){
+      if(to==='USD')return usdPerEur;
+      if(to==='XOF')return XOF_PER_EUR;
     }
-  })();
+    // Autres → EUR
+    if(to==='EUR'){
+      if(from==='USD')return 1/usdPerEur;
+      if(from==='XOF')return 1/XOF_PER_EUR;
+    }
+    // USD ↔ XOF (passer par EUR)
+    if(from==='USD'&&to==='XOF')return XOF_PER_EUR/usdPerEur;
+    if(from==='XOF'&&to==='USD')return usdPerEur/XOF_PER_EUR;
 
-  function convert(amount, from = 'XOF', to = 'EUR'){
-    if(!amount || isNaN(amount)) return 0;
-    const inEUR = amount / rates[from];
-    return inEUR * rates[to];
+    return null;
   }
 
-  function format(amount, from = 'XOF', to = 'EUR'){
-    const value = convert(amount, from, to);
-    if(!value) return '';
-    let symbol;
-    if(to === 'EUR') symbol = '€';
-    else if(to === 'USD') symbol = '$';
-    else symbol = 'FCFA';
-    const rounded = Math.round(value);
-    const formatted = rounded.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
-    return `≈ ${formatted} ${symbol}`;
+  /* ─── Formate un montant ─── */
+  function format(amount,from='XOF',to='EUR'){
+    const rate=getRate(from,to);
+    if(!rate)return '';
+    const converted=Number(amount)*rate;
+    if(to==='XOF'){
+      return `${Math.round(converted).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ')} FCFA`;
+    }
+    if(to==='EUR'){
+      return `${converted.toFixed(2)} €`;
+    }
+    if(to==='USD'){
+      return `${converted.toFixed(2)} $`;
+    }
+    return `${converted.toFixed(2)} ${to}`;
   }
 
-  function formatAlt(amountXOF){
-    return format(amountXOF, 'XOF', 'EUR');
+  /* ─── Conversion programmatique ─── */
+  async function convert(amount,from,to){
+    await fetchRates();
+    const rate=getRate(from,to);
+    if(!rate)throw new Error('Paire de devises non supportée');
+    return Number(amount)*rate;
   }
 
-  return {
-    convert, format, formatAlt,
-    getRates: () => ({ ...rates }),
-    refresh: fetchRates
+  return{
+    fetchRates,
+    format,
+    convert,
+    getRate,
+    getUsdPerEur:()=>usdPerEur,
+    getXofPerEur:()=>XOF_PER_EUR
   };
 })();
-
-window.Currency = Currency;
