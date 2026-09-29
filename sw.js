@@ -3,7 +3,7 @@
    Cache des assets statiques + offline fallback
 ═══════════════════════════════════════════════ */
 
-const CACHE = 'afropulse-v3';
+const CACHE = 'afropulse-v12';
 const CACHE_URLS = [
   '/',
   '/index.html',
@@ -54,8 +54,11 @@ self.addEventListener('fetch', (e) => {
     url.pathname.startsWith('/functions/')
   ) return;
 
-  // HTML : network first (pour contenu frais)
-  if (e.request.headers.get('accept')?.includes('text/html')) {
+  // HTML et JS : network first (pour contenu frais)
+  if (
+    e.request.headers.get('accept')?.includes('text/html') ||
+    url.pathname.endsWith('.js')
+  ) {
     e.respondWith(
       fetch(e.request)
         .then(resp => {

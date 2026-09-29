@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -6,1092 +6,1662 @@
 <title>Administration, AfroPulse</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <link rel="icon" type="image/png" href="assets/icon-192.png">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
 <script>document.documentElement.classList.toggle('dark',localStorage.getItem('ap-theme')==='dark'||(!localStorage.getItem('ap-theme')&&matchMedia('(prefers-color-scheme:dark)').matches));</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tailwind.css">
 <link rel="stylesheet" href="assets/style.css">
 <style>
-:root{--bg:#fafaf9;--sf:#fff;--bd:#e2e8f0;--ink:#0f172a;--mu:#64748b;--ac:#0b5fff;--gd:#b8860b;--ok:#059669;--er:#dc2626}
-.dark{--bg:#0a0e17;--sf:#111826;--bd:#1e293b;--ink:#e6edf7;--mu:#94a3b8;--ac:#3b82f6;--gd:#e0a800;--ok:#10b981;--er:#f87171}
+:root{
+  --admin-sidebar-width:260px;
+  --admin-topbar-height:64px;
+  --adm-bg:#f5f7fb;
+  --adm-card:#ffffff;
+  --adm-border:#e6eaef;
+  --adm-text:#0f172a;
+  --adm-muted:#64748b;
+  --adm-hover:#f4f6f8;
+  --adm-blue:#0b5fff;
+  --adm-emerald:#059669;
+  --adm-gold:#c99a2e;
+  --adm-red:#dc2626;
+  --adm-purple:#7c3aed;
+}
+.dark{
+  --adm-bg:#0a0e17;
+  --adm-card:#111826;
+  --adm-border:#1e293b;
+  --adm-text:#e6edf7;
+  --adm-muted:#94a3b8;
+  --adm-hover:#1a2233;
+  --adm-blue:#3b82f6;
+  --adm-emerald:#10b981;
+  --adm-gold:#e0b54a;
+  --adm-red:#f87171;
+  --adm-purple:#a78bfa;
+}
 *{box-sizing:border-box;min-width:0}
-html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;margin:0;min-height:100vh}
-.card-stat{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.15rem}
-.card-stat-ic{width:36px;height:36px;border-radius:.6rem;display:grid;place-items:center;margin-bottom:.6rem}
-.card-stat-v{font-size:1.75rem;font-weight:800;line-height:1;margin-bottom:.2rem}
-.card-stat-l{font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu)}
-.chart-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem}
-.tw{overflow-x:auto;border-radius:1rem;border:1px solid var(--bd);background:var(--sf)}
-table.tb{width:100%;border-collapse:collapse;font-size:.8rem;min-width:720px}
-table.tb th{text-align:left;padding:.75rem .9rem;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--bd);background:color-mix(in srgb,var(--bg) 60%,transparent)}
-table.tb td{padding:.75rem .9rem;border-bottom:1px solid var(--bd);color:var(--ink);vertical-align:middle}
-table.tb tbody tr:last-child td{border-bottom:none}
-table.tb tbody tr:hover{background:color-mix(in srgb,var(--ac) 3%,transparent)}
-.bd{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;padding:.2rem .55rem;border-radius:999px;white-space:nowrap}
-.bd.w{background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)}
-.bd.o{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
-.bd.k{background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er)}
-.act{padding:.35rem .65rem;font-size:.7rem;font-weight:600;border-radius:.45rem;border:1px solid var(--bd);background:var(--sf);color:var(--ink);cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.3rem}
-.act:hover{background:var(--bg)}
-.act-ok{border-color:color-mix(in srgb,var(--ok) 40%,transparent);color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
-.act-ko{border-color:color-mix(in srgb,var(--er) 40%,transparent);color:var(--er);background:color-mix(in srgb,var(--er) 8%,transparent)}
-.act-pdf{border-color:color-mix(in srgb,var(--ac) 40%,transparent);color:var(--ac);background:color-mix(in srgb,var(--ac) 8%,transparent)}
-.act-add{border-color:var(--ac);background:var(--ac);color:#fff;padding:.5rem .9rem;font-size:.75rem}
-.act-add:hover{background:color-mix(in srgb,var(--ac) 85%,black)}
-.tabs{display:inline-flex;gap:.2rem;padding:.2rem;border-radius:.65rem;background:var(--sf);border:1px solid var(--bd)}
-.tabs button{padding:.45rem .85rem;font-size:.72rem;font-weight:600;border-radius:.45rem;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit}
-.tabs button.on{background:var(--ac);color:#fff}
-.empty{padding:2.5rem 1rem;text-align:center;color:var(--mu);font-size:.85rem}
-.empty i{display:block;font-size:1.5rem;margin-bottom:.6rem;opacity:.4}
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(150%);background:var(--sf);border:1px solid var(--bd);border-radius:.75rem;padding:.7rem 1.2rem;box-shadow:0 12px 32px -8px rgba(0,0,0,.25);font-size:.8rem;font-weight:600;color:var(--ink);z-index:200;transition:transform .35s;display:flex;align-items:center;gap:.5rem}
-.toast.on{transform:translateX(-50%) translateY(0)}
-#lockScreen{background:rgba(10,14,23,.85);backdrop-filter:blur(14px)}
-.admin-bar{border-bottom:1px solid var(--bd);background:var(--sf)}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-.shake{animation:shake .45s}
-.nav-admin{display:flex;gap:.25rem;overflow-x:auto;padding:.5rem 0;margin-bottom:1.5rem;border-bottom:1px solid var(--bd)}
-.nav-admin button{padding:.55rem 1rem;font-size:.8rem;font-weight:600;border:none;background:transparent;color:var(--mu);cursor:pointer;font-family:inherit;border-radius:.5rem;white-space:nowrap}
-.nav-admin button.on{background:var(--ac);color:#fff}
-.track-card{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.15rem}
-.track-num{font-size:1.75rem;font-weight:800;line-height:1;margin-bottom:.25rem;color:var(--ink)}
-.track-lbl{font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu)}
-.content-section{background:var(--sf);border:1px solid var(--bd);border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem}
-.content-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1rem}
-.content-item{display:flex;gap:1rem;padding:1rem;border:1px solid var(--bd);border-radius:.75rem;margin-bottom:.75rem;background:var(--bg)}
-.content-item:hover{border-color:var(--ac)}
-.content-item-body{flex:1;min-width:0}
-.content-item-title{font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.25rem}
-.content-item-sub{font-size:.75rem;color:var(--mu);line-height:1.5}
-.content-item-actions{display:flex;gap:.35rem;flex-shrink:0}
-.modal{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+html,body{background:var(--adm-bg);color:var(--adm-text);font-family:'Inter',system-ui,sans-serif;margin:0;min-height:100vh}
+
+#lockScreen{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;background:radial-gradient(circle at 30% 30%,#0b5fff 0%,#0a0e17 60%)}
+#lockScreen::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpattern id='p' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 10h20M10 0v20' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C/pattern%3E%3Crect width='100' height='100' fill='url(%23p)'/%3E%3C/svg%3E");pointer-events:none}
+.lock-card{position:relative;background:rgba(17,24,38,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:1.75rem;padding:2.5rem 2.25rem;width:100%;max-width:400px;box-shadow:0 32px 80px -20px rgba(0,0,0,.6);animation:lockIn .4s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes lockIn{from{opacity:0;transform:scale(.95) translateY(15px)}to{opacity:1;transform:none}}
+.lock-icon{width:64px;height:64px;border-radius:1.25rem;display:grid;place-items:center;margin:0 auto 1.5rem;background:linear-gradient(135deg,rgba(11,95,255,.3),rgba(201,154,46,.2));border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1.5rem;box-shadow:0 12px 32px -8px rgba(11,95,255,.5)}
+.lock-title{text-align:center;font-size:1.5rem;font-weight:800;color:#fff;margin:0 0 .4rem;letter-spacing:-.02em}
+.lock-sub{text-align:center;font-size:.85rem;color:rgba(255,255,255,.6);margin:0 0 2rem}
+.lock-input{width:100%;padding:1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:.85rem;color:#fff;font-size:1.5rem;font-weight:700;text-align:center;letter-spacing:.4em;font-family:'SF Mono',monospace;outline:none;transition:.2s;margin-bottom:1rem}
+.lock-input:focus{border-color:rgba(11,95,255,.6);box-shadow:0 0 0 3px rgba(11,95,255,.2)}
+.lock-btn{width:100%;padding:1rem;background:linear-gradient(135deg,#0b5fff,#3b82f6);border:none;border-radius:.85rem;color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 12px 28px -10px rgba(11,95,255,.6);transition:.2s}
+.lock-btn:hover{transform:translateY(-2px);box-shadow:0 16px 36px -10px rgba(11,95,255,.7)}
+.lock-back{width:100%;padding:.75rem;margin-top:.75rem;background:transparent;border:none;color:rgba(255,255,255,.5);font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:.4rem;transition:.2s}
+.lock-back:hover{color:rgba(255,255,255,.9)}
+.lock-err{color:#f87171;font-size:.78rem;text-align:center;margin:0 0 .75rem;display:none}
+.lock-err.show{display:block}
+.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+#adminContent{visibility:hidden}
+.admin-wrap{display:flex;min-height:100vh}
+.sidebar{width:var(--admin-sidebar-width);background:var(--adm-card);border-right:1px solid var(--adm-border);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+.sidebar-header{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--adm-border);flex-shrink:0}
+.sidebar-brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:inherit}
+.sidebar-logo{width:38px;height:38px;border-radius:.7rem;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,rgba(11,95,255,.15),rgba(201,154,46,.1));border:1px solid rgba(11,95,255,.25)}
+.sidebar-logo svg{width:20px;height:20px;stroke:var(--adm-blue);fill:none;stroke-width:2.2;stroke-linecap:round}
+.sidebar-title{font-size:.95rem;font-weight:800;color:var(--adm-text);line-height:1.2}
+.sidebar-sub{font-size:.65rem;color:var(--adm-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:.15rem}
+.sidebar-nav{flex:1;overflow-y:auto;padding:1rem .75rem}
+.sidebar-section{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--adm-muted);padding:.75rem .75rem .4rem;margin-top:.5rem}
+.sidebar-link{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:.65rem;color:var(--adm-muted);text-decoration:none;font-size:.85rem;font-weight:600;cursor:pointer;transition:.15s;margin-bottom:.15rem;position:relative;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.sidebar-link:hover{background:var(--adm-hover);color:var(--adm-text)}
+.sidebar-link.active{background:color-mix(in srgb,var(--adm-blue) 10%,transparent);color:var(--adm-blue);font-weight:700}
+.sidebar-link.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--adm-blue);border-radius:0 3px 3px 0}
+.sidebar-link i{width:18px;text-align:center;font-size:.9rem;flex-shrink:0}
+.sidebar-link span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--adm-red);color:#fff;font-size:.65rem;font-weight:800;line-height:1}
+.sidebar-badge.gold{background:var(--adm-gold)}
+.sidebar-badge.emerald{background:var(--adm-emerald)}
+.sidebar-footer{padding:.75rem;border-top:1px solid var(--adm-border);flex-shrink:0}
+
+.main-area{flex:1;margin-left:var(--admin-sidebar-width);display:flex;flex-direction:column;min-width:0}
+.topbar{height:var(--admin-topbar-height);background:color-mix(in srgb,var(--adm-card) 85%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--adm-border);position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;gap:1rem}
+.topbar-title{font-size:1.05rem;font-weight:800;color:var(--adm-text);letter-spacing:-.01em}
+.topbar-sub{font-size:.72rem;color:var(--adm-muted);margin-top:.1rem}
+.topbar-actions{display:flex;align-items:center;gap:.6rem}
+.topbar-btn{width:38px;height:38px;border-radius:.6rem;border:1px solid var(--adm-border);background:var(--adm-card);color:var(--adm-muted);display:grid;place-items:center;cursor:pointer;font-family:inherit;transition:.15s;position:relative}
+.topbar-btn:hover{color:var(--adm-text);border-color:var(--adm-blue)}
+.topbar-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--adm-red);color:#fff;font-size:9px;font-weight:800;display:none;align-items:center;justify-content:center;line-height:1}
+.topbar-badge.on{display:flex}
+.topbar-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--adm-blue),var(--adm-purple));color:#fff;font-weight:800;font-size:.8rem;display:grid;place-items:center;flex-shrink:0;border:2px solid var(--adm-card);box-shadow:0 0 0 1px var(--adm-border)}
+.sidebar-toggle{display:none}
+
+.content{padding:1.5rem;flex:1;max-width:1600px;margin:0 auto;width:100%}
+.page{display:none;animation:fadeIn .25s}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.card{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:1rem;padding:1.25rem}
+.kpi{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:1.15rem;padding:1.35rem;position:relative;overflow:hidden;transition:.25s}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 16px 36px -20px rgba(15,23,42,.15)}
+.kpi::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;border-radius:50%;opacity:.06;pointer-events:none}
+.kpi.blue::before{background:var(--adm-blue);top:-30px;right:-30px}
+.kpi.emerald::before{background:var(--adm-emerald);top:-30px;right:-30px}
+.kpi.gold::before{background:var(--adm-gold);top:-30px;right:-30px}
+.kpi.red::before{background:var(--adm-red);top:-30px;right:-30px}
+.kpi.purple::before{background:var(--adm-purple);top:-30px;right:-30px}
+.kpi-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}
+.kpi-icon{width:42px;height:42px;border-radius:.75rem;display:grid;place-items:center;font-size:1rem}
+.kpi.blue .kpi-icon{background:color-mix(in srgb,var(--adm-blue) 12%,transparent);color:var(--adm-blue)}
+.kpi.emerald .kpi-icon{background:color-mix(in srgb,var(--adm-emerald) 12%,transparent);color:var(--adm-emerald)}
+.kpi.gold .kpi-icon{background:color-mix(in srgb,var(--adm-gold) 15%,transparent);color:var(--adm-gold)}
+.kpi.red .kpi-icon{background:color-mix(in srgb,var(--adm-red) 12%,transparent);color:var(--adm-red)}
+.kpi.purple .kpi-icon{background:color-mix(in srgb,var(--adm-purple) 12%,transparent);color:var(--adm-purple)}
+.kpi-value{font-size:1.85rem;font-weight:900;line-height:1;color:var(--adm-text);letter-spacing:-.03em;margin-bottom:.35rem}
+.kpi-label{font-size:.72rem;font-weight:700;color:var(--adm-muted);text-transform:uppercase;letter-spacing:.06em}
+.kpi-trend{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:700;margin-top:.6rem;padding:.2rem .55rem;border-radius:999px}
+.kpi-trend.up{background:color-mix(in srgb,var(--adm-emerald) 12%,transparent);color:var(--adm-emerald)}
+.kpi-trend.down{background:color-mix(in srgb,var(--adm-red) 12%,transparent);color:var(--adm-red)}
+.kpi-trend.neutral{background:color-mix(in srgb,var(--adm-muted) 12%,transparent);color:var(--adm-muted)}
+
+.alert-banner{display:flex;align-items:flex-start;gap:.85rem;padding:1rem 1.15rem;border-radius:.85rem;margin-bottom:1rem;border:1px solid transparent;transition:.2s}
+.alert-banner:hover{transform:translateX(4px)}
+.alert-banner-icon{width:38px;height:38px;border-radius:.65rem;display:grid;place-items:center;flex-shrink:0;font-size:.95rem}
+.alert-banner-body{flex:1;min-width:0}
+.alert-banner-title{font-weight:800;font-size:.85rem;margin-bottom:.15rem}
+.alert-banner-desc{font-size:.75rem;color:var(--adm-muted);line-height:1.45}
+.alert-banner-action{display:flex;align-items:center;gap:.3rem;padding:.4rem .85rem;border-radius:.55rem;font-size:.72rem;font-weight:700;background:var(--adm-card);border:1px solid var(--adm-border);color:var(--adm-text);cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap;flex-shrink:0}
+.alert-banner-action:hover{border-color:var(--adm-blue);color:var(--adm-blue)}
+.alert-banner.warn{background:color-mix(in srgb,var(--adm-gold) 6%,var(--adm-card));border-color:color-mix(in srgb,var(--adm-gold) 25%,transparent)}
+.alert-banner.warn .alert-banner-icon{background:color-mix(in srgb,var(--adm-gold) 15%,transparent);color:var(--adm-gold)}
+.alert-banner.warn .alert-banner-title{color:var(--adm-gold)}
+.alert-banner.info{background:color-mix(in srgb,var(--adm-blue) 4%,var(--adm-card));border-color:color-mix(in srgb,var(--adm-blue) 20%,transparent)}
+.alert-banner.info .alert-banner-icon{background:color-mix(in srgb,var(--adm-blue) 12%,transparent);color:var(--adm-blue)}
+.alert-banner.info .alert-banner-title{color:var(--adm-blue)}
+.alert-banner.danger{background:color-mix(in srgb,var(--adm-red) 6%,var(--adm-card));border-color:color-mix(in srgb,var(--adm-red) 25%,transparent)}
+.alert-banner.danger .alert-banner-icon{background:color-mix(in srgb,var(--adm-red) 12%,transparent);color:var(--adm-red)}
+.alert-banner.danger .alert-banner-title{color:var(--adm-red)}
+
+.table-wrap{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:1rem;overflow:hidden}
+.table-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--adm-border);flex-wrap:wrap;gap:.75rem}
+.table-title{font-size:.95rem;font-weight:800;color:var(--adm-text)}
+.table-sub{font-size:.72rem;color:var(--adm-muted);margin-top:.15rem}
+.table-scroll{overflow-x:auto}
+table.data{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
+table.data th{text-align:left;padding:.75rem 1rem;font-size:.68rem;font-weight:800;color:var(--adm-muted);text-transform:uppercase;letter-spacing:.06em;background:var(--adm-hover);border-bottom:1px solid var(--adm-border)}
+table.data td{padding:.85rem 1rem;border-bottom:1px solid var(--adm-border);vertical-align:middle}
+table.data tbody tr:last-child td{border-bottom:none}
+table.data tbody tr:hover{background:color-mix(in srgb,var(--adm-blue) 3%,transparent)}
+
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:800;padding:.3rem .65rem;border-radius:999px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.badge.pending{background:color-mix(in srgb,var(--adm-gold) 15%,transparent);color:var(--adm-gold)}
+.badge.success{background:color-mix(in srgb,var(--adm-emerald) 15%,transparent);color:var(--adm-emerald)}
+.badge.danger{background:color-mix(in srgb,var(--adm-red) 15%,transparent);color:var(--adm-red)}
+.badge.info{background:color-mix(in srgb,var(--adm-blue) 15%,transparent);color:var(--adm-blue)}
+.badge.neutral{background:color-mix(in srgb,var(--adm-muted) 15%,transparent);color:var(--adm-muted)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .85rem;border-radius:.6rem;font-size:.78rem;font-weight:700;border:1px solid var(--adm-border);background:var(--adm-card);color:var(--adm-text);cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap}
+.btn:hover{background:var(--adm-hover)}
+.btn.primary{background:var(--adm-blue);border-color:var(--adm-blue);color:#fff;box-shadow:0 4px 12px -4px color-mix(in srgb,var(--adm-blue) 50%,transparent)}
+.btn.primary:hover{background:color-mix(in srgb,var(--adm-blue) 90%,black);transform:translateY(-1px)}
+.btn.success{background:var(--adm-emerald);border-color:var(--adm-emerald);color:#fff}
+.btn.success:hover{background:color-mix(in srgb,var(--adm-emerald) 90%,black)}
+.btn.danger{background:var(--adm-red);border-color:var(--adm-red);color:#fff}
+.btn.danger:hover{background:color-mix(in srgb,var(--adm-red) 90%,black)}
+.btn.ghost{background:transparent}
+.btn.ghost:hover{background:var(--adm-hover)}
+.btn.xs{padding:.35rem .6rem;font-size:.7rem}
+
+.tabs{display:inline-flex;gap:.2rem;padding:.25rem;border-radius:.65rem;background:var(--adm-hover);border:1px solid var(--adm-border)}
+.tabs button{padding:.4rem .8rem;border-radius:.45rem;font-size:.72rem;font-weight:700;border:none;background:transparent;color:var(--adm-muted);cursor:pointer;font-family:inherit;transition:.15s}
+.tabs button.on{background:var(--adm-card);color:var(--adm-blue);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+
+.empty{padding:3rem 1.5rem;text-align:center}
+.empty i{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.4}
+.empty-title{font-weight:800;font-size:.95rem;color:var(--adm-text);margin-bottom:.35rem}
+.empty-desc{font-size:.8rem;color:var(--adm-muted)}
+
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(10,14,23,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .modal.on{display:flex}
-.modal-box{background:var(--sf);border:1px solid var(--bd);border-radius:1.25rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:1.5rem}
-.modal-title{font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:1.25rem}
-.form-row{margin-bottom:1rem}
-.form-row label{display:block;font-size:.72rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
-.form-row input,.form-row textarea,.form-row select{width:100%;background:var(--bg);border:1px solid var(--bd);color:var(--ink);border-radius:.5rem;padding:.6rem .8rem;font-size:.85rem;font-family:inherit;outline:none;transition:.15s}
-.form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--ac)}
-.form-row textarea{resize:vertical;min-height:80px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
-.form-hint{font-size:.7rem;color:var(--mu);margin-top:.3rem}
-.modal-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--bd)}
+.modal-box{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:1.25rem;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px -20px rgba(0,0,0,.5);animation:modalIn .3s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--adm-border)}
+.modal-title{font-weight:800;font-size:1rem;color:var(--adm-text);letter-spacing:-.01em}
+.modal-close{width:32px;height:32px;border-radius:.5rem;border:none;background:var(--adm-hover);color:var(--adm-muted);cursor:pointer;display:grid;place-items:center;font-family:inherit}
+.modal-close:hover{color:var(--adm-text)}
+.modal-body{padding:1.5rem}
+.modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--adm-border);display:flex;gap:.75rem;justify-content:flex-end}
+
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.75rem;font-weight:700;color:var(--adm-text);margin-bottom:.35rem}
+.form-input,.form-select,.form-textarea{width:100%;padding:.7rem .85rem;background:var(--adm-hover);border:1px solid var(--adm-border);border-radius:.6rem;color:var(--adm-text);font-size:.85rem;font-family:inherit;outline:none;transition:.15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--adm-blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--adm-blue) 15%,transparent)}
+.form-textarea{resize:vertical;min-height:80px}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(150%);background:var(--adm-card);border:1px solid var(--adm-border);border-radius:.75rem;padding:.85rem 1.15rem;box-shadow:0 16px 40px -10px rgba(0,0,0,.3);font-size:.82rem;font-weight:600;color:var(--adm-text);z-index:400;transition:transform .35s cubic-bezier(.2,.9,.3,1.1);display:flex;align-items:center;gap:.6rem;max-width:90vw}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+.chart-box{background:var(--adm-card);border:1px solid var(--adm-border);border-radius:1rem;padding:1.25rem}
+.chart-title{font-size:.9rem;font-weight:800;color:var(--adm-text);margin-bottom:1rem}
+.chart-canvas{position:relative;height:260px}
+
+.activity-item{display:flex;align-items:flex-start;gap:.85rem;padding:.85rem 0;border-bottom:1px solid var(--adm-border)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:36px;height:36px;border-radius:.6rem;display:grid;place-items:center;flex-shrink:0;font-size:.85rem}
+.activity-body{flex:1;min-width:0}
+.activity-title{font-size:.82rem;font-weight:700;color:var(--adm-text);margin-bottom:.15rem}
+.activity-desc{font-size:.72rem;color:var(--adm-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.activity-time{font-size:.68rem;color:var(--adm-muted);white-space:nowrap;flex-shrink:0}
+
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(10,14,23,.5);z-index:99;backdrop-filter:blur(4px)}
+.sidebar-overlay.on{display:block}
+
+@media(max-width:1024px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-area{margin-left:0}
+  .sidebar-toggle{display:grid}
+  .content{padding:1rem}
+  .topbar{padding:0 1rem}
+  .topbar-title{font-size:.9rem}
+  .topbar-sub{display:none}
+}
+
+/* Très petits écrans (iPhone SE, Galaxy S8) */
+@media(max-width:420px){
+  .content{padding:.75rem}
+  .topbar{padding:0 .75rem}
+  .topbar-title{font-size:.82rem}
+  .topbar-btn{width:34px;height:34px}
+  .topbar-avatar{width:34px;height:34px;font-size:.72rem}
+  .topbar-actions{gap:.35rem}
+  
+  .grid.grid-cols-2{gap:.5rem}
+  
+  .kpi{padding:.85rem;border-radius:.85rem}
+  .kpi-value{font-size:1.35rem}
+  .kpi-label{font-size:.6rem;letter-spacing:.03em;line-height:1.2}
+  .kpi-icon{width:32px;height:32px;font-size:.85rem}
+  .kpi-head{margin-bottom:.5rem}
+  .kpi-trend{font-size:.6rem;padding:.15rem .45rem;margin-top:.4rem}
+  
+  .card{padding:.85rem;border-radius:.85rem}
+  .chart-box{padding:.85rem}
+  .chart-title{font-size:.78rem}
+  .chart-canvas{height:200px}
+  
+  .alert-banner{padding:.75rem;gap:.6rem}
+  .alert-banner-icon{width:32px;height:32px;font-size:.85rem}
+  .alert-banner-title{font-size:.78rem}
+  .alert-banner-desc{font-size:.68rem}
+  .alert-banner-action{padding:.3rem .6rem;font-size:.65rem}
+  
+  .table-head{padding:.75rem}
+  .table-title{font-size:.85rem}
+  .table-sub{font-size:.65rem}
+  
+  .btn{padding:.45rem .7rem;font-size:.72rem}
+  .btn.xs{padding:.28rem .5rem;font-size:.65rem}
+  
+  .tabs{padding:.15rem}
+  .tabs button{padding:.3rem .55rem;font-size:.65rem}
+  
+  .modal-box{border-radius:1rem}
+  .modal-body{padding:1rem}
+  .modal-head{padding:1rem}
+  .modal-title{font-size:.9rem}
+  .modal-foot{padding:.85rem 1rem}
+  
+  .form-input,.form-select,.form-textarea{padding:.6rem .7rem;font-size:.78rem}
+  
+  .activity-icon{width:30px;height:30px;font-size:.75rem}
+  .activity-title{font-size:.75rem}
+  .activity-desc{font-size:.68rem}
+}
+
+/* Écrans très étroits : KPI en 1 colonne */
+@media(max-width:360px){
+  .grid.grid-cols-2{grid-template-columns:1fr}
+}
+
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--adm-muted) 30%,transparent);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--adm-muted) 50%,transparent)}
 </style>
 </head>
-<body class="font-sans" data-no-layout data-no-life>
+<body data-no-layout data-no-life>
 
-<div id="lockScreen" class="fixed inset-0 z-[200] hidden items-center justify-center p-4">
-  <div class="w-full max-w-sm p-7 rounded-2xl shadow-2xl" style="background:var(--sf);border:1px solid var(--bd)">
-    <div class="w-12 h-12 rounded-xl grid place-items-center mb-5 mx-auto" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
-      <i class="fa-solid fa-shield-halved" style="color:var(--ac)"></i>
-    </div>
-    <h3 class="text-lg font-bold text-center mb-1">Accès administrateur</h3>
-    <p class="text-sm text-center mb-6" style="color:var(--mu)">Entrez le code PIN pour continuer.</p>
-    <input id="lockInput" type="password" maxlength="20" placeholder="••••••••" class="input text-center text-xl font-bold mb-3 tracking-[.25em]" autocomplete="off">
-    <p id="lockErr" class="hidden text-xs text-center mb-3" style="color:var(--er)"><i class="fa-solid fa-circle-exclamation mr-1"></i>Code incorrect</p>
-    <button onclick="Lock.verify()" class="btn bp w-full"><i class="fa-solid fa-unlock text-xs"></i>Accéder</button>
-    <button onclick="location.href='index.html'" class="btn bo w-full mt-2 text-xs"><i class="fa-solid fa-arrow-left"></i>Retour à l'accueil</button>
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <h1 class="lock-title">Administration</h1>
+    <p class="lock-sub">AfroPulse · Accès sécurisé</p>
+    <input id="lockInput" type="password" maxlength="20" placeholder="••••••" class="lock-input" autocomplete="off">
+    <p id="lockErr" class="lock-err"><i class="fa-solid fa-circle-exclamation mr-1"></i>Code incorrect</p>
+    <button onclick="Lock.verify()" class="lock-btn"><i class="fa-solid fa-unlock"></i>Déverrouiller</button>
+    <button onclick="location.href='index.html'" class="lock-back"><i class="fa-solid fa-arrow-left"></i>Retour au site</button>
   </div>
 </div>
 
-<div id="adminContent" style="visibility:hidden">
-  <header class="admin-bar sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <span class="w-8 h-8 rounded-lg grid place-items-center" style="background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 20%,transparent)">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg>
-        </span>
-        <span class="text-sm font-bold">Afro<span style="color:var(--ac)">Pulse</span> <span class="font-normal" style="color:var(--mu)">/ Administration</span></span>
+<div id="adminContent">
+<div class="admin-wrap">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-brand">
+        <span class="sidebar-logo"><svg viewBox="0 0 24 24"><path d="M2 12h3l2-5 3 10 3-12 3 8 2-3h3"/></svg></span>
+        <div>
+          <div class="sidebar-title">Afro<span style="color:var(--adm-blue)">Pulse</span></div>
+          <div class="sidebar-sub">Administration</div>
+        </div>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Pilotage</div>
+      <button class="sidebar-link active" data-page="dashboard"><i class="fa-solid fa-chart-pie"></i><span>Vue d'ensemble</span></button>
+      <button class="sidebar-link" data-page="notifications"><i class="fa-solid fa-bell"></i><span>Notifications</span><span class="sidebar-badge" id="navNotifBadge" hidden>0</span></button>
+      <button class="sidebar-link" data-page="logs"><i class="fa-solid fa-clock-rotate-left"></i><span>Journal d'activité</span></button>
+      <div class="sidebar-section">Finances</div>
+      <button class="sidebar-link" data-page="subscriptions"><i class="fa-solid fa-credit-card"></i><span>Abonnements</span><span class="sidebar-badge gold" id="navSubsBadge" hidden>0</span></button>
+      <button class="sidebar-link" data-page="withdrawals"><i class="fa-solid fa-money-bill-transfer"></i><span>Retraits</span><span class="sidebar-badge" id="navWitBadge" hidden>0</span></button>
+      <button class="sidebar-link" data-page="payouts"><i class="fa-solid fa-paper-plane"></i><span>Versements</span><span class="sidebar-badge" id="navPayBadge" hidden>0</span></button>
+      <div class="sidebar-section">Communauté</div>
+      <button class="sidebar-link" data-page="users"><i class="fa-solid fa-users"></i><span>Utilisateurs</span><span class="sidebar-badge emerald" id="navUsersBadge" hidden>0</span></button>
+      <button class="sidebar-link" data-page="rccm"><i class="fa-solid fa-building-shield"></i><span>RCCM</span><span class="sidebar-badge gold" id="navRccmBadge" hidden>0</span></button>
+      <button class="sidebar-link" data-page="badges"><i class="fa-solid fa-award"></i><span>Badges</span></button>
+      <div class="sidebar-section">Contenu</div>
+      <button class="sidebar-link" data-page="content"><i class="fa-solid fa-pen-to-square"></i><span>Contenu dynamique</span></button>
+      <button class="sidebar-link" data-page="analytics"><i class="fa-solid fa-chart-line"></i><span>Analytics</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-link" onclick="Admin.logout()" style="color:var(--adm-red)"><i class="fa-solid fa-right-from-bracket"></i><span>Déconnexion</span></button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:.85rem;flex:1;min-width:0">
+        <button class="topbar-btn sidebar-toggle" onclick="Sidebar.toggle()"><i class="fa-solid fa-bars"></i></button>
+        <div style="min-width:0">
+          <div class="topbar-title" id="pageTitle">Vue d'ensemble</div>
+          <div class="topbar-sub" id="pageSub">Tableau de bord administrateur</div>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="Theme.toggle()" aria-label="Thème" class="w-8 h-8 rounded-lg grid place-items-center" style="border:1px solid var(--bd);background:var(--bg);cursor:pointer"><i data-theme-icon class="fa-solid fa-moon text-xs"></i></button>
-        <button onclick="Admin.reload()" class="act"><i class="fa-solid fa-rotate"></i>Rafraîchir</button>
-        <button onclick="Admin.logout()" class="act"><i class="fa-solid fa-right-from-bracket"></i>Déconnexion</button>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="Theme.toggle()" title="Thème"><i data-theme-icon class="fa-solid fa-moon"></i></button>
+        <button class="topbar-btn" onclick="Page.go('notifications')" title="Notifications"><i class="fa-solid fa-bell"></i><span class="topbar-badge" id="topbarNotifBadge">0</span></button>
+        <button class="topbar-btn" onclick="Admin.reload()" title="Rafraîchir"><i class="fa-solid fa-rotate"></i></button>
+        <div class="topbar-avatar" id="topbarAvatar">AD</div>
       </div>
     </div>
-  </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-    <div class="nav-admin" id="navAdmin">
-      <button data-tab="overview" class="on">Vue d'ensemble</button>
-      <button data-tab="stats">Statistiques</button>
-      <button data-tab="traffic">Trafic</button>
-      <button data-tab="subs">Abonnements</button>
-      <button data-tab="rccm">RCCM</button>
-      <button data-tab="content">Contenu</button>
-      <button data-tab="badges">Badges</button>
-    </div>
+    <div class="content">
 
-    <!-- Vue d'ensemble -->
-    <div id="tab-overview" class="tab-content">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-clock"></i></div><div class="card-stat-v" id="sSW" style="color:var(--gd)">0</div><div class="card-stat-l">Abonnements en attente</div></div>
-        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--gd) 12%,transparent);color:var(--gd)"><i class="fa-solid fa-file-shield"></i></div><div class="card-stat-v" id="sRW" style="color:var(--gd)">0</div><div class="card-stat-l">RCCM en attente</div></div>
-        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)"><i class="fa-solid fa-circle-check"></i></div><div class="card-stat-v" id="sOk" style="color:var(--ok)">0</div><div class="card-stat-l">Validés</div></div>
-        <div class="card-stat"><div class="card-stat-ic" style="background:color-mix(in srgb,var(--er) 12%,transparent);color:var(--er)"><i class="fa-solid fa-circle-xmark"></i></div><div class="card-stat-v" id="sKo" style="color:var(--er)">0</div><div class="card-stat-l">Rejetés</div></div>
-      </div>
-
-      <section class="mb-8">
-        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-          <h2 class="text-base font-bold">Abonnements récents</h2>
-          <div class="tabs" data-t="sub">
-            <button data-f="all" class="on">Tous</button>
-            <button data-f="en_attente">En attente</button>
-            <button data-f="actif">Actifs</button>
-            <button data-f="rejete">Rejetés</button>
+      <div class="page active" id="page-dashboard">
+        <div id="suggestionsBox"></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div class="kpi blue"><div class="kpi-head"><div class="kpi-icon"><i class="fa-solid fa-users"></i></div></div><div class="kpi-value" id="kpiUsers">—</div><div class="kpi-label">Utilisateurs</div><div class="kpi-trend neutral"><i class="fa-solid fa-minus"></i>Aujourd'hui</div></div>
+          <div class="kpi emerald"><div class="kpi-head"><div class="kpi-icon"><i class="fa-solid fa-coins"></i></div></div><div class="kpi-value" id="kpiRevenue">—</div><div class="kpi-label">Revenus ce mois</div><div class="kpi-trend up"><i class="fa-solid fa-arrow-up"></i>+0%</div></div>
+          <div class="kpi gold"><div class="kpi-head"><div class="kpi-icon"><i class="fa-solid fa-credit-card"></i></div></div><div class="kpi-value" id="kpiSubs">—</div><div class="kpi-label">Abonnements actifs</div><div class="kpi-trend neutral"><i class="fa-solid fa-circle-check"></i>En cours</div></div>
+          <div class="kpi red"><div class="kpi-head"><div class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></div></div><div class="kpi-value" id="kpiPending">—</div><div class="kpi-label">En attente</div><div class="kpi-trend down"><i class="fa-solid fa-clock"></i>À traiter</div></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4 mb-6">
+          <div class="chart-box"><div class="chart-title"><i class="fa-solid fa-chart-line mr-1" style="color:var(--adm-blue)"></i>Inscriptions (30 jours)</div><div class="chart-canvas"><canvas id="chartDaily"></canvas></div></div>
+          <div class="chart-box"><div class="chart-title"><i class="fa-solid fa-chart-column mr-1" style="color:var(--adm-emerald)"></i>Revenus (12 mois)</div><div class="chart-canvas"><canvas id="chartRevenue"></canvas></div></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div style="font-weight:800;font-size:.95rem;color:var(--adm-text)"><i class="fa-solid fa-bolt mr-1" style="color:var(--adm-gold)"></i>Activité récente</div>
+              <button onclick="Page.go('logs')" class="btn ghost xs">Voir tout</button>
+            </div>
+            <div id="activityFeed"></div>
+          </div>
+          <div class="card">
+            <div style="font-weight:800;font-size:.95rem;color:var(--adm-text);margin-bottom:1rem"><i class="fa-solid fa-fire mr-1" style="color:var(--adm-red)"></i>Top villes</div>
+            <div id="topCities" style="display:flex;flex-direction:column;gap:.85rem"></div>
           </div>
         </div>
-        <div class="tw"><table class="tb">
-          <thead><tr><th>Nom</th><th>Formule</th><th>Montant</th><th>Passerelle</th><th>Réf. SMS</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-          <tbody id="tbS"></tbody>
-        </table></div>
-      </section>
-
-      <section class="mb-8">
-        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-          <h2 class="text-base font-bold">Dossiers RCCM</h2>
-          <div class="tabs" data-t="rccm">
-            <button data-f="all" class="on">Tous</button>
-            <button data-f="en_attente">En attente</button>
-            <button data-f="approuve">Approuvés</button>
-            <button data-f="rejete">Rejetés</button>
-          </div>
-        </div>
-        <div class="tw"><table class="tb">
-          <thead><tr><th>Référence</th><th>Entreprise</th><th>RCCM</th><th>CC</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-          <tbody id="tbR"></tbody>
-        </table></div>
-      </section>
-
-      <div class="flex flex-wrap items-center justify-end gap-2 pt-4" style="border-top:1px solid var(--bd)">
-        <button onclick="Admin.exportSubs()" class="act"><i class="fa-solid fa-download"></i>Export abonnements</button>
-        <button onclick="Admin.exportRccm()" class="act"><i class="fa-solid fa-download"></i>Export RCCM</button>
-        <button onclick="Admin.seed()" class="act"><i class="fa-solid fa-flask"></i>Charger la démo</button>
-        <button onclick="Admin.clear()" class="act act-ko"><i class="fa-solid fa-trash"></i>Tout effacer</button>
       </div>
-    </div>
 
-    <!-- Statistiques -->
-    <div id="tab-stats" class="tab-content hidden">
-      <div class="grid lg:grid-cols-2 gap-5 mb-6">
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Inscriptions (30 derniers jours)</div>
-          <div style="height:260px"><canvas id="chartDaily"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Revenus par mois (FCFA)</div>
-          <div style="height:260px"><canvas id="chartRevenue"></canvas></div>
+      <div class="page" id="page-notifications">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Notifications admin</div><div class="table-sub">Toutes les alertes de la plateforme</div></div>
+            <button onclick="Notifications.markAllRead()" class="btn xs"><i class="fa-solid fa-check-double"></i>Tout marquer lu</button>
+          </div>
+          <div id="notificationsList" class="table-scroll"></div>
         </div>
       </div>
-      <div class="grid lg:grid-cols-2 gap-5">
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Top villes</div>
-          <div id="topCities" class="space-y-2"></div>
-        </div>
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Top compétences</div>
-          <div id="topSkills" class="space-y-2"></div>
+
+      <div class="page" id="page-logs">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Journal d'activité</div><div class="table-sub">Historique des actions admin</div></div>
+            <button onclick="Logs.clear()" class="btn danger xs"><i class="fa-solid fa-trash"></i>Effacer</button>
+          </div>
+          <div id="logsList" class="table-scroll"></div>
         </div>
       </div>
-    </div>
 
-    <!-- Trafic -->
-    <div id="tab-traffic" class="tab-content hidden">
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="track-card"><div class="track-num" id="trafficTotal">—</div><div class="track-lbl">Pages vues (7j)</div></div>
-        <div class="track-card"><div class="track-num" id="trafficUnique">—</div><div class="track-lbl">Visiteurs uniques</div></div>
-        <div class="track-card"><div class="track-num" id="trafficToday">—</div><div class="track-lbl">Vues aujourd'hui</div></div>
-        <div class="track-card"><div class="track-num" id="trafficAvg">—</div><div class="track-lbl">Vues par jour</div></div>
-      </div>
-      <div class="grid lg:grid-cols-2 gap-5 mb-6">
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Visites (7 derniers jours)</div>
-          <div style="height:260px"><canvas id="chartTraffic"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="text-sm font-bold mb-4">Pages les plus vues</div>
-          <div id="topPages" class="space-y-2"></div>
+      <div class="page" id="page-subscriptions">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Abonnements</div><div class="table-sub"><span id="subsCount">0</span> abonnement(s)</div></div>
+            <div class="tabs" data-t="subs">
+              <button data-f="all" class="on">Tous</button>
+              <button data-f="en_attente">En attente</button>
+              <button data-f="actif">Actifs</button>
+              <button data-f="rejete">Rejetés</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data"><thead><tr><th>Utilisateur</th><th>Formule</th><th>Montant</th><th>Passerelle</th><th>Référence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbSubs"></tbody></table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Abonnements -->
-    <div id="tab-subs" class="tab-content hidden">
-      <div class="tw"><table class="tb">
-        <thead><tr><th>Nom</th><th>Formule</th><th>Montant</th><th>Passerelle</th><th>Réf. SMS</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-        <tbody id="tbS2"></tbody>
-      </table></div>
-    </div>
-
-    <!-- RCCM -->
-    <div id="tab-rccm" class="tab-content hidden">
-      <div class="tw"><table class="tb">
-        <thead><tr><th>Référence</th><th>Entreprise</th><th>RCCM</th><th>CC</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-        <tbody id="tbR2"></tbody>
-      </table></div>
-    </div>
-
-    <!-- Contenu dynamique -->
-    <div id="tab-content" class="tab-content hidden">
-      <section class="content-section">
-        <div class="content-head">
-          <div>
-            <h2 class="text-base font-bold">Témoignages</h2>
-            <p class="text-xs mt-.5" style="color:var(--mu)">Affichés sur la page d'accueil et la page particulier.</p>
+      <div class="page" id="page-withdrawals">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Demandes de retrait</div><div class="table-sub">Talents et entreprises qui demandent un retrait</div></div>
+            <div class="tabs" data-t="wit">
+              <button data-f="all" class="on">Tous</button>
+              <button data-f="en_attente">En attente</button>
+              <button data-f="valide">Validés</button>
+              <button data-f="paye">Payés</button>
+              <button data-f="rejete">Rejetés</button>
+            </div>
           </div>
-          <button onclick="Content.openTestimonial()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter un témoignage</button>
-        </div>
-        <div id="listTestimonials"></div>
-      </section>
-
-      <section class="content-section">
-        <div class="content-head">
-          <div>
-            <h2 class="text-base font-bold">Formules tarifaires</h2>
-            <p class="text-xs mt-.5" style="color:var(--mu)">Affichées sur la page tarifs. Prix en FCFA.</p>
-          </div>
-          <button onclick="Content.openPlan()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter une formule</button>
-        </div>
-        <div id="listPlans"></div>
-      </section>
-
-      <section class="content-section">
-        <div class="content-head">
-          <div>
-            <h2 class="text-base font-bold">FAQ</h2>
-            <p class="text-xs mt-.5" style="color:var(--mu)">Affichée sur la page tarifs.</p>
-          </div>
-          <button onclick="Content.openFaq()" class="act act-add"><i class="fa-solid fa-plus"></i>Ajouter une question</button>
-        </div>
-        <div id="listFaqs"></div>
-      </section>
-    </div>
-
-    <!-- Badges -->
-    <div id="tab-badges" class="tab-content hidden">
-      <div class="content-section">
-        <div class="content-head">
-          <div>
-            <h2 class="text-base font-bold">Attribution des badges</h2>
-            <p class="text-xs mt-.5" style="color:var(--mu)">Recherchez un membre par email, puis attribuez ou retirez un badge.</p>
+          <div class="table-scroll">
+            <table class="data"><thead><tr><th>Référence</th><th>User ID</th><th>Montant</th><th>Méthode</th><th>Compte</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbWithdrawals"></tbody></table>
           </div>
         </div>
-        <div class="form-row">
-          <label>Email du membre</label>
-          <div class="flex gap-2">
-            <input id="badgeEmail" type="email" placeholder="email@exemple.com" style="flex:1">
-            <button onclick="Badges.search()" class="act act-add">Rechercher</button>
-          </div>
-        </div>
-        <div id="badgeResult" class="mt-4"></div>
       </div>
+
+      <div class="page" id="page-payouts">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Versements</div><div class="table-sub">Paiements à effectuer aux utilisateurs</div></div>
+            <button onclick="Payouts.openNew()" class="btn primary xs"><i class="fa-solid fa-plus"></i>Nouveau versement</button>
+          </div>
+          <div class="table-scroll">
+            <table class="data"><thead><tr><th>Bénéficiaire</th><th>Montant</th><th>Méthode</th><th>Référence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbPayouts"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-users">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Utilisateurs</div><div class="table-sub"><span id="usersCount">0</span> membre(s)</div></div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <input id="usersSearch" class="form-input" placeholder="Rechercher..." style="width:200px" oninput="Users.search()">
+              <div class="tabs" data-t="users">
+                <button data-f="all" class="on">Tous</button>
+                <button data-f="particulier">Particuliers</button>
+                <button data-f="entreprise">Entreprises</button>
+                <button data-f="banned">Bannis</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data"><thead><tr><th>Membre</th><th>Email</th><th>Ville</th><th>Rôle</th><th>Inscription</th><th>Solde</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbUsers"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-rccm">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div><div class="table-title">Dossiers RCCM</div><div class="table-sub">Vérification des entreprises</div></div>
+            <div class="tabs" data-t="rccm">
+              <button data-f="all" class="on">Tous</button>
+              <button data-f="en_attente">En attente</button>
+              <button data-f="approuve">Approuvés</button>
+              <button data-f="rejete">Rejetés</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data"><thead><tr><th>Référence</th><th>Entreprise</th><th>RCCM</th><th>Document</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbRccm"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-badges">
+        <div class="card" style="max-width:640px">
+          <div style="font-weight:800;font-size:.95rem;color:var(--adm-text);margin-bottom:1rem"><i class="fa-solid fa-award mr-1" style="color:var(--adm-gold)"></i>Attribution de badges</div>
+          <div class="form-group">
+            <label class="form-label">Email du membre</label>
+            <div style="display:flex;gap:.5rem">
+              <input id="badgeEmail" type="email" class="form-input" placeholder="email@exemple.com" style="flex:1">
+              <button onclick="Badges.search()" class="btn primary"><i class="fa-solid fa-magnifying-glass"></i>Chercher</button>
+            </div>
+          </div>
+          <div id="badgeResult"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-content">
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div><div style="font-weight:800;font-size:.95rem;color:var(--adm-text)">Témoignages</div><div style="font-size:.72rem;color:var(--adm-muted)">Affichés sur l'accueil</div></div>
+              <button onclick="Content.openTestimonial()" class="btn primary xs"><i class="fa-solid fa-plus"></i>Ajouter</button>
+            </div>
+            <div id="listTestimonials"></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div><div style="font-weight:800;font-size:.95rem;color:var(--adm-text)">Formules tarifaires</div><div style="font-size:.72rem;color:var(--adm-muted)">Affichées sur la page tarifs</div></div>
+              <button onclick="Content.openPlan()" class="btn primary xs"><i class="fa-solid fa-plus"></i>Ajouter</button>
+            </div>
+            <div id="listPlans"></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <div><div style="font-weight:800;font-size:.95rem;color:var(--adm-text)">FAQ</div><div style="font-size:.72rem;color:var(--adm-muted)">Affichée sur la page tarifs</div></div>
+              <button onclick="Content.openFaq()" class="btn primary xs"><i class="fa-solid fa-plus"></i>Ajouter</button>
+            </div>
+            <div id="listFaqs"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-analytics">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div class="kpi blue"><div class="kpi-value" id="trafficTotal">—</div><div class="kpi-label">Pages vues (7j)</div></div>
+          <div class="kpi purple"><div class="kpi-value" id="trafficUnique">—</div><div class="kpi-label">Visiteurs uniques</div></div>
+          <div class="kpi emerald"><div class="kpi-value" id="trafficToday">—</div><div class="kpi-label">Aujourd'hui</div></div>
+          <div class="kpi gold"><div class="kpi-value" id="trafficAvg">—</div><div class="kpi-label">Moyenne/jour</div></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="chart-box"><div class="chart-title">Visites (7 derniers jours)</div><div class="chart-canvas"><canvas id="chartTraffic"></canvas></div></div>
+          <div class="card"><div style="font-weight:800;font-size:.95rem;color:var(--adm-text);margin-bottom:1rem">Pages les plus vues</div><div id="topPages" style="display:flex;flex-direction:column;gap:.85rem"></div></div>
+        </div>
+      </div>
+
     </div>
-  </main>
+  </div>
+</div>
 </div>
 
-<!-- Modal générique pour édition -->
-<div id="editModal" class="modal">
+<div id="modal" class="modal">
   <div class="modal-box">
-    <div class="modal-title" id="editTitle">Édition</div>
-    <form id="editForm" onsubmit="Content.submit(event)">
-      <div id="editFields"></div>
-      <div class="modal-actions">
-        <button type="button" onclick="Content.close()" class="act">Annuler</button>
-        <button type="submit" id="editSubmit" class="act act-add">Enregistrer</button>
-      </div>
-    </form>
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">Édition</div>
+      <button class="modal-close" onclick="Modal.close()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i><span id="toastMsg">—</span></div>
+<div id="confirmModal" class="modal">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-body" style="text-align:center;padding:2rem 1.5rem">
+      <div style="width:64px;height:64px;border-radius:1.25rem;display:grid;place-items:center;margin:0 auto 1.25rem;background:color-mix(in srgb,var(--adm-gold) 15%,transparent);color:var(--adm-gold);font-size:1.5rem"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div style="font-weight:800;font-size:1.05rem;color:var(--adm-text);margin-bottom:.5rem" id="confirmTitle">Confirmation</div>
+      <div style="font-size:.85rem;color:var(--adm-muted);line-height:1.55" id="confirmMsg">Êtes-vous sûr ?</div>
+    </div>
+    <div class="modal-foot" style="justify-content:center">
+      <button class="btn ghost" onclick="Confirm.cancel()">Annuler</button>
+      <button class="btn danger" onclick="Confirm.ok()">Confirmer</button>
+    </div>
+  </div>
+</div>
 
-<script src="assets/env.js"></script>
-<script src="assets/db.js"></script>
+<div class="toast" id="toast">
+  <i class="fa-solid fa-circle-check" style="color:var(--adm-emerald)"></i>
+  <span id="toastMsg">—</span>
+</div>
+
+<script src="assets/i18n.js?v=12"></script>
+<script src="assets/env.js?v=12"></script>
+<script src="assets/db.js?v=12"></script>
 <script>
+const $=id=>document.getElementById(id);
+const $$=sel=>document.querySelectorAll(sel);
+const fmt=n=>Number(n||0).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
+
+function waitForSb(){
+  return new Promise(resolve=>{
+    if(window.__sb) return resolve();
+    const t=setInterval(()=>{
+      if(window.__sb){clearInterval(t);resolve();}
+    },50);
+    setTimeout(()=>{clearInterval(t);resolve();},15000);
+  });
+}
+
 const Theme=(()=>{
   const K='ap-theme',r=document.documentElement;
-  const apply=m=>{r.classList.toggle('dark',m==='dark');document.querySelectorAll('[data-theme-icon]').forEach(i=>{i.className=m==='dark'?'fa-solid fa-sun text-xs':'fa-solid fa-moon text-xs'})};
+  const apply=m=>{
+    r.classList.toggle('dark',m==='dark');
+    $$('[data-theme-icon]').forEach(i=>{
+      i.className=m==='dark'?'fa-solid fa-sun':'fa-solid fa-moon';
+    });
+  };
   return{
     toggle(){const n=r.classList.contains('dark')?'light':'dark';localStorage.setItem(K,n);apply(n)},
     init(){apply(localStorage.getItem(K)||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))}
   };
 })();
 
+function toast(msg, type='success'){
+  const el=$('toast');
+  const icons={success:'fa-circle-check',error:'fa-circle-exclamation',warn:'fa-triangle-exclamation',info:'fa-circle-info'};
+  const colors={success:'var(--adm-emerald)',error:'var(--adm-red)',warn:'var(--adm-gold)',info:'var(--adm-blue)'};
+  el.querySelector('i').className=`fa-solid ${icons[type]||icons.success}`;
+  el.querySelector('i').style.color=colors[type]||colors.success;
+  $('toastMsg').textContent=msg;
+  el.classList.add('on');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>el.classList.remove('on'),2800);
+}
+
 const Lock=(()=>{
-  const HASH='c366e74277c0026a2ebf8ef9f75315e32171b555ff9d4cd01aeb116609c847f4';
-  const sha=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+  // 👇 CHANGE TON PIN ICI
+  const PIN='0355';
+
   return{
-    init(){
-      const lock=document.getElementById('lockScreen'),content=document.getElementById('adminContent');
-      if(sessionStorage.getItem('ap-admin')==='1'){content.style.visibility='visible';lock.classList.add('hidden');lock.classList.remove('flex');return}
-      lock.classList.remove('hidden');lock.classList.add('flex');
-      const i=document.getElementById('lockInput');
-      if(i){i.addEventListener('keypress',e=>{if(e.key==='Enter')Lock.verify()});setTimeout(()=>i.focus(),100)}
+    async init(){
+      if(sessionStorage.getItem('ap-admin')==='1'){
+        $('lockScreen').style.display='none';
+        $('adminContent').style.visibility='visible';
+        await App.start();
+        return;
+      }
+      $('lockScreen').style.display='flex';
+      const i=$('lockInput');
+      i.addEventListener('keypress',e=>{if(e.key==='Enter')Lock.verify()});
+      setTimeout(()=>i.focus(),150);
     },
     async verify(){
-      const v=document.getElementById('lockInput').value.trim();
-      const lock=document.getElementById('lockScreen'),err=document.getElementById('lockErr'),box=lock.querySelector('.w-full.max-w-sm');
-      if(await sha(v)===HASH){
+      const v=$('lockInput').value.trim();
+      const err=$('lockErr');
+      if(v===PIN){
         sessionStorage.setItem('ap-admin','1');
-        lock.classList.add('hidden');lock.classList.remove('flex');
-        document.getElementById('adminContent').style.visibility='visible';
-        Admin.reload();
+        $('lockScreen').style.display='none';
+        $('adminContent').style.visibility='visible';
+        await App.start();
       }else{
-        err.classList.remove('hidden');box.classList.add('shake');
-        setTimeout(()=>box.classList.remove('shake'),500);
-        const i=document.getElementById('lockInput');i.value='';i.focus();
+        err.classList.add('show');
+        document.querySelector('.lock-card').classList.add('shake');
+        setTimeout(()=>document.querySelector('.lock-card').classList.remove('shake'),500);
+        $('lockInput').value='';
+        $('lockInput').focus();
       }
     }
   };
 })();
 
-async function ouvrirRccm(pathOrUrl){
-  if(!pathOrUrl){alert('Aucun document associé à ce dossier.');return;}
-  const w = window.open('', '_blank');
-  if(w){
-    w.document.write('<html><head><title>Chargement du PDF</title></head><body style="font-family:system-ui,sans-serif;padding:2rem;color:#0f172a"><p>Génération du lien sécurisé…</p></body></html>');
-  }
-  try{
-    const url = await DB.getRccmSignedUrl(pathOrUrl, 3600);
-    if(!url){
-      if(w) w.close();
-      alert("Impossible de générer le lien. Vérifiez vos droits ou la présence du fichier.");
-      return;
-    }
-    if(w){w.location.href = url;}else{window.location.href = url;}
-  }catch(e){
-    if(w) w.close();
-    alert('Erreur lors de l\'ouverture du document.');
-  }
-}
-window.ouvrirRccm = ouvrirRccm;
+const Sidebar=(()=>{
+  return{
+    toggle(){$('sidebar').classList.toggle('open');document.querySelector('.sidebar-overlay')?.classList.toggle('on');},
+    close(){$('sidebar').classList.remove('open');document.querySelector('.sidebar-overlay')?.classList.remove('on');}
+  };
+})();
 
-const Admin=(()=>{
-  const $=id=>document.getElementById(id);
-  const fmt=n=>Number(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
-  const dstr=iso=>new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-  let S=[],R=[],fS='all',fR='all';
-  let chartDaily=null,chartRevenue=null,chartTraffic=null;
-
-  const bd=s=>s==='actif'||s==='approuve'
-    ?`<span class="bd o"><i class="fa-solid fa-circle-check"></i>${s==='actif'?'Actif':'Approuvé'}</span>`
-    :s==='rejete'
-    ?`<span class="bd k"><i class="fa-solid fa-circle-xmark"></i>Rejeté</span>`
-    :`<span class="bd w"><i class="fa-solid fa-clock"></i>En attente</span>`;
-
-  const actS=x=>x.status==='en_attente'
-    ?`<div style="display:flex;gap:.4rem"><button class="act act-ok" onclick="Admin.setS('${x.id||x.ref}','actif')"><i class="fa-solid fa-check"></i>Valider</button><button class="act act-ko" onclick="Admin.setS('${x.id||x.ref}','rejete')"><i class="fa-solid fa-xmark"></i>Rejeter</button></div>`
-    :`<button class="act" onclick="Admin.setS('${x.id||x.ref}','en_attente')"><i class="fa-solid fa-rotate-left"></i>Réinitialiser</button>`;
-
-  const actR=x=>{
-    const hasDoc = !!(x.documentUrl || x.fileName);
-    const voirPdf = hasDoc
-      ? `<button class="act act-pdf" onclick="ouvrirRccm('${(x.documentUrl||x.fileName||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-file-pdf"></i>Voir PDF</button>`
-      : `<span class="act" style="opacity:.5;cursor:not-allowed" title="Aucun document"><i class="fa-solid fa-file-slash"></i>Pas de PDF</span>`;
-
-    const actions = x.status==='en_attente'
-      ? `<button class="act act-ok" onclick="Admin.setR('${x.id||x.ref}','approuve')"><i class="fa-solid fa-check"></i>Valider</button>
-         <button class="act act-ko" onclick="Admin.setR('${x.id||x.ref}','rejete')"><i class="fa-solid fa-xmark"></i>Rejeter</button>`
-      : `<button class="act" onclick="Admin.setR('${x.id||x.ref}','en_attente')"><i class="fa-solid fa-rotate-left"></i>Réinitialiser</button>`;
-
-    return `<div style="display:flex;gap:.4rem;flex-wrap:wrap">${voirPdf}${actions}</div>`;
+const Page=(()=>{
+  const TITLES={
+    dashboard:['Vue d\'ensemble','Tableau de bord administrateur'],
+    notifications:['Notifications','Alertes de la plateforme'],
+    logs:['Journal d\'activité','Historique des actions admin'],
+    subscriptions:['Abonnements','Validation des paiements'],
+    withdrawals:['Retraits','Demandes de retrait à traiter'],
+    payouts:['Versements','Paiements à effectuer'],
+    users:['Utilisateurs','Membres de la plateforme'],
+    rccm:['Dossiers RCCM','Vérification des entreprises'],
+    badges:['Badges','Attribution de badges'],
+    content:['Contenu dynamique','Témoignages, formules, FAQ'],
+    analytics:['Analytics','Trafic et statistiques']
   };
 
-  function toast(m,ok=true){
-    $('toastMsg').textContent=m;
-    const i=$('toast').querySelector('i');
-    i.className=ok?'fa-solid fa-circle-check':'fa-solid fa-circle-exclamation';
-    i.style.color=ok?'var(--ok)':'var(--er)';
-    $('toast').classList.add('on');
-    clearTimeout(toast._t);
-    toast._t=setTimeout(()=>$('toast').classList.remove('on'),2200);
+  function go(page){
+    $$('.page').forEach(p=>p.classList.remove('active'));
+    $(`page-${page}`)?.classList.add('active');
+    $$('.sidebar-link').forEach(l=>{l.classList.toggle('active',l.dataset.page===page)});
+    const [title,sub]=TITLES[page]||['Admin',''];
+    $('pageTitle').textContent=title;
+    $('pageSub').textContent=sub;
+    Sidebar.close();
+    if(page==='notifications') Notifications.load();
+    if(page==='logs') Logs.load();
+    if(page==='subscriptions') Subs.load();
+    if(page==='withdrawals') Withdrawals.load();
+    if(page==='payouts') Payouts.load();
+    if(page==='users') Users.load();
+    if(page==='rccm') Rccm.load();
+    if(page==='content') Content.load();
+    if(page==='analytics') Analytics.load();
   }
 
-  function stats(){
-    $('sSW').textContent=S.filter(x=>x.status==='en_attente').length;
-    $('sRW').textContent=R.filter(x=>x.status==='en_attente').length;
-    $('sOk').textContent=S.filter(x=>x.status==='actif').length+R.filter(x=>x.status==='approuve').length;
-    $('sKo').textContent=S.filter(x=>x.status==='rejete').length+R.filter(x=>x.status==='rejete').length;
-  }
+  return{go};
+})();
 
-  function renderS(target){
-    const rows=S.filter(x=>fS==='all'||x.status===fS);
-    const tb=$(target||'tbS');if(!tb)return;
-    if(!rows.length){tb.innerHTML=`<tr><td colspan="8" class="empty"><i class="fa-solid fa-inbox"></i>Aucun abonnement</td></tr>`;return}
-    tb.innerHTML=rows.map(x=>`<tr>
-      <td style="font-weight:600">${x.name||'—'}</td>
-      <td>${x.plan||'—'}<div style="font-size:.7rem;color:var(--mu)">${x.cycle==='monthly'||x.cycle==='m'?'Mensuel':'Annuel'}</div></td>
-      <td style="font-weight:600">${fmt(x.amount||0)} FCFA</td>
-      <td>${x.gateway==='WAVE'?'<i class="fa-solid fa-bolt" style="color:#1dc3f1"></i> Wave':'<i class="fa-solid fa-mobile-screen" style="color:#ff6600"></i> Orange'}</td>
-      <td style="font-family:monospace;font-size:.75rem">${x.ref||'—'}</td>
-      <td style="font-size:.75rem;color:var(--mu)">${x.createdAt?dstr(x.createdAt):'—'}</td>
-      <td>${bd(x.status)}</td><td>${actS(x)}</td></tr>`).join('');
+const Logs=(()=>{
+  async function add(action, targetType=null, targetId=null, details=null){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('admin_logs').insert({action, target_type:targetType, target_id:targetId, details});
+    }catch(e){console.warn('Log failed',e)}
   }
+  async function load(){
+    if(!window.__sb) return;
+    const box=$('logsList');
+    box.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data,error}=await window.__sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(100);
+      if(error)throw error;
+      if(!data.length){box.innerHTML='<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><div class="empty-title">Aucune activité</div></div>';return}
+      box.innerHTML=`<table class="data"><thead><tr><th>Action</th><th>Type</th><th>Détails</th><th>Date</th></tr></thead><tbody>${data.map(l=>`
+        <tr>
+          <td><strong>${l.action}</strong></td>
+          <td><span class="badge neutral">${l.target_type||'—'}</span></td>
+          <td style="color:var(--adm-muted);font-size:.75rem">${l.details?JSON.stringify(l.details).slice(0,80):'—'}</td>
+          <td style="color:var(--adm-muted);font-size:.75rem">${new Date(l.created_at).toLocaleString('fr-FR')}</td>
+        </tr>`).join('')}</tbody></table>`;
+    }catch(e){box.innerHTML='<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div><div class="empty-desc">'+e.message+'</div></div>'}
+  }
+  async function clear(){
+    Confirm.open('Effacer les logs ?','Cette action est irréversible.',async()=>{
+      try{
+        await window.__sb.from('admin_logs').delete().neq('id','00000000-0000-0000-0000-000000000000');
+        toast('Logs effacés');load();
+      }catch(e){toast(e.message,'error')}
+    });
+  }
+  return{add,load,clear};
+})();
 
-  function renderR(target){
-    const rows=R.filter(x=>fR==='all'||x.status===fR);
-    const tb=$(target||'tbR');if(!tb)return;
-    if(!rows.length){tb.innerHTML=`<tr><td colspan="7" class="empty"><i class="fa-solid fa-inbox"></i>Aucun dossier RCCM</td></tr>`;return}
-    tb.innerHTML=rows.map(x=>`<tr>
-      <td style="font-family:monospace;font-size:.75rem">${x.ref||'—'}</td>
-      <td style="font-weight:600">${x.company||'—'}</td>
-      <td style="font-family:monospace;font-size:.75rem">${x.rccm||'—'}</td>
-      <td style="font-family:monospace;font-size:.75rem">${x.cc||'—'}</td>
-      <td style="font-size:.75rem;color:var(--mu)">${x.createdAt?dstr(x.createdAt):'—'}</td>
-      <td>${bd(x.status)}</td><td>${actR(x)}</td></tr>`).join('');
+const Notifications=(()=>{
+  async function add(type, title, body, link){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('admin_notifications').insert({type,title,body,link});
+      await refreshBadge();
+    }catch(e){}
   }
+  async function refreshBadge(){
+    if(!window.__sb) return;
+    try{
+      const {count}=await window.__sb.from('admin_notifications').select('id',{count:'exact',head:true}).eq('read',false);
+      const badge=$('topbarNotifBadge'),navBadge=$('navNotifBadge');
+      if(count>0){
+        badge.textContent=count>9?'9+':count;badge.classList.add('on');
+        navBadge.textContent=count>9?'9+':count;navBadge.hidden=false;
+      }else{badge.classList.remove('on');navBadge.hidden=true}
+    }catch(e){}
+  }
+  async function load(){
+    if(!window.__sb) return;
+    const box=$('notificationsList');
+    box.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data}=await window.__sb.from('admin_notifications').select('*').order('created_at',{ascending:false}).limit(100);
+      if(!data||!data.length){box.innerHTML='<div class="empty"><i class="fa-solid fa-bell-slash"></i><div class="empty-title">Aucune notification</div></div>';return}
+      box.innerHTML=`<table class="data"><thead><tr><th></th><th>Type</th><th>Titre</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${data.map(n=>`
+        <tr style="${!n.read?'background:color-mix(in srgb,var(--adm-blue) 4%,transparent)':''}">
+          <td>${!n.read?'<span style="width:8px;height:8px;border-radius:50%;background:var(--adm-blue);display:inline-block"></span>':'<i class="fa-solid fa-check" style="color:var(--adm-muted);opacity:.4"></i>'}</td>
+          <td><span class="badge info">${n.type}</span></td>
+          <td><strong>${n.title}</strong></td>
+          <td style="color:var(--adm-muted);font-size:.75rem">${n.body||'—'}</td>
+          <td style="color:var(--adm-muted);font-size:.75rem">${new Date(n.created_at).toLocaleString('fr-FR')}</td>
+          <td>${n.link?`<button onclick="Page.go('${n.link.replace('page:','')}')" class="btn xs">Voir</button>`:''}</td>
+        </tr>`).join('')}</tbody></table>`;
+    }catch(e){box.innerHTML='<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></div>'}
+  }
+  async function markAllRead(){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('admin_notifications').update({read:true}).eq('read',false);
+      toast('Notifications marquées comme lues');load();refreshBadge();
+    }catch(e){toast(e.message,'error')}
+  }
+  return{add,load,markAllRead,refreshBadge};
+})();
+
+const Subs=(()=>{
+  let all=[],filter='all';
+  async function load(){
+    if(!window.__sb) return;
+    const tb=$('tbSubs');
+    tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
+    try{
+      const {data}=await window.__sb.from('subscriptions').select('*').order('created_at',{ascending:false});
+      all=data||[];render();
+      const pending=all.filter(s=>s.status==='en_attente').length;
+      const badge=$('navSubsBadge');
+      if(pending>0){badge.textContent=pending;badge.hidden=false}else{badge.hidden=true}
+      $('subsCount').textContent=all.length;
+    }catch(e){tb.innerHTML=`<tr><td colspan="8" class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></td></tr>`}
+  }
+  function render(){
+    const tb=$('tbSubs');
+    const list=filter==='all'?all:all.filter(s=>s.status===filter);
+    if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-inbox"></i><div class="empty-title">Aucun abonnement</div></td></tr>';return}
+    tb.innerHTML=list.map(s=>{
+      const statusBadge=s.status==='actif'?'badge success':s.status==='rejete'?'badge danger':'badge pending';
+      const statusLabel=s.status==='actif'?'Actif':s.status==='rejete'?'Rejeté':'En attente';
+      const gateway=s.gateway==='WAVE'?'<i class="fa-solid fa-bolt" style="color:#1dc3f1"></i> Wave':s.gateway==='ORANGE'?'<i class="fa-solid fa-mobile-screen" style="color:#ff6600"></i> Orange':s.gateway==='DJAMO'?'<i class="fa-solid fa-wallet" style="color:#1a1a2e"></i> Djamo':s.gateway==='CARD'?'<i class="fa-solid fa-credit-card" style="color:#0b5fff"></i> Carte':s.gateway;
+      return `<tr>
+        <td><strong>${s.user_name||s.name||'—'}</strong></td>
+        <td>${s.plan_name||s.plan||'—'}<div style="font-size:.7rem;color:var(--adm-muted)">${(s.billing_cycle||s.cycle)==='yearly'?'Annuel':'Mensuel'}</div></td>
+        <td><strong>${fmt(s.amount)} FCFA</strong></td>
+        <td>${gateway||'—'}</td>
+        <td style="font-family:monospace;font-size:.75rem">${s.tx_reference||s.ref||'—'}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${new Date(s.created_at).toLocaleDateString('fr-FR')}</td>
+        <td><span class="${statusBadge}">${statusLabel}</span></td>
+        <td>
+          ${s.status==='en_attente'?`<div style="display:flex;gap:.3rem"><button class="btn success xs" onclick="Subs.set('${s.id}','actif')"><i class="fa-solid fa-check"></i></button><button class="btn danger xs" onclick="Subs.set('${s.id}','rejete')"><i class="fa-solid fa-xmark"></i></button></div>`:`<button class="btn ghost xs" onclick="Subs.set('${s.id}','en_attente')"><i class="fa-solid fa-rotate-left"></i></button>`}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+  async function set(id, status){
+    if(!window.__sb) return;
+    try{
+      const updates={status};
+      if(status==='actif'){
+        const sub=all.find(s=>s.id===id);
+        const cycle=sub?.billing_cycle||sub?.cycle||'monthly';
+        const days=cycle==='yearly'?365:30;
+        updates.expires_at=new Date(Date.now()+days*24*3600*1000).toISOString();
+      }
+      await window.__sb.from('subscriptions').update(updates).eq('id',id);
+      await Logs.add(`Abonnement ${status}`, 'subscription', id, updates);
+      toast(`Abonnement ${status==='actif'?'activé':'rejeté'}`);load();
+    }catch(e){toast(e.message,'error')}
+  }
+  document.querySelectorAll('[data-t="subs"] button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      filter=b.dataset.f;
+      document.querySelectorAll('[data-t="subs"] button').forEach(x=>x.classList.toggle('on',x===b));
+      render();
+    });
+  });
+  return{load,set};
+})();
+
+const Withdrawals=(()=>{
+  let all=[],filter='all';
 
   async function load(){
-    try{[S,R]=await Promise.all([DB.getSubscriptions(),DB.getRccm()])}catch(e){S=[];R=[]}
-  }
-
-  async function renderStats(){
-    const {daily,revenue,topCities,topSkills}=await DB.getAdminStats();
-    const isDark=document.documentElement.classList.contains('dark');
-    const textColor=isDark?'#e6edf7':'#0f172a';
-    const gridColor=isDark?'rgba(148,163,184,0.1)':'rgba(15,23,42,0.08)';
-
-    if(chartDaily)chartDaily.destroy();
-    const ctxD=$('chartDaily');
-    if(ctxD){
-      chartDaily=new Chart(ctxD,{
-        type:'line',
-        data:{
-          labels:daily.map(d=>new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),
-          datasets:[
-            {label:'Particuliers',data:daily.map(d=>d.particuliers),borderColor:'#0b5fff',backgroundColor:'rgba(11,95,255,.1)',tension:.35,fill:true},
-            {label:'Entreprises',data:daily.map(d=>d.entreprises),borderColor:'#b8860b',backgroundColor:'rgba(184,134,11,.1)',tension:.35,fill:true}
-          ]
-        },
-        options:{responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{labels:{color:textColor,font:{size:11}}}},
-          scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor},beginAtZero:true}}
-        }
-      });
-    }
-
-    if(chartRevenue)chartRevenue.destroy();
-    const ctxR=$('chartRevenue');
-    if(ctxR){
-      chartRevenue=new Chart(ctxR,{
-        type:'bar',
-        data:{
-          labels:revenue.map(r=>new Date(r.mois+'-01').toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})),
-          datasets:[{label:'Revenus FCFA',data:revenue.map(r=>r.total),backgroundColor:'#10b981',borderRadius:6}]
-        },
-        options:{responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)+' FCFA'}}},
-          scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{display:false}},y:{ticks:{color:textColor,font:{size:10},callback:v=>fmt(v)},grid:{color:gridColor},beginAtZero:true}}
-        }
-      });
-    }
-
-    const cCities=$('topCities');
-    if(cCities){
-      const maxC=topCities[0]?.count||1;
-      cCities.innerHTML=topCities.length?topCities.map((c,i)=>`
-        <div class="flex items-center gap-3">
-          <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between text-xs mb-1">
-              <span class="font-semibold truncate" style="color:var(--ink)">${c.name}</span>
-              <span style="color:var(--mu)">${c.count}</span>
-            </div>
-            <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
-              <div style="height:100%;width:${(c.count/maxC*100)}%;background:linear-gradient(90deg,var(--ac),var(--gd))"></div>
-            </div>
-          </div>
-        </div>`).join(''):'<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
-    }
-
-    const cSkills=$('topSkills');
-    if(cSkills){
-      const maxS=topSkills[0]?.count||1;
-      cSkills.innerHTML=topSkills.length?topSkills.map((s,i)=>`
-        <div class="flex items-center gap-3">
-          <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between text-xs mb-1">
-              <span class="font-semibold truncate" style="color:var(--ink)">${s.name}</span>
-              <span style="color:var(--mu)">${s.count}</span>
-            </div>
-            <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
-              <div style="height:100%;width:${(s.count/maxS*100)}%;background:linear-gradient(90deg,var(--ok),var(--ac))"></div>
-            </div>
-          </div>
-        </div>`).join(''):'<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
-    }
-  }
-
-  async function renderTraffic(){
+    if(!window.__sb) return;
+    const tb=$('tbWithdrawals');
+    tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
     try{
-      const { total, uniqueVisitors, topPages, daily } = await DB.getAnalytics(7);
-      $('trafficTotal').textContent = total.toLocaleString('fr-FR');
-      $('trafficUnique').textContent = uniqueVisitors.toLocaleString('fr-FR');
-      const today = new Date().toISOString().slice(0,10);
-      const todayEntry = daily.find(d => d.jour === today);
-      $('trafficToday').textContent = todayEntry ? todayEntry.views : '0';
-      $('trafficAvg').textContent = daily.length ? Math.round(total / daily.length) : '0';
+      const {data}=await window.__sb.from('withdrawals').select('*').order('requested_at',{ascending:false});
+      all=data||[];
+      render();
+      const pending=all.filter(w=>w.status==='en_attente').length;
+      const badge=$('navWitBadge');
+      if(pending>0){badge.textContent=pending;badge.hidden=false}
+      else{badge.hidden=true}
+    }catch(e){tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></td></tr>'}
+  }
 
-      const isDark = document.documentElement.classList.contains('dark');
-      const textColor = isDark ? '#e6edf7' : '#0f172a';
-      const gridColor = isDark ? 'rgba(148,163,184,0.1)' : 'rgba(15,23,42,0.08)';
+  function render(){
+    const tb=$('tbWithdrawals');
+    const list=filter==='all'?all:all.filter(w=>w.status===filter);
+    if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-inbox"></i><div class="empty-title">Aucune demande</div><div class="empty-desc">Les demandes de retrait apparaîtront ici</div></td></tr>';return}
+    tb.innerHTML=list.map(w=>{
+      const statusMap={en_attente:['badge pending','En attente'],valide:['badge info','Validé'],paye:['badge success','Payé'],rejete:['badge danger','Rejeté']};
+      const [cls,lbl]=statusMap[w.status]||['badge neutral',w.status||'—'];
+      const account=w.account||w.account_number||w.phone||'—';
+      const date=w.requested_at||w.created_at;
+      const userIdShort=w.user_id?w.user_id.slice(0,8)+'…':'—';
+      return `<tr>
+        <td><strong>${w.ref||'—'}</strong></td>
+        <td style="font-family:monospace;font-size:.72rem">${userIdShort}</td>
+        <td><strong>${fmt(w.amount)} FCFA</strong></td>
+        <td>${w.method||'—'}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${account}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${date?new Date(date).toLocaleDateString('fr-FR'):'—'}</td>
+        <td><span class="${cls}">${lbl}</span></td>
+        <td>
+          ${w.status==='en_attente'?`<div style="display:flex;gap:.3rem"><button class="btn success xs" onclick="Withdrawals.set('${w.id}','valide')" title="Valider"><i class="fa-solid fa-check"></i></button><button class="btn danger xs" onclick="Withdrawals.set('${w.id}','rejete')" title="Rejeter"><i class="fa-solid fa-xmark"></i></button></div>`:
+            w.status==='valide'?`<button class="btn primary xs" onclick="Withdrawals.set('${w.id}','paye')"><i class="fa-solid fa-paper-plane"></i>Payé</button>`:
+            `<button class="btn ghost xs" onclick="Withdrawals.set('${w.id}','en_attente')" title="Réinitialiser"><i class="fa-solid fa-rotate-left"></i></button>`}
+        </td>
+      </tr>`;
+    }).join('');
+  }
 
-      if(chartTraffic) chartTraffic.destroy();
-      const ctx = $('chartTraffic');
-      if(ctx){
-        chartTraffic = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: daily.map(d => new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),
-            datasets: [
-              { label:'Vues', data: daily.map(d => d.views), borderColor:'#0b5fff', backgroundColor:'rgba(11,95,255,.1)', tension:.35, fill:true },
-              { label:'Visiteurs', data: daily.map(d => d.visitors), borderColor:'#b8860b', backgroundColor:'rgba(184,134,11,.1)', tension:.35, fill:true }
-            ]
-          },
-          options:{ responsive:true, maintainAspectRatio:false,
-            plugins:{ legend:{ labels:{ color:textColor, font:{size:11} } } },
-            scales:{
-              x:{ ticks:{color:textColor,font:{size:10}}, grid:{color:gridColor} },
-              y:{ ticks:{color:textColor,font:{size:10}}, grid:{color:gridColor}, beginAtZero:true }
-            }
-          }
-        });
+  async function set(id, status){
+    if(!window.__sb) return;
+    try{
+      const updates={status};
+      if(status==='valide') updates.reviewed_at=new Date().toISOString();
+      if(status==='paye') updates.completed_at=new Date().toISOString();
+      if(status==='rejete') updates.reviewed_at=new Date().toISOString();
+
+      await window.__sb.from('withdrawals').update(updates).eq('id',id);
+      await Logs.add(`Retrait ${status}`, 'withdrawal', id, {status});
+      toast(`Retrait ${status}`);
+      load();
+    }catch(e){toast(e.message,'error')}
+  }
+
+  document.querySelectorAll('[data-t="wit"] button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      filter=b.dataset.f;
+      document.querySelectorAll('[data-t="wit"] button').forEach(x=>x.classList.toggle('on',x===b));
+      render();
+    });
+  });
+
+  return{load,set};
+})();
+
+const Payouts=(()=>{
+  let all=[];
+  async function load(){
+    if(!window.__sb) return;
+    const tb=$('tbPayouts');
+    tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
+    try{
+      const {data}=await window.__sb.from('payouts').select('*').order('created_at',{ascending:false});
+      all=data||[];render();
+      const pending=all.filter(p=>p.status==='a_payer').length;
+      const badge=$('navPayBadge');
+      if(pending>0){badge.textContent=pending;badge.hidden=false}else{badge.hidden=true}
+    }catch(e){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></td></tr>'}
+  }
+  function render(){
+    const tb=$('tbPayouts');
+    if(!all.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-inbox"></i><div class="empty-title">Aucun versement</div><div class="empty-desc">Créez un nouveau versement pour commencer</div></td></tr>';return}
+    tb.innerHTML=all.map(p=>{
+      const statusMap={a_payer:['badge pending','À payer'],paye:['badge success','Payé'],echoue:['badge danger','Échoué']};
+      const [cls,lbl]=statusMap[p.status]||['badge neutral',p.status];
+      return `<tr>
+        <td><strong>${p.recipient_name}</strong><div style="font-size:.7rem;color:var(--adm-muted)">${p.recipient_email||''}</div></td>
+        <td><strong>${fmt(p.amount)} FCFA</strong></td>
+        <td>${p.method||'—'}</td>
+        <td style="font-family:monospace;font-size:.72rem">${p.reference||'—'}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
+        <td><span class="${cls}">${lbl}</span></td>
+        <td>
+          ${p.status==='a_payer'?`<button class="btn success xs" onclick="Payouts.markPaid('${p.id}')"><i class="fa-solid fa-check"></i>Marquer payé</button>`:`<button class="btn ghost xs" onclick="Payouts.remove('${p.id}')"><i class="fa-solid fa-trash"></i></button>`}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+  function openNew(){
+    Modal.open('Nouveau versement', `
+      <div class="form-group"><label class="form-label">Nom du bénéficiaire *</label><input id="pRecipient" class="form-input" placeholder="Ex : Aïcha Koné"></div>
+      <div class="form-group"><label class="form-label">Email</label><input id="pEmail" type="email" class="form-input" placeholder="email@exemple.com"></div>
+      <div class="form-group"><label class="form-label">Montant (FCFA) *</label><input id="pAmount" type="number" class="form-input" placeholder="15000"></div>
+      <div class="form-group"><label class="form-label">Méthode de paiement</label><select id="pMethod" class="form-select"><option value="Wave">Wave</option><option value="Orange Money">Orange Money</option><option value="Djamo">Djamo</option><option value="Virement bancaire">Virement bancaire</option><option value="Carte">Carte</option></select></div>
+      <div class="form-group"><label class="form-label">Référence de paiement</label><input id="pRef" class="form-input" placeholder="Ex : TX-90812903"></div>
+      <div class="form-group"><label class="form-label">Note admin</label><textarea id="pNote" class="form-textarea" placeholder="Note interne..."></textarea></div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Créer le versement',class:'primary',onclick:Payouts.create}
+    ]);
+  }
+  async function create(){
+    if(!window.__sb) return;
+    const name=$('pRecipient').value.trim();
+    const email=$('pEmail').value.trim();
+    const amount=parseFloat($('pAmount').value)||0;
+    const method=$('pMethod').value;
+    const ref=$('pRef').value.trim();
+    const note=$('pNote').value.trim();
+    if(!name||!amount){toast('Nom et montant obligatoires','error');return}
+    try{
+      await window.__sb.from('payouts').insert({recipient_name:name,recipient_email:email,amount,method,reference:ref||null,admin_note:note||null,status:'a_payer'});
+      await Logs.add(`Versement créé : ${name}`, 'payout', null, {amount, method});
+      await Notifications.add('payout_created', `Nouveau versement : ${name}`, `${fmt(amount)} FCFA via ${method}`);
+      toast('Versement créé');Modal.close();load();
+    }catch(e){toast(e.message,'error')}
+  }
+  async function markPaid(id){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('payouts').update({status:'paye',paid_at:new Date().toISOString()}).eq('id',id);
+      await Logs.add('Versement marqué payé', 'payout', id);
+      toast('Versement marqué payé');load();
+    }catch(e){toast(e.message,'error')}
+  }
+  async function remove(id){
+    Confirm.open('Supprimer ce versement ?','Action irréversible.',async()=>{
+      await window.__sb.from('payouts').delete().eq('id',id);
+      await Logs.add('Versement supprimé', 'payout', id);
+      toast('Versement supprimé');load();
+    });
+  }
+  return{load,openNew,create,markPaid,remove};
+})();
+
+const Users=(()=>{
+  let all=[],filter='all',searchTerm='';
+  async function load(){
+    if(!window.__sb) return;
+    const tb=$('tbUsers');
+    tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
+    try{
+      const {data}=await window.__sb.from('profiles').select('id,full_name,email,city,role,created_at,banned,balance').order('created_at',{ascending:false}).limit(500);
+      all=data||[];render();
+      const banned=all.filter(u=>u.banned).length;
+      const badge=$('navUsersBadge');
+      if(banned>0){badge.textContent=banned;badge.hidden=false}else{badge.hidden=true}
+      $('usersCount').textContent=all.length;
+    }catch(e){tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></td></tr>'}
+  }
+  function render(){
+    const tb=$('tbUsers');
+    let list=filter==='all'?all:filter==='banned'?all.filter(u=>u.banned):all.filter(u=>u.role===filter);
+    if(searchTerm){
+      const term=searchTerm.toLowerCase();
+      list=list.filter(u=>(u.full_name||'').toLowerCase().includes(term)||(u.email||'').toLowerCase().includes(term));
+    }
+    if(!list.length){tb.innerHTML='<tr><td colspan="8" class="empty"><i class="fa-solid fa-users"></i><div class="empty-title">Aucun utilisateur</div></td></tr>';return}
+    tb.innerHTML=list.slice(0,200).map(u=>{
+      const initials=(u.full_name||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+      const roleBadge=u.role==='entreprise'?'<span class="badge info">Entreprise</span>':'<span class="badge neutral">Particulier</span>';
+      const statusBadge=u.banned?'<span class="badge danger">Banni</span>':'<span class="badge success">Actif</span>';
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:.6rem"><div style="width:32px;height:32px;border-radius:50%;background:color-mix(in srgb,var(--adm-blue) 15%,transparent);color:var(--adm-blue);display:grid;place-items:center;font-weight:800;font-size:.7rem;flex-shrink:0">${initials}</div><strong>${u.full_name||'—'}</strong></div></td>
+        <td style="font-size:.75rem;color:var(--adm-muted)">${u.email||'—'}</td>
+        <td style="font-size:.75rem;color:var(--adm-muted)">${u.city||'—'}</td>
+        <td>${roleBadge}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
+        <td><strong style="color:var(--adm-emerald);font-size:.78rem">${fmt(u.balance||0)} F</strong></td>
+        <td>${statusBadge}</td>
+        <td>
+          <div style="display:flex;gap:.3rem">
+            <a href="profil-public.html#id=${u.id}" target="_blank" class="btn ghost xs" title="Voir le profil"><i class="fa-solid fa-eye"></i></a>
+            <button class="btn primary xs" onclick="Users.credit('${u.id}','${(u.full_name||u.email||'').replace(/'/g,"\\'")}')" title="Créditer"><i class="fa-solid fa-coins"></i></button>
+            ${u.banned?`<button class="btn success xs" onclick="Users.unban('${u.id}')" title="Débannir"><i class="fa-solid fa-check"></i></button>`:`<button class="btn xs" onclick="Users.ban('${u.id}','${(u.full_name||u.email||'').replace(/'/g,"\\'")}')" title="Bannir"><i class="fa-solid fa-ban"></i></button>`}
+            <button class="btn danger xs" onclick="Users.del('${u.id}','${(u.full_name||u.email||'').replace(/'/g,"\\'")}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+  function search(){searchTerm=$('usersSearch').value.trim();render()}
+  function ban(id, name){
+    Modal.open(`Bannir ${name}`, `
+      <p style="font-size:.85rem;color:var(--adm-muted);margin-bottom:1rem">L'utilisateur ne pourra plus se connecter ni publier.</p>
+      <div class="form-group"><label class="form-label">Raison du ban</label><textarea id="banReason" class="form-textarea" placeholder="Ex : Comportement inapproprié"></textarea></div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Bannir',class:'danger',onclick:async()=>{
+        const reason=$('banReason').value.trim();
+        try{
+          await window.__sb.from('profiles').update({banned:true,banned_reason:reason||null,banned_at:new Date().toISOString()}).eq('id',id);
+          await Logs.add(`Utilisateur banni : ${name}`, 'user', id, {reason});
+          toast('Utilisateur banni');Modal.close();load();
+        }catch(e){toast(e.message,'error')}
+      }}
+    ]);
+  }
+  async function unban(id){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('profiles').update({banned:false,banned_reason:null,banned_at:null}).eq('id',id);
+      await Logs.add('Utilisateur débanni', 'user', id);
+      toast('Utilisateur débanni');load();
+    }catch(e){toast(e.message,'error')}
+  }
+  function del(id, name){
+    Confirm.open(`Supprimer ${name} ?`,'Cette action supprimera définitivement le compte.',async()=>{
+      try{
+        await window.__sb.from('profiles').delete().eq('id',id);
+        await Logs.add(`Utilisateur supprimé : ${name}`, 'user', id);
+        toast('Utilisateur supprimé');load();
+      }catch(e){toast(e.message,'error')}
+    });
+  }
+  function credit(id, name){
+    Modal.open(`Créditer ${name}`, `
+      <p style="font-size:.85rem;color:var(--adm-muted);margin-bottom:1rem">Ajoutez du solde au compte de cet utilisateur.</p>
+      <div class="form-group">
+        <label class="form-label">Montant à créditer (FCFA) *</label>
+        <input id="creditAmount" type="number" min="100" step="100" class="form-input" placeholder="Ex : 25000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motif</label>
+        <select id="creditReason" class="form-select">
+          <option value="Mission complétée">Mission complétée</option>
+          <option value="Bonus">Bonus</option>
+          <option value="Remboursement">Remboursement</option>
+          <option value="Correction manuelle">Correction manuelle</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note admin</label>
+        <textarea id="creditNote" class="form-textarea" placeholder="Note interne..."></textarea>
+      </div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Créditer le compte',class:'success',onclick:async()=>{
+        const amount=parseFloat($('creditAmount').value)||0;
+        const reason=$('creditReason').value;
+        const note=$('creditNote').value.trim();
+        if(amount<=0){toast('Montant invalide','error');return}
+        try{
+          await DB.creditUser(id, amount, reason);
+          await Logs.add(`Crédit de ${fmt(amount)} FCFA à ${name}`, 'user', id, {amount, reason, note});
+          await Notifications.add('user_credited', `Compte crédité : ${name}`, `+${fmt(amount)} FCFA · ${reason}`, 'page:users');
+          toast(`${fmt(amount)} FCFA crédités à ${name}`);
+          Modal.close();
+          load();
+        }catch(e){toast(e.message,'error')}
+      }}
+    ]);
+  }
+  document.querySelectorAll('[data-t="users"] button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      filter=b.dataset.f;
+      document.querySelectorAll('[data-t="users"] button').forEach(x=>x.classList.toggle('on',x===b));
+      render();
+    });
+  });
+  return{load,search,ban,unban,del,credit};
+})();
+
+const Rccm=(()=>{
+  let all=[],filter='all';
+  async function load(){
+    if(!window.__sb) return;
+    const tb=$('tbRccm');
+    tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
+    try{
+      const {data}=await window.__sb.from('businesses').select('*').order('created_at',{ascending:false});
+      all=data||[];render();
+      const pending=all.filter(r=>r.status==='en_attente').length;
+      const badge=$('navRccmBadge');
+      if(pending>0){badge.textContent=pending;badge.hidden=false}else{badge.hidden=true}
+    }catch(e){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">Erreur</div></td></tr>'}
+  }
+  function render(){
+    const tb=$('tbRccm');
+    const list=filter==='all'?all:all.filter(r=>r.status===filter);
+    if(!list.length){tb.innerHTML='<tr><td colspan="7" class="empty"><i class="fa-solid fa-building-shield"></i><div class="empty-title">Aucun dossier RCCM</div></td></tr>';return}
+    tb.innerHTML=list.map(r=>{
+      const statusMap={en_attente:['badge pending','En attente'],approuve:['badge success','Approuvé'],rejete:['badge danger','Rejeté']};
+      const [cls,lbl]=statusMap[r.status]||['badge neutral',r.status];
+      const docBtn=r.document_url?`<button class="btn ghost xs" onclick="Rccm.openDoc('${r.document_url.replace(/'/g,"\\'")}')"><i class="fa-solid fa-file-pdf" style="color:var(--adm-red)"></i>Voir PDF</button>`:'<span style="opacity:.5;font-size:.72rem">—</span>';
+      return `<tr>
+        <td style="font-family:monospace;font-size:.72rem">AP-${r.id.slice(0,6).toUpperCase()}</td>
+        <td><strong>${r.company_name}</strong></td>
+        <td style="font-family:monospace;font-size:.72rem">${r.rccm_number||'—'}</td>
+        <td>${docBtn}</td>
+        <td style="font-size:.72rem;color:var(--adm-muted)">${new Date(r.created_at).toLocaleDateString('fr-FR')}</td>
+        <td><span class="${cls}">${lbl}</span></td>
+        <td>
+          ${r.status==='en_attente'?`<div style="display:flex;gap:.3rem"><button class="btn success xs" onclick="Rccm.set('${r.id}','approuve')"><i class="fa-solid fa-check"></i></button><button class="btn danger xs" onclick="Rccm.set('${r.id}','rejete')"><i class="fa-solid fa-xmark"></i></button></div>`:`<button class="btn ghost xs" onclick="Rccm.set('${r.id}','en_attente')"><i class="fa-solid fa-rotate-left"></i></button>`}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+  async function set(id, status){
+    if(!window.__sb) return;
+    try{
+      await window.__sb.from('businesses').update({status}).eq('id',id);
+      await Logs.add(`RCCM ${status}`, 'rccm', id, {status});
+      toast(`Dossier ${status==='approuve'?'approuvé':'rejeté'}`);load();
+    }catch(e){toast(e.message,'error')}
+  }
+  async function openDoc(path){
+    if(!path){toast('Aucun document','warn');return}
+    if(/^https?:\/\//.test(path)){window.open(path,'_blank');return}
+    if(!window.__sb) return;
+    try{
+      const {data,error}=await window.__sb.storage.from('rccm').createSignedUrl(path,3600);
+      if(error||!data?.signedUrl){toast('Impossible de générer le lien','error');return}
+      window.open(data.signedUrl,'_blank');
+    }catch(e){toast(e.message,'error')}
+  }
+  document.querySelectorAll('[data-t="rccm"] button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      filter=b.dataset.f;
+      document.querySelectorAll('[data-t="rccm"] button').forEach(x=>x.classList.toggle('on',x===b));
+      render();
+    });
+  });
+  return{load,set,openDoc};
+})();
+
+const Badges=(()=>{
+  let allBadges=[],currentUser=null;
+  async function search(){
+    if(!window.__sb) return;
+    const email=$('badgeEmail').value.trim();
+    if(!email){$('badgeResult').innerHTML='<p style="color:var(--adm-red);font-size:.8rem">Entrez un email.</p>';return}
+    $('badgeResult').innerHTML='<p style="color:var(--adm-muted);font-size:.8rem">Recherche...</p>';
+    try{
+      const {data}=await window.__sb.from('profiles').select('id,email,full_name,city,role').eq('email',email.toLowerCase()).limit(1);
+      if(!data||!data.length){$('badgeResult').innerHTML='<p style="color:var(--adm-red);font-size:.8rem">Aucun membre trouvé.</p>';return}
+      currentUser=data[0];
+      const [allB,userB]=await Promise.all([
+        window.__sb.from('badges').select('*').order('display_order'),
+        window.__sb.from('user_badges').select('badge_slug').eq('user_id',currentUser.id)
+      ]);
+      allBadges=allB.data||[];
+      const awarded=(userB.data||[]).map(b=>b.badge_slug);
+      $('badgeResult').innerHTML=`
+        <div style="padding:1rem;background:var(--adm-hover);border-radius:.65rem;margin-top:1rem">
+          <div style="font-weight:800;font-size:.9rem;color:var(--adm-text);margin-bottom:.25rem">${currentUser.full_name||currentUser.email}</div>
+          <div style="font-size:.72rem;color:var(--adm-muted);margin-bottom:1rem">${currentUser.email} · ${currentUser.city||''} · ${currentUser.role}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+            ${allBadges.map(b=>`<button class="btn ${awarded.includes(b.slug)?'success':'ghost'} xs" onclick="Badges.toggle('${b.slug}')"><i class="fa-solid ${b.icon||'fa-award'}"></i>${b.label}${awarded.includes(b.slug)?' ✓':''}</button>`).join('')}
+          </div>
+        </div>`;
+    }catch(e){$('badgeResult').innerHTML=`<p style="color:var(--adm-red);font-size:.8rem">${e.message}</p>`}
+  }
+  async function toggle(slug){
+    if(!window.__sb||!currentUser) return;
+    try{
+      const {data}=await window.__sb.from('user_badges').select('id').eq('user_id',currentUser.id).eq('badge_slug',slug).limit(1);
+      if(data&&data.length){
+        await window.__sb.from('user_badges').delete().eq('id',data[0].id);
+        await Logs.add(`Badge retiré : ${slug}`, 'badge', currentUser.id);
+        toast('Badge retiré');
+      }else{
+        await window.__sb.from('user_badges').insert({user_id:currentUser.id,badge_slug:slug});
+        await Logs.add(`Badge attribué : ${slug}`, 'badge', currentUser.id);
+        toast('Badge attribué');
       }
+      search();
+    }catch(e){toast(e.message,'error')}
+  }
+  return{search,toggle};
+})();
 
-      const tp = $('topPages');
-      const maxCount = topPages[0]?.count || 1;
-      tp.innerHTML = topPages.length
-        ? topPages.map((p,i) => `
-          <div class="flex items-center gap-3">
-            <div class="text-xs w-6 text-right font-bold" style="color:var(--mu)">${i+1}</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between text-xs mb-1">
-                <span class="font-semibold truncate" style="color:var(--ink)">${p.path}</span>
-                <span style="color:var(--mu)">${p.count}</span>
-              </div>
-              <div style="height:6px;border-radius:3px;background:var(--bg);overflow:hidden">
-                <div style="height:100%;width:${(p.count/maxCount*100)}%;background:linear-gradient(90deg,var(--ac),var(--gd))"></div>
-              </div>
+const Content=(()=>{
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function load(){loadTestimonials();loadPlans();loadFaqs()}
+  async function loadTestimonials(){
+    if(!window.__sb) return;
+    const list=$('listTestimonials');
+    list.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data}=await window.__sb.from('testimonials').select('*').order('display_order');
+      if(!data||!data.length){list.innerHTML='<div class="empty"><i class="fa-solid fa-quote-left"></i><div class="empty-title">Aucun témoignage</div></div>';return}
+      list.innerHTML=data.map(t=>`
+        <div style="padding:1rem;border:1px solid var(--adm-border);border-radius:.75rem;margin-bottom:.6rem;display:flex;gap:1rem">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.85rem;color:var(--adm-text)">${esc(t.author_name)}${t.published?'':' <span style="font-size:.7rem;color:var(--adm-red)">(brouillon)</span>'}</div>
+            <div style="font-size:.72rem;color:var(--adm-muted);margin-top:.15rem">${esc(t.author_role||'')} · ${esc(t.author_city||'')} · ${t.rating||5}★</div>
+            <div style="font-size:.78rem;color:var(--adm-muted);margin-top:.5rem">« ${esc((t.quote||'').slice(0,140))} »</div>
+          </div>
+          <button class="btn ghost xs" onclick="Content.delTesti('${t.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('');
+    }catch(e){list.innerHTML=`<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">${e.message}</div></div>`}
+  }
+  async function loadPlans(){
+    if(!window.__sb) return;
+    const list=$('listPlans');
+    list.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data}=await window.__sb.from('plans').select('*').order('display_order');
+      if(!data||!data.length){list.innerHTML='<div class="empty"><i class="fa-solid fa-tag"></i><div class="empty-title">Aucune formule</div></div>';return}
+      list.innerHTML=data.map(p=>`
+        <div style="padding:1rem;border:1px solid var(--adm-border);border-radius:.75rem;margin-bottom:.6rem;display:flex;gap:1rem">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.85rem;color:var(--adm-text)">${esc(p.name)}${p.recommended?' <span class="badge info">Recommandé</span>':''}${p.active?'':' <span style="font-size:.7rem;color:var(--adm-red)">(inactif)</span>'}</div>
+            <div style="font-size:.72rem;color:var(--adm-muted);margin-top:.15rem">${esc(p.description||'')}</div>
+            <div style="font-size:.78rem;color:var(--adm-muted);margin-top:.5rem"><strong style="color:var(--adm-text)">${fmt(p.monthly_price)} FCFA/mois</strong> · ${fmt(p.yearly_price)} FCFA/an</div>
+          </div>
+          <button class="btn ghost xs" onclick="Content.delPlan('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('');
+    }catch(e){list.innerHTML=`<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">${e.message}</div></div>`}
+  }
+  async function loadFaqs(){
+    if(!window.__sb) return;
+    const list=$('listFaqs');
+    list.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data}=await window.__sb.from('faqs').select('*').order('display_order');
+      if(!data||!data.length){list.innerHTML='<div class="empty"><i class="fa-solid fa-circle-question"></i><div class="empty-title">Aucune FAQ</div></div>';return}
+      list.innerHTML=data.map(f=>`
+        <div style="padding:1rem;border:1px solid var(--adm-border);border-radius:.75rem;margin-bottom:.6rem;display:flex;gap:1rem">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.85rem;color:var(--adm-text)">${esc(f.question)}${f.active?'':' <span style="font-size:.7rem;color:var(--adm-red)">(inactif)</span>'}</div>
+            <div style="font-size:.78rem;color:var(--adm-muted);margin-top:.5rem">${esc((f.answer||'').slice(0,160))}</div>
+          </div>
+          <button class="btn ghost xs" onclick="Content.delFaq('${f.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('');
+    }catch(e){list.innerHTML=`<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><div class="empty-title">${e.message}</div></div>`}
+  }
+  async function delTesti(id){
+    Confirm.open('Supprimer ?','Action définitive.',async()=>{
+      await window.__sb.from('testimonials').delete().eq('id',id);
+      await Logs.add('Témoignage supprimé', 'testimonial', id);
+      toast('Supprimé');loadTestimonials();
+    });
+  }
+  async function delPlan(id){
+    Confirm.open('Supprimer cette formule ?','Action définitive.',async()=>{
+      await window.__sb.from('plans').delete().eq('id',id);
+      await Logs.add('Formule supprimée', 'plan', id);
+      toast('Supprimée');loadPlans();
+    });
+  }
+  async function delFaq(id){
+    Confirm.open('Supprimer cette question ?','Action définitive.',async()=>{
+      await window.__sb.from('faqs').delete().eq('id',id);
+      await Logs.add('FAQ supprimée', 'faq', id);
+      toast('Supprimée');loadFaqs();
+    });
+  }
+  function openTestimonial(){
+    Modal.open('Nouveau témoignage', `
+      <div class="form-group"><label class="form-label">Nom *</label><input id="tName" class="form-input"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label">Rôle</label><input id="tRole" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Ville</label><input id="tCity" class="form-input"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Témoignage *</label><textarea id="tQuote" class="form-textarea"></textarea></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label">Note (1-5)</label><input id="tRating" type="number" min="1" max="5" value="5" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Ordre</label><input id="tOrder" type="number" value="0" class="form-input"></div>
+      </div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Créer',class:'primary',onclick:async()=>{
+        const name=$('tName').value.trim(),quote=$('tQuote').value.trim();
+        if(!name||!quote){toast('Nom et témoignage obligatoires','error');return}
+        try{
+          await window.__sb.from('testimonials').insert({author_name:name,author_role:$('tRole').value.trim(),author_city:$('tCity').value.trim(),quote,rating:parseInt($('tRating').value)||5,display_order:parseInt($('tOrder').value)||0,published:true});
+          await Logs.add('Témoignage créé', 'testimonial', null, {name});
+          toast('Créé');Modal.close();loadTestimonials();
+        }catch(e){toast(e.message,'error')}
+      }}
+    ]);
+  }
+  function openPlan(){
+    Modal.open('Nouvelle formule', `
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label">Slug *</label><input id="pSlug" class="form-input" placeholder="ex: pro"></div>
+        <div class="form-group"><label class="form-label">Nom *</label><input id="pName" class="form-input"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><input id="pDesc" class="form-input"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label">Prix mensuel (FCFA)</label><input id="pMonthly" type="number" class="form-input" value="0"></div>
+        <div class="form-group"><label class="form-label">Prix annuel (FCFA)</label><input id="pYearly" type="number" class="form-input" value="0"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Avantages (1 par ligne)</label><textarea id="pFeatures" class="form-textarea" placeholder="Avantage 1&#10;Avantage 2"></textarea></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group"><label class="form-label">Ordre</label><input id="pOrder" type="number" value="0" class="form-input"></div>
+        <div class="form-group" style="display:flex;align-items:flex-end"><label style="display:flex;gap:.4rem;align-items:center;font-size:.8rem"><input id="pReco" type="checkbox"> Recommandé</label></div>
+      </div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Créer',class:'primary',onclick:async()=>{
+        const slug=$('pSlug').value.trim(),name=$('pName').value.trim();
+        if(!slug||!name){toast('Slug et nom obligatoires','error');return}
+        try{
+          await window.__sb.from('plans').insert({slug,name,description:$('pDesc').value.trim(),monthly_price:parseFloat($('pMonthly').value)||0,yearly_price:parseFloat($('pYearly').value)||0,features:$('pFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean),recommended:$('pReco').checked,display_order:parseInt($('pOrder').value)||0,active:true});
+          await Logs.add('Formule créée', 'plan', null, {slug});
+          toast('Créée');Modal.close();loadPlans();
+        }catch(e){toast(e.message,'error')}
+      }}
+    ]);
+  }
+  function openFaq(){
+    Modal.open('Nouvelle question FAQ', `
+      <div class="form-group"><label class="form-label">Question *</label><input id="fQ" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Réponse *</label><textarea id="fA" class="form-textarea"></textarea></div>
+      <div class="grid grid-cols-2 gap-3"><div class="form-group"><label class="form-label">Ordre</label><input id="fOrder" type="number" value="0" class="form-input"></div></div>
+    `, [
+      {label:'Annuler',class:'ghost',onclick:()=>Modal.close()},
+      {label:'Créer',class:'primary',onclick:async()=>{
+        const q=$('fQ').value.trim(),a=$('fA').value.trim();
+        if(!q||!a){toast('Question et réponse obligatoires','error');return}
+        try{
+          await window.__sb.from('faqs').insert({question:q,answer:a,display_order:parseInt($('fOrder').value)||0,active:true});
+          await Logs.add('FAQ créée', 'faq', null, {q});
+          toast('Créée');Modal.close();loadFaqs();
+        }catch(e){toast(e.message,'error')}
+      }}
+    ]);
+  }
+  return{load,delTesti,delPlan,delFaq,openTestimonial,openPlan,openFaq};
+})();
+
+const Analytics=(()=>{
+  let chartTraffic=null;
+  async function load(){
+    if(!window.__sb) return;
+    try{
+      const since=new Date(Date.now()-7*24*3600*1000).toISOString();
+      const {data}=await window.__sb.from('page_views').select('path,session_id,created_at').gte('created_at',since);
+      const rows=data||[];
+      const total=rows.length;
+      const unique=new Set(rows.map(r=>r.session_id)).size;
+      const today=new Date().toISOString().slice(0,10);
+      const todayCount=rows.filter(r=>r.created_at.startsWith(today)).length;
+      const byDay={};
+      rows.forEach(r=>{
+        const d=r.created_at.slice(0,10);
+        if(!byDay[d])byDay[d]={jour:d,views:0,visitors:new Set()};
+        byDay[d].views++;
+        byDay[d].visitors.add(r.session_id);
+      });
+      const daily=Object.values(byDay).map(x=>({jour:x.jour,views:x.views,visitors:x.visitors.size})).sort((a,b)=>a.jour.localeCompare(b.jour));
+      $('trafficTotal').textContent=fmt(total);
+      $('trafficUnique').textContent=fmt(unique);
+      $('trafficToday').textContent=fmt(todayCount);
+      $('trafficAvg').textContent=daily.length?Math.round(total/daily.length):'0';
+      const isDark=document.documentElement.classList.contains('dark');
+      const textColor=isDark?'#e6edf7':'#0f172a';
+      const gridColor=isDark?'rgba(148,163,184,.1)':'rgba(15,23,42,.08)';
+      if(chartTraffic)chartTraffic.destroy();
+      const ctx=$('chartTraffic');
+      if(ctx){
+        chartTraffic=new Chart(ctx,{type:'line',data:{labels:daily.map(d=>new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),datasets:[{label:'Vues',data:daily.map(d=>d.views),borderColor:'#0b5fff',backgroundColor:'rgba(11,95,255,.1)',tension:.35,fill:true},{label:'Visiteurs',data:daily.map(d=>d.visitors),borderColor:'#c99a2e',backgroundColor:'rgba(201,154,46,.1)',tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor,font:{size:11}}}},scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor},beginAtZero:true}}}});
+      }
+      const byPage={};
+      rows.forEach(r=>{byPage[r.path]=(byPage[r.path]||0)+1});
+      const top=Object.entries(byPage).map(([path,count])=>({path,count})).sort((a,b)=>b.count-a.count).slice(0,8);
+      const max=top[0]?.count||1;
+      $('topPages').innerHTML=top.length?top.map(p=>`
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.2rem">
+              <span style="color:var(--adm-text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.path}</span>
+              <span style="color:var(--adm-muted)">${p.count}</span>
             </div>
-          </div>`).join('')
-        : '<div class="text-xs text-center py-4" style="color:var(--mu)">Aucune donnée</div>';
+            <div style="height:5px;border-radius:3px;background:var(--adm-hover);overflow:hidden"><div style="height:100%;width:${p.count/max*100}%;background:linear-gradient(90deg,var(--adm-blue),var(--adm-gold))"></div></div>
+          </div>
+        </div>`).join(''):'<div style="color:var(--adm-muted);font-size:.8rem;text-align:center;padding:1rem">Aucune donnée</div>';
+    }catch(e){console.warn(e)}
+  }
+  return{load};
+})();
+
+const Modal=(()=>{
+  return{
+    open(title, body, actions){
+      $('modalTitle').textContent=title;
+      $('modalBody').innerHTML=body;
+      $('modalFoot').innerHTML=(actions||[]).map((a,i)=>`<button class="btn ${a.class||'ghost'}" data-mi="${i}">${a.label}</button>`).join('');
+      $('modalFoot').querySelectorAll('[data-mi]').forEach(btn=>{
+        const idx=parseInt(btn.dataset.mi);
+        btn.addEventListener('click',actions[idx].onclick);
+      });
+      $('modal').classList.add('on');
+    },
+    close(){$('modal').classList.remove('on')}
+  };
+})();
+
+const Confirm=(()=>{
+  let callback=null;
+  return{
+    open(title,msg,cb){
+      $('confirmTitle').textContent=title;
+      $('confirmMsg').textContent=msg;
+      callback=cb;
+      $('confirmModal').classList.add('on');
+    },
+    ok(){$('confirmModal').classList.remove('on');if(callback)callback();callback=null},
+    cancel(){$('confirmModal').classList.remove('on');callback=null}
+  };
+})();
+
+const App=(()=>{
+  let chartDaily=null,chartRevenue=null;
+
+  async function loadKPIs(){
+    if(!window.__sb) return;
+    try{
+      const {count:usersCount}=await window.__sb.from('profiles').select('id',{count:'exact',head:true});
+      $('kpiUsers').textContent=fmt(usersCount||0);
+      const monthStart=new Date();monthStart.setDate(1);monthStart.setHours(0,0,0,0);
+      const {data:subsActive}=await window.__sb.from('subscriptions').select('amount,created_at').eq('status','actif').gte('created_at',monthStart.toISOString());
+      const monthRevenue=(subsActive||[]).reduce((s,x)=>s+(Number(x.amount)||0),0);
+      $('kpiRevenue').textContent=fmt(monthRevenue)+' F';
+      const {count:activeCount}=await window.__sb.from('subscriptions').select('id',{count:'exact',head:true}).eq('status','actif');
+      $('kpiSubs').textContent=fmt(activeCount||0);
+      const [s1,s2,s3]=await Promise.all([
+        window.__sb.from('subscriptions').select('id',{count:'exact',head:true}).eq('status','en_attente'),
+        window.__sb.from('businesses').select('id',{count:'exact',head:true}).eq('status','en_attente'),
+        window.__sb.from('withdrawals').select('id',{count:'exact',head:true}).eq('status','en_attente')
+      ]);
+      const totalPending=(s1.count||0)+(s2.count||0)+(s3.count||0);
+      $('kpiPending').textContent=fmt(totalPending);
+    }catch(e){console.warn(e)}
+  }
+
+  async function loadCharts(){
+    if(!window.__sb) return;
+    try{
+      const since=new Date(Date.now()-30*24*3600*1000).toISOString();
+      const {data:profs}=await window.__sb.from('profiles').select('created_at,role').gte('created_at',since);
+      const byDay={};
+      (profs||[]).forEach(p=>{
+        const d=p.created_at.slice(0,10);
+        if(!byDay[d])byDay[d]={jour:d,particuliers:0,entreprises:0};
+        if(p.role==='entreprise')byDay[d].entreprises++;else byDay[d].particuliers++;
+      });
+      const daily=Object.values(byDay).sort((a,b)=>a.jour.localeCompare(b.jour));
+      const isDark=document.documentElement.classList.contains('dark');
+      const textColor=isDark?'#e6edf7':'#0f172a';
+      const gridColor=isDark?'rgba(148,163,184,.1)':'rgba(15,23,42,.08)';
+      if(chartDaily)chartDaily.destroy();
+      const ctxD=$('chartDaily');
+      if(ctxD){
+        chartDaily=new Chart(ctxD,{type:'line',data:{labels:daily.map(d=>new Date(d.jour).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})),datasets:[{label:'Particuliers',data:daily.map(d=>d.particuliers),borderColor:'#0b5fff',backgroundColor:'rgba(11,95,255,.1)',tension:.35,fill:true},{label:'Entreprises',data:daily.map(d=>d.entreprises),borderColor:'#c99a2e',backgroundColor:'rgba(201,154,46,.1)',tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor,font:{size:11}}}},scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor},beginAtZero:true}}}});
+      }
+      const {data:subs}=await window.__sb.from('subscriptions').select('created_at,amount').eq('status','actif');
+      const byMonth={};
+      (subs||[]).forEach(s=>{
+        const m=s.created_at.slice(0,7);
+        if(!byMonth[m])byMonth[m]={mois:m,total:0};
+        byMonth[m].total+=Number(s.amount)||0;
+      });
+      const rev=Object.values(byMonth).sort((a,b)=>a.mois.localeCompare(b.mois)).slice(-12);
+      if(chartRevenue)chartRevenue.destroy();
+      const ctxR=$('chartRevenue');
+      if(ctxR){
+        chartRevenue=new Chart(ctxR,{type:'bar',data:{labels:rev.map(r=>new Date(r.mois+'-01').toLocaleDateString('fr-FR',{month:'short',year:'2-digit'})),datasets:[{label:'Revenus FCFA',data:rev.map(r=>r.total),backgroundColor:'#10b981',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)+' FCFA'}}},scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{display:false}},y:{ticks:{color:textColor,font:{size:10},callback:v=>fmt(v)},grid:{color:gridColor},beginAtZero:true}}}});
+      }
+    }catch(e){console.warn(e)}
+  }
+
+  async function loadSuggestions(){
+    if(!window.__sb) return;
+    const box=$('suggestionsBox');
+    box.innerHTML='';
+    try{
+      const [subsR,rccmR,witR]=await Promise.all([
+        window.__sb.from('subscriptions').select('id',{count:'exact',head:true}).eq('status','en_attente'),
+        window.__sb.from('businesses').select('id',{count:'exact',head:true}).eq('status','en_attente'),
+        window.__sb.from('withdrawals').select('id',{count:'exact',head:true}).eq('status','en_attente')
+      ]);
+      const suggestions=[];
+      if((subsR.count||0)>0) suggestions.push({type:'warn',icon:'fa-credit-card',title:`${subsR.count} abonnement(s) en attente`,desc:'Validez les paiements pour activer les comptes',action:'Voir les abonnements',page:'subscriptions'});
+      if((rccmR.count||0)>0) suggestions.push({type:'info',icon:'fa-building-shield',title:`${rccmR.count} dossier(s) RCCM à vérifier`,desc:'Validez les entreprises pour leur donner le badge',action:'Voir les dossiers',page:'rccm'});
+      if((witR.count||0)>0) suggestions.push({type:'danger',icon:'fa-money-bill-transfer',title:`${witR.count} demande(s) de retrait`,desc:'Traitez les demandes de vos talents',action:'Voir les retraits',page:'withdrawals'});
+      if(!suggestions.length){
+        box.innerHTML=`<div class="alert-banner info" style="margin-bottom:1.5rem"><div class="alert-banner-icon"><i class="fa-solid fa-circle-check"></i></div><div class="alert-banner-body"><div class="alert-banner-title">Tout est à jour</div><div class="alert-banner-desc">Aucune action en attente. La plateforme tourne bien.</div></div></div>`;
+        return;
+      }
+      box.innerHTML=suggestions.map(s=>`
+        <div class="alert-banner ${s.type}" style="margin-bottom:1rem">
+          <div class="alert-banner-icon"><i class="fa-solid ${s.icon}"></i></div>
+          <div class="alert-banner-body">
+            <div class="alert-banner-title">${s.title}</div>
+            <div class="alert-banner-desc">${s.desc}</div>
+          </div>
+          <button class="alert-banner-action" onclick="Page.go('${s.page}')">${s.action} <i class="fa-solid fa-arrow-right"></i></button>
+        </div>`).join('');
+    }catch(e){console.warn(e)}
+  }
+
+  async function loadActivity(){
+    if(!window.__sb) return;
+    const box=$('activityFeed');
+    box.innerHTML='<div class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+    try{
+      const {data}=await window.__sb.from('admin_logs').select('*').order('created_at',{ascending:false}).limit(8);
+      if(!data||!data.length){
+        box.innerHTML='<div class="empty" style="padding:1.5rem"><i class="fa-solid fa-bolt"></i><div class="empty-title">Aucune activité</div><div class="empty-desc" style="font-size:.72rem">Vos actions apparaîtront ici</div></div>';
+        return;
+      }
+      const colors={
+        subscription:{bg:'color-mix(in srgb,var(--adm-blue) 12%,transparent)',c:'var(--adm-blue)',i:'fa-credit-card'},
+        rccm:{bg:'color-mix(in srgb,var(--adm-gold) 15%,transparent)',c:'var(--adm-gold)',i:'fa-building-shield'},
+        user:{bg:'color-mix(in srgb,var(--adm-purple) 12%,transparent)',c:'var(--adm-purple)',i:'fa-user'},
+        withdrawal:{bg:'color-mix(in srgb,var(--adm-red) 12%,transparent)',c:'var(--adm-red)',i:'fa-money-bill-transfer'},
+        payout:{bg:'color-mix(in srgb,var(--adm-emerald) 12%,transparent)',c:'var(--adm-emerald)',i:'fa-paper-plane'}
+      };
+      const timeAgo=iso=>{
+        const d=new Date(iso),diff=(Date.now()-d)/1000;
+        if(diff<60)return 'à l\'instant';
+        if(diff<3600)return `il y a ${Math.floor(diff/60)} min`;
+        if(diff<86400)return `il y a ${Math.floor(diff/3600)} h`;
+        return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+      };
+      box.innerHTML=data.map(l=>{
+        const cfg=colors[l.target_type]||{bg:'color-mix(in srgb,var(--adm-blue) 12%,transparent)',c:'var(--adm-blue)',i:'fa-bolt'};
+        return `<div class="activity-item">
+          <div class="activity-icon" style="background:${cfg.bg};color:${cfg.c}"><i class="fa-solid ${cfg.i}"></i></div>
+          <div class="activity-body">
+            <div class="activity-title">${l.action}</div>
+            <div class="activity-desc">${l.details?JSON.stringify(l.details).slice(0,60):'Action administrateur'}</div>
+          </div>
+          <div class="activity-time">${timeAgo(l.created_at)}</div>
+        </div>`;
+      }).join('');
+    }catch(e){box.innerHTML='<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i></div>'}
+  }
+
+  async function loadTopCities(){
+    if(!window.__sb) return;
+    const box=$('topCities');
+    try{
+      const {data}=await window.__sb.from('profiles').select('city').not('city','is',null);
+      const count={};
+      (data||[]).forEach(p=>{
+        const city=p.city.split(',')[0].trim();
+        if(city)count[city]=(count[city]||0)+1;
+      });
+      const top=Object.entries(count).map(([name,count])=>({name,count})).sort((a,b)=>b.count-a.count).slice(0,6);
+      const max=top[0]?.count||1;
+      box.innerHTML=top.length?top.map((c,i)=>`
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div style="width:24px;text-align:right;font-size:.7rem;font-weight:800;color:var(--adm-muted)">${i+1}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.2rem">
+              <span style="color:var(--adm-text);font-weight:600">${c.name}</span>
+              <span style="color:var(--adm-muted)">${c.count}</span>
+            </div>
+            <div style="height:5px;border-radius:3px;background:var(--adm-hover);overflow:hidden"><div style="height:100%;width:${c.count/max*100}%;background:linear-gradient(90deg,var(--adm-blue),var(--adm-gold))"></div></div>
+          </div>
+        </div>`).join(''):'<div style="color:var(--adm-muted);font-size:.8rem;text-align:center;padding:1rem">Aucune donnée</div>';
     }catch(e){}
   }
 
-  function toCSV(rows, headers){
-    if(!rows.length) return '';
-    const escape = v => {
-      const s = String(v == null ? '' : v);
-      return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
-    };
-    const head = headers.map(h => escape(h.label)).join(';');
-    const body = rows.map(r => headers.map(h => escape(h.get(r))).join(';')).join('\n');
-    return '\uFEFF' + head + '\n' + body;
+  async function refresh(){
+    if(!window.__sb) return;
+    await Promise.all([loadKPIs(),loadCharts(),loadSuggestions(),loadActivity(),loadTopCities()]);
+    await Notifications.refreshBadge();
   }
 
-  function downloadCSV(filename, content){
-    const blob = new Blob([content], { type:'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  async function start(){
+    Theme.init();
+    await waitForSb();
+    await new Promise(r=>setTimeout(r,200));
+    await refresh();
+    setInterval(refresh,60000);
   }
 
-  return{
-    async reload(){
-      await load();
-      stats();
-      renderS('tbS');renderS('tbS2');
-      renderR('tbR');renderR('tbR2');
-      renderStats();
-      renderTraffic();
-      if(typeof Content!=='undefined') Content.reload();
-    },
-    logout(){sessionStorage.removeItem('ap-admin');location.href='index.html'},
-    toast,
-    async setS(id,s){await DB.updateSubscriptionStatus(id,s);await this.reload();toast(s==='actif'?'Abonnement activé':s==='rejete'?'Abonnement rejeté':'Statut réinitialisé',s!=='rejete')},
-    async setR(id,s){await DB.updateRccmStatus(id,s);await this.reload();toast(s==='approuve'?'Dossier RCCM approuvé':s==='rejete'?'Dossier rejeté':'Statut réinitialisé',s!=='rejete')},
-
-    exportSubs(){
-      if(!S.length){ toast('Aucun abonnement à exporter', false); return; }
-      const csv = toCSV(S, [
-        { label:'Référence', get: x => x.ref },
-        { label:'Nom', get: x => x.name },
-        { label:'Formule', get: x => x.plan },
-        { label:'Cycle', get: x => x.cycle },
-        { label:'Montant FCFA', get: x => x.amount },
-        { label:'Passerelle', get: x => x.gateway },
-        { label:'Statut', get: x => x.status },
-        { label:'Date', get: x => x.createdAt ? new Date(x.createdAt).toLocaleString('fr-FR') : '' }
-      ]);
-      const date = new Date().toISOString().slice(0,10);
-      downloadCSV(`afropulse-abonnements-${date}.csv`, csv);
-      toast('Export abonnements téléchargé');
-    },
-
-    exportRccm(){
-      if(!R.length){ toast('Aucun dossier RCCM à exporter', false); return; }
-      const csv = toCSV(R, [
-        { label:'Référence', get: x => x.ref },
-        { label:'Entreprise', get: x => x.company },
-        { label:'RCCM', get: x => x.rccm },
-        { label:'CC', get: x => x.cc },
-        { label:'Statut', get: x => x.status },
-        { label:'Date', get: x => x.createdAt ? new Date(x.createdAt).toLocaleString('fr-FR') : '' }
-      ]);
-      const date = new Date().toISOString().slice(0,10);
-      downloadCSV(`afropulse-rccm-${date}.csv`, csv);
-      toast('Export RCCM téléchargé');
-    },
-
-    async seed(){
-      const n=Date.now();
-      for(const s of [
-        {ref:'TX-90812903',plan:'Entreprise Pro',cycle:'monthly',amount:15000,gateway:'WAVE',name:'Maya Studio SARL',status:'en_attente',createdAt:new Date(n-7200e3).toISOString()},
-        {ref:'TX-90812904',plan:'Jeune & Pro',cycle:'yearly',amount:21600,gateway:'ORANGE',name:'Aïcha Koné',status:'en_attente',createdAt:new Date(n-21600e3).toISOString()},
-        {ref:'TX-90812905',plan:'Entreprise VIP',cycle:'monthly',amount:35000,gateway:'WAVE',name:'SolarBox CI',status:'actif',createdAt:new Date(n-172800e3).toISOString()},
-        {ref:'TX-90812906',plan:'Jeune & Pro',cycle:'monthly',amount:2000,gateway:'ORANGE',name:'Idriss Traoré',status:'actif',createdAt:new Date(n-259200e3).toISOString()}
-      ]){try{await DB.saveSubscription(s)}catch(e){}}
-      for(const r of [
-        {ref:'AP-RCCM-A1B2C3',company:'Fintech CI',rccm:'CI-ABJ-2024-B-12345',cc:'1234567 A',fileName:'rccm-fintech.pdf',status:'en_attente',createdAt:new Date(n-10800e3).toISOString()},
-        {ref:'AP-RCCM-D4E5F6',company:'AfroCosmetics',rccm:'CI-ABJ-2023-A-98765',cc:'7654321 B',fileName:'attestation-afro.pdf',status:'en_attente',createdAt:new Date(n-36000e3).toISOString()},
-        {ref:'AP-RCCM-G7H8I9',company:'DevHub Africa',rccm:'SN-DKR-2024-A-45678',cc:'1111111 C',fileName:'rccm-devhub.pdf',status:'approuve',createdAt:new Date(n-345600e3).toISOString()},
-        {ref:'AP-RCCM-J1K2L3',company:'Faux Business',rccm:'XX-FAKE-2024-X-00000',cc:'0000000 X',fileName:'faux.pdf',status:'rejete',createdAt:new Date(n-432000e3).toISOString()}
-      ]){try{await DB.saveRccm(r)}catch(e){}}
-      await this.reload();
-      toast('Données de démonstration chargées');
-    },
-    async clear(){
-      if(!confirm('Effacer toutes les données ? Cette action est définitive.'))return;
-      try{
-        await DB.clearAllSubscriptions();
-        await DB.clearAllRccm();
-        await this.reload();
-        toast('Toutes les données ont été effacées');
-      }catch(e){toast('Erreur lors de la suppression',false)}
-    }
-  };
+  return{start,refresh};
 })();
 
-/* ═══ MODULE CONTENU (témoignages, plans, FAQ) ═══ */
-const Content=(()=>{
-  const $=id=>document.getElementById(id);
-  let currentEdit={ type:null, id:null };
-  let dataTestimonials=[], dataPlans=[], dataFaqs=[];
-
-  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-  async function reload(){
-    await Promise.all([loadTestimonials(), loadPlans(), loadFaqs()]);
+const Admin={
+  async reload(){
+    await App.refresh();
+    toast('Données rechargées');
+  },
+  logout(){
+    sessionStorage.removeItem('ap-admin');
+    location.href='index.html';
   }
+};
 
-  async function loadTestimonials(){
-    try{ dataTestimonials = await DB.getTestimonialsAll(); }catch(e){ dataTestimonials=[] }
-    renderTestimonials();
-  }
-  async function loadPlans(){
-    try{ dataPlans = await DB.getPlansAll(); }catch(e){ dataPlans=[] }
-    renderPlans();
-  }
-  async function loadFaqs(){
-    try{ dataFaqs = await DB.getFaqsAll(); }catch(e){ dataFaqs=[] }
-    renderFaqs();
-  }
-
-  function renderTestimonials(){
-    const list=$('listTestimonials');
-    if(!dataTestimonials.length){
-      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-quote-left"></i>Aucun témoignage. Cliquez sur Ajouter pour commencer.</div>';
-      return;
-    }
-    list.innerHTML=dataTestimonials.map(t=>`
-      <div class="content-item">
-        <div class="content-item-body">
-          <div class="content-item-title">${esc(t.name)}${t.published?'':' <span style="font-size:.7rem;color:var(--er)">(brouillon)</span>'}</div>
-          <div class="content-item-sub">${esc(t.role||'')} · ${esc(t.city||'')} · ${t.rating||5}★</div>
-          <div class="content-item-sub" style="margin-top:.5rem">« ${esc((t.quote||'').slice(0,140))}${t.quote && t.quote.length>140?'…':''} »</div>
-        </div>
-        <div class="content-item-actions">
-          <button class="act" onclick="Content.openTestimonial('${t.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
-          <button class="act act-ko" onclick="Content.remove('testimonial','${t.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function renderPlans(){
-    const list=$('listPlans');
-    if(!dataPlans.length){
-      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-tag"></i>Aucune formule. Cliquez sur Ajouter pour commencer.</div>';
-      return;
-    }
-    list.innerHTML=dataPlans.map(p=>`
-      <div class="content-item">
-        <div class="content-item-body">
-          <div class="content-item-title">${esc(p.name)}${p.recommended?' <span style="font-size:.65rem;background:color-mix(in srgb,var(--ac) 12%,transparent);color:var(--ac);padding:.15rem .4rem;border-radius:999px">Recommandé</span>':''}${p.active?'':' <span style="font-size:.7rem;color:var(--er)">(inactif)</span>'}</div>
-          <div class="content-item-sub">${esc(p.description||'')}</div>
-          <div class="content-item-sub" style="margin-top:.5rem"><strong style="color:var(--ink)">${p.monthly.toLocaleString('fr-FR')} FCFA/mois</strong> · ${p.yearly.toLocaleString('fr-FR')} FCFA/an · ${(p.features||[]).length} avantages</div>
-        </div>
-        <div class="content-item-actions">
-          <button class="act" onclick="Content.openPlan('${p.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
-          <button class="act act-ko" onclick="Content.remove('plan','${p.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function renderFaqs(){
-    const list=$('listFaqs');
-    if(!dataFaqs.length){
-      list.innerHTML='<div class="empty" style="padding:1.5rem;border:1px dashed var(--bd);border-radius:.75rem"><i class="fa-solid fa-circle-question"></i>Aucune question. Cliquez sur Ajouter pour commencer.</div>';
-      return;
-    }
-    list.innerHTML=dataFaqs.map(f=>`
-      <div class="content-item">
-        <div class="content-item-body">
-          <div class="content-item-title">${esc(f.question)}${f.active?'':' <span style="font-size:.7rem;color:var(--er)">(inactif)</span>'}</div>
-          <div class="content-item-sub" style="margin-top:.5rem">${esc((f.answer||'').slice(0,160))}${f.answer && f.answer.length>160?'…':''}</div>
-        </div>
-        <div class="content-item-actions">
-          <button class="act" onclick="Content.openFaq('${f.id}')" title="Éditer"><i class="fa-solid fa-pen"></i></button>
-          <button class="act act-ko" onclick="Content.remove('faq','${f.id}')" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function openModal(title, fieldsHtml, submitLabel){
-    $('editTitle').textContent=title;
-    $('editFields').innerHTML=fieldsHtml;
-    $('editSubmit').textContent=submitLabel||'Enregistrer';
-    $('editModal').classList.add('on');
-  }
-
-  function close(){
-    $('editModal').classList.remove('on');
-    currentEdit={ type:null, id:null };
-    $('editFields').innerHTML='';
-  }
-
-  function openTestimonial(id){
-    const t = id ? dataTestimonials.find(x=>x.id===id) : null;
-    currentEdit={ type:'testimonial', id: id||null };
-    openModal(
-      id ? 'Éditer le témoignage' : 'Nouveau témoignage',
-      `
-        <div class="form-row">
-          <label>Nom de l'auteur *</label>
-          <input name="name" required value="${t?esc(t.name):''}">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Rôle / métier</label>
-            <input name="role" value="${t?esc(t.role||''):''}">
-          </div>
-          <div class="form-row">
-            <label>Ville, pays</label>
-            <input name="city" placeholder="Ex : Abidjan, Côte d'Ivoire" value="${t?esc(t.city||''):''}">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Initiales</label>
-            <input name="initials" maxlength="3" placeholder="Ex : DK" value="${t?esc(t.initials||''):''}">
-            <p class="form-hint">Laissez vide pour générer automatiquement.</p>
-          </div>
-          <div class="form-row">
-            <label>Couleur</label>
-            <select name="color">
-              ${['var(--ac)','var(--gd)','var(--ok)'].map(c=>`<option value="${c}"${t&&t.color===c?' selected':''}>${c==='var(--ac)'?'Bleu':c==='var(--gd)'?'Or':'Vert'}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Témoignage *</label>
-          <textarea name="quote" required rows="5">${t?esc(t.quote):''}</textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Note (1 à 5)</label>
-            <input name="rating" type="number" min="1" max="5" value="${t?t.rating:5}">
-          </div>
-          <div class="form-row">
-            <label>Ordre d'affichage</label>
-            <input name="display_order" type="number" value="${t?t.display_order:0}">
-            <p class="form-hint">Les plus petits chiffres en premier.</p>
-          </div>
-        </div>
-        <div class="form-row">
-          <label><input type="checkbox" name="published" ${(!t || t.published)?'checked':''} style="width:auto;margin-right:.5rem">Publier ce témoignage</label>
-        </div>
-      `,
-      id ? 'Enregistrer' : 'Créer'
-    );
-  }
-
-  function openPlan(id){
-    const p = id ? dataPlans.find(x=>x.id===id) : null;
-    currentEdit={ type:'plan', id: id||null };
-    openModal(
-      id ? 'Éditer la formule' : 'Nouvelle formule',
-      `
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Identifiant (slug) *</label>
-            <input name="slug" required placeholder="Ex : young" value="${p?esc(p.slug):''}" ${id?'readonly style="opacity:.6"':''}>
-            <p class="form-hint">Unique, en minuscules, sans espace.</p>
-          </div>
-          <div class="form-row">
-            <label>Nom affiché *</label>
-            <input name="name" required placeholder="Ex : Jeune & Pro" value="${p?esc(p.name):''}">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Description</label>
-          <input name="description" placeholder="Ex : Pour les talents indépendants." value="${p?esc(p.description||''):''}">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Prix mensuel (FCFA) *</label>
-            <input name="monthly" type="number" required min="0" value="${p?p.monthly:0}">
-          </div>
-          <div class="form-row">
-            <label>Prix annuel (FCFA) *</label>
-            <input name="yearly" type="number" required min="0" value="${p?p.yearly:0}">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Avantages (un par ligne) *</label>
-          <textarea name="features" required rows="5" placeholder="Profil visible dans le réseau&#10;Troc illimité&#10;1 session mentorat par mois">${p?(p.features||[]).join('\n'):''}</textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Ordre d'affichage</label>
-            <input name="display_order" type="number" value="${p?p.display_order:0}">
-          </div>
-          <div class="form-row">
-            <label>Options</label>
-            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="recommended" ${p&&p.recommended?'checked':''} style="width:auto;margin-right:.4rem">Marquer comme recommandé</label>
-            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="active" ${(!p || p.active)?'checked':''} style="width:auto;margin-right:.4rem">Formule active</label>
-          </div>
-        </div>
-      `,
-      id ? 'Enregistrer' : 'Créer'
-    );
-  }
-
-  function openFaq(id){
-    const f = id ? dataFaqs.find(x=>x.id===id) : null;
-    currentEdit={ type:'faq', id: id||null };
-    openModal(
-      id ? 'Éditer la question' : 'Nouvelle question',
-      `
-        <div class="form-row">
-          <label>Question *</label>
-          <input name="question" required value="${f?esc(f.question):''}">
-        </div>
-        <div class="form-row">
-          <label>Réponse *</label>
-          <textarea name="answer" required rows="5">${f?esc(f.answer):''}</textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Ordre d'affichage</label>
-            <input name="display_order" type="number" value="${f?f.display_order:0}">
-          </div>
-          <div class="form-row">
-            <label>Options</label>
-            <label style="display:block;font-size:.8rem;font-weight:500;margin-top:.4rem"><input type="checkbox" name="active" ${(!f || f.active)?'checked':''} style="width:auto;margin-right:.4rem">Question active</label>
-          </div>
-        </div>
-      `,
-      id ? 'Enregistrer' : 'Créer'
-    );
-  }
-
-  async function submit(e){
-    e.preventDefault();
-    const form=e.target;
-    const fd=new FormData(form);
-    const btn=$('editSubmit');
-    btn.disabled=true;
-    const original=btn.textContent;
-    btn.textContent='Enregistrement…';
-
-    try{
-      if(currentEdit.type==='testimonial'){
-        const d={
-          name: fd.get('name').trim(),
-          role: fd.get('role').trim(),
-          city: fd.get('city').trim(),
-          initials: fd.get('initials').trim(),
-          color: fd.get('color'),
-          quote: fd.get('quote').trim(),
-          rating: parseInt(fd.get('rating'),10)||5,
-          display_order: parseInt(fd.get('display_order'),10)||0,
-          published: !!fd.get('published')
-        };
-        if(currentEdit.id) await DB.updateTestimonial(currentEdit.id, d);
-        else await DB.createTestimonial(d);
-      }else if(currentEdit.type==='plan'){
-        const d={
-          slug: fd.get('slug').trim().toLowerCase(),
-          name: fd.get('name').trim(),
-          description: fd.get('description').trim(),
-          monthly: parseInt(fd.get('monthly'),10)||0,
-          yearly: parseInt(fd.get('yearly'),10)||0,
-          features: fd.get('features').split('\n').map(s=>s.trim()).filter(Boolean),
-          recommended: !!fd.get('recommended'),
-          active: !!fd.get('active'),
-          display_order: parseInt(fd.get('display_order'),10)||0
-        };
-        if(currentEdit.id) await DB.updatePlan(currentEdit.id, d);
-        else await DB.createPlan(d);
-      }else if(currentEdit.type==='faq'){
-        const d={
-          question: fd.get('question').trim(),
-          answer: fd.get('answer').trim(),
-          display_order: parseInt(fd.get('display_order'),10)||0,
-          active: !!fd.get('active')
-        };
-        if(currentEdit.id) await DB.updateFaq(currentEdit.id, d);
-        else await DB.createFaq(d);
-      }
-      Admin.toast('Enregistrement effectué');
-      close();
-      await reload();
-    }catch(err){
-      Admin.toast('Erreur : '+(err.message||''), false);
-      btn.disabled=false;
-      btn.textContent=original;
-    }
-  }
-
-  async function remove(type, id){
-    if(!confirm('Supprimer cet élément ? Cette action est définitive.'))return;
-    try{
-      if(type==='testimonial') await DB.deleteTestimonial(id);
-      else if(type==='plan') await DB.deletePlan(id);
-      else if(type==='faq') await DB.deleteFaq(id);
-      Admin.toast('Élément supprimé');
-      await reload();
-    }catch(e){
-      Admin.toast('Erreur : '+(e.message||''), false);
-    }
-  }
-
-  return { reload, openTestimonial, openPlan, openFaq, submit, close, remove };
-})();
-window.Content = Content;
-
-/* ═══ MODULE BADGES ═══ */
-const Badges=(()=>{
-  const $=id=>document.getElementById(id);
-  let allBadges = [];
-  let currentUser = null;
-
-  async function loadBadges(){
-    if(allBadges.length) return allBadges;
-    allBadges = await DB.getBadges();
-    return allBadges;
-  }
-
-  async function search(){
-    const email = $('badgeEmail').value.trim();
-    if(!email){
-      $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Entrez un email.</div>';
-      return;
-    }
-    $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--mu)">Recherche…</div>';
-
-    try{
-      const sb = window.__sb;
-      if(!sb){ $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Supabase indisponible.</div>'; return; }
-
-      const { data, error } = await sb.from('profiles')
-        .select('id, email, full_name, city, role')
-        .eq('email', email.toLowerCase())
-        .limit(1);
-
-      if(error || !data || !data.length){
-        $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Aucun membre trouvé avec cet email.</div>';
-        return;
-      }
-
-      currentUser = data[0];
-      await loadBadges();
-      const userBadges = await DB.getUserBadges(currentUser.id);
-      const awardedSlugs = userBadges.map(b => b.badge_slug);
-
-      $('badgeResult').innerHTML = `
-        <div class="content-item">
-          <div class="content-item-body">
-            <div class="content-item-title">${currentUser.full_name || currentUser.email}</div>
-            <div class="content-item-sub">${currentUser.email} · ${currentUser.city || ''} · ${currentUser.role}</div>
-            <div class="flex flex-wrap gap-2 mt-3">
-              ${allBadges.map(b => `
-                <button onclick="Badges.toggle('${b.slug}')" class="act ${awardedSlugs.includes(b.slug)?'act-ok':''}" style="font-size:.72rem">
-                  <i class="fa-solid ${b.icon||'fa-award'}"></i>${b.label}
-                  ${awardedSlugs.includes(b.slug)?'<i class="fa-solid fa-check"></i>':''}
-                </button>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    }catch(e){
-      $('badgeResult').innerHTML = '<div class="text-xs" style="color:var(--er)">Erreur : ' + e.message + '</div>';
-    }
-  }
-
-  async function toggle(slug){
-    if(!currentUser) return;
-    try{
-      const userBadges = await DB.getUserBadges(currentUser.id);
-      const has = userBadges.some(b => b.badge_slug === slug);
-      if(has){
-        await DB.removeBadge(currentUser.id, slug);
-        Admin.toast('Badge retiré');
-      }else{
-        await DB.awardBadge(currentUser.id, slug);
-        Admin.toast('Badge attribué');
-      }
-      const email = $('badgeEmail').value.trim();
-      if(email) search();
-    }catch(e){
-      Admin.toast('Erreur : ' + e.message, false);
-    }
-  }
-
-  return { search, toggle };
-})();
-window.Badges = Badges;
-
-document.querySelectorAll('[data-t]').forEach(w=>{
-  w.addEventListener('click',e=>{
-    const b=e.target.closest('button[data-f]');if(!b)return;
-    w.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-    if(w.dataset.t==='sub')fS=b.dataset.f;else fR=b.dataset.f;
-    Admin.reload();
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(btn=>{
+    btn.addEventListener('click',()=>Page.go(btn.dataset.page));
   });
-});
-
-document.querySelectorAll('#navAdmin button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('#navAdmin button').forEach(x=>x.classList.toggle('on',x===b));
-    document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));
-    document.getElementById('tab-'+b.dataset.tab).classList.remove('hidden');
-  });
-});
-
-addEventListener('DOMContentLoaded',()=>{
-  Theme.init();
+  $('modal').addEventListener('click',e=>{if(e.target.id==='modal')Modal.close()});
+  $('confirmModal').addEventListener('click',e=>{if(e.target.id==='confirmModal')Confirm.cancel()});
+  addEventListener('keydown',e=>{if(e.key==='Escape'){Modal.close();Confirm.cancel();}});
   Lock.init();
-  if(sessionStorage.getItem('ap-admin')==='1')Admin.reload();
+  const overlay=document.createElement('div');
+  overlay.className='sidebar-overlay';
+  overlay.onclick=()=>Sidebar.close();
+  document.body.appendChild(overlay);
 });
 </script>
 </body>

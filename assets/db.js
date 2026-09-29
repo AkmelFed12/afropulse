@@ -451,72 +451,131 @@ const DB=(()=>{
       await wait();
       await client.from('contacts').delete().eq('id',id);
     },
+
     /* ─── Retraits ─── */
-async saveWithdrawal(d){
-  if(!ready) throw new Error('Supabase non disponible');
-  await wait();
-  const {data:{user}}=await client.auth.getUser();
-  if(!user) throw new Error('Non connecté');
+    async saveWithdrawal(d){
+      if(!ready) throw new Error('Supabase non disponible');
+      await wait();
+      const {data:{user}}=await client.auth.getUser();
+      if(!user) throw new Error('Non connecté');
 
-  const {data,error}=await client.from('withdrawals').insert({
-    user_id:user.id,
-    user_name:d.userName,
-    user_email:d.userEmail,
-    amount:d.amount,
-    method:d.method,
-    account_details:d.accountDetails||null,
-    status:'en_attente'
-  }).select().single();
-  if(error)throw error;
-  return data;
-},
+      const ref = 'WD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,5).toUpperCase();
 
-async getMyWithdrawals(){
-  if(!ready)return [];
-  await wait();
-  const {data:{user}}=await client.auth.getUser();
-  if(!user)return [];
-  const {data,error}=await client.from('withdrawals')
-    .select('*')
-    .eq('user_id',user.id)
-    .order('created_at',{ascending:false});
-  if(error)return [];
-  return data.map(x=>({
-    id:x.id,
-    amount:x.amount,
-    method:x.method,
-    accountDetails:x.account_details,
-    status:x.status,
-    adminNote:x.admin_note,
-    createdAt:x.created_at,
-    updatedAt:x.updated_at
-  }));
-},
+      // Payload MINIMAL - seulement les colonnes NOT NULL obligatoires
+      const payload = {
+        ref,
+        user_id: user.id,
+        amount: Math.floor(Number(d.amount)),
+        method: d.method,
+        status: 'en_attente',
+        requested_at: new Date().toISOString()
+      };
 
-async getMyBalance(){
-  if(!ready)return {available:0,pending:0,withdrawn:0};
-  await wait();
-  const {data:{user}}=await client.auth.getUser();
-  if(!user)return {available:0,pending:0,withdrawn:0};
+      console.log('[saveWithdrawal] payload minimal :', payload);
 
-  try{
-    const {data:withdrawals}=await client.from('withdrawals')
-      .select('amount,status')
-      .eq('user_id',user.id);
+      const {data,error}=await client.from('withdrawals').insert(payload).select().single();
 
-    const pending=(withdrawals||[]).filter(w=>w.status==='en_attente'||w.status==='valide').reduce((s,w)=>s+Number(w.amount||0),0);
-    const withdrawn=(withdrawals||[]).filter(w=>w.status==='paye').reduce((s,w)=>s+Number(w.amount||0),0);
-    const earned = 0; // À connecter avec les missions complétées plus tard
+      if(error){
+        console.error('[saveWithdrawal] Erreur Supabase complète :', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        throw new Error(error.message || 'Erreur d\'enregistrement');
+      }
 
-    return {
-      available: Math.max(0, earned - pending - withdrawn),
-      pending,
-      withdrawn
-    };
-  }catch(e){
-    return {available:0,pending:0,withdrawn:0};
-  }
-},
+      return data;
+    },
+
+    async getMyWithdrawals(){
+      if(!ready)return [];
+      await wait();
+      const {data:{user}}=await client.auth.getUser();
+      if(!user)return [];
+      const {data,error}=await client.from('withdrawals')
+        .select('*')
+        .eq('user_id',user.id)
+        .order('requested_at',{ascending:false});
+      if(error)return [];
+      return data.map(x=>({
+        id:x.id,
+        ref:x.ref,
+        amount:x.amount,
+        method:x.method,
+        accountDetails:x.account||x.account_number||x.phone||'',
+        status:x.status||'en_attente',
+        adminNote:x.admin_note||x.rejection_reason||null,
+        createdAt:x.requested_at||x.created_at,
+        updatedAt:x.reviewed_at||x.completed_at
+      }));
+    },
+
+    async getMyBalance(userId){
+      if(!ready)return {available:0,pending:0,withdrawn:0};
+      await wait();
+
+      let uid = userId;
+      if(!uid){
+        const {data:{user}}=await client.auth.getUser();
+        if(!user)return {available:0,pending:0,withdrawn:0};
+        uid = user.id;
+      }
+
+      try{
+        const {data:profile,error:errProfile}=await client.from('profiles').select('balance').eq('id',uid).single();
+        if(errProfile) console.warn('[getMyBalance] Erreur profile:',errProfile.message);
+        const totalBalance=Number(profile?.balance)||0;
+
+        const {data:withdrawals}=await client.from('withdrawals')
+          .select('amount,status')
+          .eq('user_id',uid);
+
+        const pending=(withdrawals||[]).filter(w=>w.status==='en_attente'||w.status==='valide').reduce((s,w)=>s+Number(w.amount||0),0);
+        const withdrawn=(withdrawals||[]).filter(w=>w.status==='paye').reduce((s,w)=>s+Number(w.amount||0),0);
+
+        return {
+          available: Math.max(0, totalBalance - pending),
+          pending,
+          withdrawn
+        };
+      }catch(e){
+        console.warn('[getMyBalance] Erreur:',e);
+        return {available:0,pending:0,withdrawn:0};
+      }
+    },
+
+    /* ─── Balance admin ─── */
+    async creditUser(userId, amount, reason){
+      if(!ready) throw new Error('Supabase non disponible');
+      await wait();
+
+      const {data:profile,error:err1}=await client.from('profiles').select('balance').eq('id',userId).single();
+      if(err1) throw err1;
+
+      const newBalance=(Number(profile?.balance)||0)+Number(amount);
+
+      const {error:err2}=await client.from('profiles').update({balance:newBalance}).eq('id',userId);
+      if(err2) throw err2;
+
+      const {data:{user}}=await client.auth.getUser();
+      await client.from('balance_transactions').insert({
+        user_id:userId,
+        amount,
+        type:'credit',
+        reason:reason||'Crédit admin',
+        admin_note:`Par admin ${user?.email||''}`
+      });
+
+      return {newBalance};
+    },
+
+    async getUserBalance(userId){
+      if(!ready)return 0;
+      await wait();
+      const {data}=await client.from('profiles').select('balance').eq('id',userId).single();
+      return Number(data?.balance)||0;
+    },
 
     /* ─── Missions ─── */
     async canPublishMission(){
@@ -638,14 +697,14 @@ async getMyBalance(){
       }
       await wait();
       try{
-        // maybeSingle() : ne plante pas si 0 ligne trouvée (fix 406)
         const {data,error}=await client
           .from('ratings')
-          .select('*')
-          .eq('target_id',targetId)
-          .maybeSingle();
-        if(error || !data)return {count:0,average:0};
-        return {count:data.reviews_count||0,average:Number(data.average_rating)||0};
+          .select('reviews_count, average_rating')
+          .eq('target_id', targetId)
+          .limit(1);
+        if(error || !data || data.length === 0)return {count:0,average:0};
+        const rating = data[0];
+        return {count:rating.reviews_count||0,average:Number(rating.average_rating)||0};
       }catch(e){
         return {count:0,average:0};
       }
@@ -1175,3 +1234,10 @@ async getMyBalance(){
     isRemote:()=>ready
   };
 })();
+
+/* ═══ Force la mise à jour du Service Worker ═══ */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.update());
+  });
+}
