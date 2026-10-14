@@ -3,7 +3,7 @@
    Cache des assets statiques + offline fallback
 ═══════════════════════════════════════════════ */
 
-const CACHE = 'afropulse-v12';
+const CACHE = 'afropulse-v13';
 const CACHE_URLS = [
   '/',
   '/index.html',
@@ -21,6 +21,7 @@ const CACHE_URLS = [
   '/assets/auth.js',
   '/assets/data.js',
   '/assets/locations.js',
+  '/assets/presence.js',
   '/assets/realtime.js',
   '/manifest.json'
 ];

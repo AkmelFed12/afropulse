@@ -11,6 +11,7 @@ const DB=(()=>{
     console.warn('[AfroPulse] Supabase non configuré : ajoute SUPABASE_KEY dans .env puis relance npm run build.');
   }
   let client=null;
+  const publicStatsCache={value:null,expiresAt:0};
   if(ready){
     const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -254,6 +255,9 @@ const DB=(()=>{
 
     /* ─── Stats publiques ─── */
     async getPublicStats(){
+      if(publicStatsCache.value && publicStatsCache.expiresAt>Date.now()){
+        return {...publicStatsCache.value, cached:true};
+      }
       if(!ready)return {profiles:null,businesses:null,missions:null,countries:null,available:false};
       await wait();
       try{
@@ -269,11 +273,18 @@ const DB=(()=>{
           const parts=(c.city||'').split(',').map(s=>s.trim());
           return parts[parts.length-1]||'';
         }).filter(Boolean));
-        return {profiles:p.count||0,businesses:b.count||0,missions:m.count||0,countries:countries.size||0,available:true};
+        const result={profiles:p.count||0,businesses:b.count||0,missions:m.count||0,countries:countries.size||0,available:true};
+        publicStatsCache.value=result;
+        publicStatsCache.expiresAt=Date.now()+30000;
+        return result;
       }catch(e){
         console.error('[AfroPulse] Statistiques publiques indisponibles:',e);
         return {profiles:null,businesses:null,missions:null,countries:null,available:false,error:e};
       }
+    },
+    clearPublicStatsCache(){
+      publicStatsCache.value=null;
+      publicStatsCache.expiresAt=0;
     },
 
     /* ─── Activité récente ─── */
@@ -382,36 +393,41 @@ const DB=(()=>{
       const {data,error}=await client.from('profiles').select('*').eq('id',id).maybeSingle();
       if(error)return null;return data;
     },
-    async searchTalents({q='',country='',role='',limit=100}={}){
+    async searchTalents({q='',country='',role='',limit=24,offset=0}={}){
       if(!ready)return (typeof DATA!=='undefined'?DATA.barters:[]).map((b,i)=>({
         id:'demo-'+i,full_name:b.n,city:b.c,avatar_url:null,job_title:b.o,skills:b.o,bio:b.d,role:'particulier'
       }));
       await wait();
       const columns='id,full_name,city,avatar_url,job_title,experience,skills,bio,role';
-      let query=client.from('profiles').select(columns);
+      let query=client.from('profiles').select(columns,{count:'exact'});
       if(role)query=query.eq('role',role);
       if(q){
         const term=`%${q}%`;
         query=query.or(`full_name.ilike.${term},job_title.ilike.${term},skills.ilike.${term},bio.ilike.${term}`);
       }
       if(country)query=query.ilike('city',`%${country}`);
-      let {data,error}=await query.order('created_at',{ascending:false}).limit(limit);
+      let {data,error,count}=await query.order('created_at',{ascending:false}).range(offset,offset+limit-1);
       // Compatibilité avec les anciens schémas profiles qui ne possèdent pas
       // encore tous les champs enrichis.
       if(error){
-        let fallback=client.from('profiles').select('id,full_name,city,avatar_url,role,created_at');
+        let fallback=client.from('profiles').select('id,full_name,city,avatar_url,role,created_at',{count:'exact'});
         if(role)fallback=fallback.eq('role',role);
         if(q)fallback=fallback.ilike('full_name',`%${q}%`);
         if(country)fallback=fallback.ilike('city',`%${country}`);
-        const retry=await fallback.order('created_at',{ascending:false}).limit(limit);
+        const retry=await fallback.order('created_at',{ascending:false}).range(offset,offset+limit-1);
         data=retry.data;
+        count=retry.count;
         error=retry.error||error;
       }
       if(error){
         console.error('[AfroPulse] Chargement des talents impossible:',error);
         throw error;
       }
-      return (data||[]).filter(p=>p.full_name);
+      const result=(data||[]).filter(p=>p.full_name);
+      result.total=count ?? result.length;
+      result.offset=offset;
+      result.limit=limit;
+      return result;
     },
 
     /* ─── Candidatures ─── */

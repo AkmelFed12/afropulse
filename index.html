@@ -474,6 +474,7 @@ addEventListener('DOMContentLoaded',async()=>{
       renderTestimonials();
     });
     const refreshPublicData=async()=>{
+      DB.clearPublicStatsCache?.();
       renderLiveFeed();
       const stats=await DB.getPublicStats();
       ['profiles','businesses','missions','countries'].forEach(key=>{

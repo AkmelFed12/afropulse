@@ -331,6 +331,12 @@
 
   <!-- ═══ RÉSULTATS ═══ -->
   <div id="results" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div class="flex items-center justify-between gap-3 mt-6">
+    <button id="refreshTalents" class="reset-link" type="button">
+      <i class="fa-solid fa-rotate text-[10px]"></i>Actualiser
+    </button>
+    <div id="pagination" class="flex items-center gap-2"></div>
+  </div>
 
 </div>
 </main>
@@ -349,6 +355,9 @@ const initials=n=>(n||'?').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCa
 
 const Talents=(()=>{
   let all=[];
+  let page=1;
+  const pageSize=12;
+  let total=0;
   let lastQuery={ q:'',role:'',country:'' };
 
   /* ═══ CHARGEMENT INITIAL ═══ */
@@ -368,9 +377,10 @@ const Talents=(()=>{
     await UI.load({
       container:g,
       skeletonHtml:UI.skeleton.cards(6),
-      loader:()=>UI.withTimeout(DB.searchTalents({limit:100}), 12000),
+      loader:()=>UI.withTimeout(DB.searchTalents({...lastQuery,limit:pageSize,offset:(page-1)*pageSize}), 12000),
       onRender:(list)=>{
         all=list;
+        total=list.total??list.length;
         render(list);
       },
       onError:(error,retry)=>{
@@ -390,6 +400,7 @@ const Talents=(()=>{
   /* ═══ RECHERCHE AVEC FILTRES ═══ */
   async function search(){
     const g=$('results');
+    page=1;
     lastQuery={
       q:$('q').value.trim(),
       role:$('role').value,
@@ -398,8 +409,12 @@ const Talents=(()=>{
     await UI.load({
       container:g,
       skeletonHtml:UI.skeleton.cards(6),
-      loader:()=>UI.withTimeout(DB.searchTalents(lastQuery), 12000),
-      onRender:render,
+      loader:()=>UI.withTimeout(DB.searchTalents({...lastQuery,limit:pageSize,offset:(page-1)*pageSize}), 12000),
+      onRender:(list)=>{
+        all=list;
+        total=list.total??list.length;
+        render(list);
+      },
       onError:(error,retry)=>{
         $('count').textContent='—';
         g.innerHTML=`<div class="empty-state">
@@ -419,13 +434,14 @@ const Talents=(()=>{
     $('role').value='';
     $('country').value='';
     lastQuery={q:'',role:'',country:''};
-    render(all);
+    page=1;
+    load();
   }
 
   /* ═══ RENDU ═══ */
   function render(list){
     const g=$('results');
-    $('count').textContent=list.length;
+    $('count').textContent=total;
 
     if(!list.length){
       g.innerHTML=emptyStateHTML();
@@ -434,6 +450,24 @@ const Talents=(()=>{
     }
 
     g.innerHTML=list.map(p=>cardHTML(p)).join('');
+    renderPagination();
+  }
+
+  function renderPagination(){
+    const host=$('pagination');
+    if(!host)return;
+    const pages=Math.ceil(total/pageSize);
+    if(pages<=1){host.innerHTML='';return}
+    host.innerHTML=`
+      <button class="reset-link" ${page===1?'disabled':''} onclick="Talents.previous()"><i class="fa-solid fa-chevron-left"></i></button>
+      <span class="text-xs" style="color:var(--mu)">Page ${page} / ${pages}</span>
+      <button class="reset-link" ${page===pages?'disabled':''} onclick="Talents.next()"><i class="fa-solid fa-chevron-right"></i></button>`;
+  }
+
+  function goTo(nextPage){
+    const pages=Math.max(1,Math.ceil(total/pageSize));
+    page=Math.min(pages,Math.max(1,nextPage));
+    load();
   }
 
   /* ═══ CARTE TALENT ═══ */
@@ -551,7 +585,12 @@ const Talents=(()=>{
     search();
   }
 
-  return{load,search,reset,quickSearch};
+  return{
+    load,search,reset,quickSearch,
+    next:()=>goTo(page+1),
+    previous:()=>goTo(page-1),
+    refresh:()=>load()
+  };
 })();
 
 /* ═══ CONTACTER UN TALENT ═══ */
@@ -585,8 +624,9 @@ addEventListener('DOMContentLoaded',async()=>{
   $('q').addEventListener('keydown',e=>{if(e.key==='Enter')Talents.search()});
   $('role').addEventListener('change',()=>Talents.search());
   $('country').addEventListener('change',()=>Talents.search());
+  $('refreshTalents').addEventListener('click',()=>Talents.refresh());
   if(typeof Realtime!=='undefined'){
-    Realtime.on('content:profiles',()=>Talents.load());
+    Realtime.on('content:profiles',()=>Talents.refresh());
   }
 });
 </script>
