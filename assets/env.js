@@ -1,9 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Auto-généré par scripts/build-env.js — NE PAS ÉDITER MANUELLEMENT
-   Généré le 2026-10-14T12:41:05.482Z
+   Généré le 2026-10-14T12:56:55.051Z
    ═══════════════════════════════════════════════════════════════════════ */
 
 window.ENV = {
-  SUPABASE_URL: "https://dwysszdxzdbaswtublxy.supabase.co",
+  SUPABASE_URL: "****************e.co",
   SUPABASE_KEY: ""
 };
+
