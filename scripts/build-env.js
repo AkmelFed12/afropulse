@@ -34,7 +34,7 @@ try{
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || '';
 
 if(!SUPABASE_URL || !SUPABASE_KEY){
   console.warn('⚠️  SUPABASE_URL ou SUPABASE_KEY manquante.');

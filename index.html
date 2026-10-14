@@ -259,6 +259,7 @@
 <script src="assets/env.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/presence.js"></script>
 <script src="assets/app.js"></script>
 <script src="assets/realtime.js"></script>
 <script>
@@ -411,18 +412,17 @@ function renderTicker(items){
 async function initOnlineCount(){
   const el=$('onlineCount');
   if(!el)return;
-  try{
-    const {count}=await DB.getOnlineCount();
-    el.textContent=count;
-    setInterval(()=>{
-      const current=parseInt(el.textContent,10)||count;
-      const delta=Math.floor(Math.random()*5)-2;
-      const next=Math.max(8,Math.min(80,current+delta));
-      el.textContent=next;
-    },8000);
-  }catch(e){
-    el.textContent=15;
+  el.textContent='—';
+  el.title='Nombre réel de visiteurs actuellement connectés';
+  if(typeof Presence==='undefined' || typeof DB==='undefined' || !DB.isConfigured()){
+    el.title='Configure Supabase pour activer le temps réel';
+    return;
   }
+  Presence.on('users',users=>{
+    el.textContent=users.length.toLocaleString('fr-FR');
+    el.title=`${users.length} visiteur(s) connecté(s) maintenant`;
+  });
+  Presence.init();
 }
 
 /* ─── Compteurs animés ─── */
@@ -454,10 +454,12 @@ addEventListener('DOMContentLoaded',async()=>{
 
   try{
     const stats=await DB.getPublicStats();
-    setCount('statProfiles',stats.profiles);
-    setCount('statBusinesses',stats.businesses);
-    setCount('statMissions',stats.missions);
-    setCount('statCountries',stats.countries);
+    ['profiles','businesses','missions','countries'].forEach(key=>{
+      const el=$('stat'+key.charAt(0).toUpperCase()+key.slice(1));
+      if(!el)return;
+      if(stats[key]===null)el.textContent='—';
+      else setCount('stat'+key.charAt(0).toUpperCase()+key.slice(1),stats[key]);
+    });
   }catch(e){}
 
   try{
@@ -471,6 +473,18 @@ addEventListener('DOMContentLoaded',async()=>{
     Realtime.on('content:testimonials', () => {
       renderTestimonials();
     });
+    const refreshPublicData=async()=>{
+      renderLiveFeed();
+      const stats=await DB.getPublicStats();
+      ['profiles','businesses','missions','countries'].forEach(key=>{
+        const id='stat'+key.charAt(0).toUpperCase()+key.slice(1);
+        if(stats[key]===null)$(id).textContent='—';
+        else setCount(id,stats[key]);
+      });
+    };
+    Realtime.on('content:profiles',refreshPublicData);
+    Realtime.on('content:businesses',refreshPublicData);
+    Realtime.on('content:missions',refreshPublicData);
   }
 });
 </script>

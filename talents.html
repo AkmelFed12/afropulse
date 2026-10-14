@@ -354,6 +354,17 @@ const Talents=(()=>{
   /* ═══ CHARGEMENT INITIAL ═══ */
   async function load(){
     const g=$('results');
+    if(typeof DB!=='undefined' && !DB.isConfigured()){
+      all=[];
+      $('count').textContent='—';
+      g.innerHTML=`<div class="empty-state">
+        <div class="empty-icon"><i class="fa-solid fa-plug-circle-xmark"></i></div>
+        <h2 class="empty-title">Connexion à la base requise</h2>
+        <p class="empty-desc">Les profils enregistrés sont conservés dans Supabase. Configure la clé publique <code>SUPABASE_KEY</code> dans le fichier <code>.env</code>, puis relance le build.</p>
+        <div class="empty-actions"><a class="btn bp" href="GUIDE-TEST.md">Voir le guide de configuration</a></div>
+      </div>`;
+      return;
+    }
     await UI.load({
       container:g,
       skeletonHtml:UI.skeleton.cards(6),
@@ -361,6 +372,17 @@ const Talents=(()=>{
       onRender:(list)=>{
         all=list;
         render(list);
+      },
+      onError:(error,retry)=>{
+        all=[];
+        $('count').textContent='—';
+        g.innerHTML=`<div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-cloud-exclamation"></i></div>
+          <h2 class="empty-title">Annuaire temporairement indisponible</h2>
+          <p class="empty-desc">Les profils existent peut-être toujours, mais la base ne répond pas correctement. Réessayez dans quelques secondes.</p>
+          <div class="empty-actions"><button class="btn bp" id="retryTalents">Réessayer</button></div>
+        </div>`;
+        $('retryTalents')?.addEventListener('click',retry);
       }
     });
   }
@@ -377,7 +399,17 @@ const Talents=(()=>{
       container:g,
       skeletonHtml:UI.skeleton.cards(6),
       loader:()=>UI.withTimeout(DB.searchTalents(lastQuery), 12000),
-      onRender:render
+      onRender:render,
+      onError:(error,retry)=>{
+        $('count').textContent='—';
+        g.innerHTML=`<div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-cloud-exclamation"></i></div>
+          <h2 class="empty-title">Recherche indisponible</h2>
+          <p class="empty-desc">La connexion à la base a échoué. Réessayez sans perdre vos filtres.</p>
+          <div class="empty-actions"><button class="btn bp" id="retryTalents">Réessayer</button></div>
+        </div>`;
+        $('retryTalents')?.addEventListener('click',retry);
+      }
     });
   }
 
@@ -553,6 +585,9 @@ addEventListener('DOMContentLoaded',async()=>{
   $('q').addEventListener('keydown',e=>{if(e.key==='Enter')Talents.search()});
   $('role').addEventListener('change',()=>Talents.search());
   $('country').addEventListener('change',()=>Talents.search());
+  if(typeof Realtime!=='undefined'){
+    Realtime.on('content:profiles',()=>Talents.load());
+  }
 });
 </script>
 </body>

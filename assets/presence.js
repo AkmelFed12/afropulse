@@ -12,6 +12,20 @@ const Presence = (() => {
   const getPage = () => location.pathname.split('/').pop() || 'index.html';
   const isAnon = () => !currentUser;
 
+  function waitForClient(timeout = 10000){
+    return new Promise(resolve => {
+      if(window.__sb || window.sb)return resolve(window.__sb || window.sb);
+      const started = Date.now();
+      const timer = setInterval(() => {
+        const client = window.__sb || window.sb;
+        if(client || Date.now() - started >= timeout){
+          clearInterval(timer);
+          resolve(client || null);
+        }
+      }, 50);
+    });
+  }
+
   function buildMeta(){
     return {
       user_id: currentUser?.id || null,
@@ -33,8 +47,10 @@ const Presence = (() => {
     const seen = new Set();
     Object.entries(state || {}).forEach(([key, metas]) => {
       (metas || []).forEach(m => {
+        // Un utilisateur connecté sur plusieurs onglets reste une seule
+        // personne. Les visiteurs anonymes sont comptés par session de présence.
         const id = m.user_id || key;
-        const dedup = id + ':' + (m.joined_at || '');
+        const dedup = m.user_id ? `user:${m.user_id}` : `anon:${key}`;
         if (seen.has(dedup)) return;
         seen.add(dedup);
         out.push({
@@ -71,15 +87,7 @@ const Presence = (() => {
 
     // Récupère le client Supabase
     sb = window.__sb || (typeof DB !== 'undefined' && DB.client) || window.sb;
-
-    if (!sb) {
-      if (typeof DB !== 'undefined' && !DB.isRemote()) {
-        try {
-          await DB.wait();
-          sb = DB.client;
-        } catch (e) {}
-      }
-    }
+    if(!sb)sb=await waitForClient();
 
     if (!sb) {
       console.warn('Presence: Supabase indisponible');

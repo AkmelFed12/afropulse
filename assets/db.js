@@ -7,6 +7,9 @@ const SUPABASE_KEY = ENV.SUPABASE_KEY || '';
 
 const DB=(()=>{
   const ready=!!SUPABASE_URL&&!!SUPABASE_KEY;
+  if(!ready){
+    console.warn('[AfroPulse] Supabase non configuré : ajoute SUPABASE_KEY dans .env puis relance npm run build.');
+  }
   let client=null;
   if(ready){
     const s=document.createElement('script');
@@ -14,13 +17,29 @@ const DB=(()=>{
     s.onload=()=>{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);window.__sb=client};
     document.head.appendChild(s);
   }
-  const wait=()=>new Promise(r=>{
-    if(!ready||client)return r();
-    const t=setInterval(()=>{if(client){clearInterval(t);r()}},50);
+  const wait=()=>new Promise((resolve,reject)=>{
+    if(!ready)return resolve();
+    if(client)return resolve();
+    const started=Date.now();
+    const timer=setInterval(()=>{
+      if(client){
+        clearInterval(timer);
+        resolve();
+      }else if(Date.now()-started>=10000){
+        clearInterval(timer);
+        reject(new Error('Délai dépassé pendant le chargement de Supabase'));
+      }
+    },50);
   });
   const ls={get:k=>JSON.parse(localStorage.getItem(k)||'[]'),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 
   return{
+    isConfigured:()=>ready,
+    configStatus:()=>({
+      configured:ready,
+      url:!!SUPABASE_URL,
+      key:!!SUPABASE_KEY
+    }),
     /* ─── Abonnements ─── */
     async saveSubscription(d){
       if(!ready){
@@ -235,7 +254,7 @@ const DB=(()=>{
 
     /* ─── Stats publiques ─── */
     async getPublicStats(){
-      if(!ready)return {profiles:0,businesses:0,missions:0,countries:0};
+      if(!ready)return {profiles:null,businesses:null,missions:null,countries:null,available:false};
       await wait();
       try{
         const [p,b,m]=await Promise.all([
@@ -243,13 +262,18 @@ const DB=(()=>{
           client.from('businesses').select('id',{count:'exact',head:true}).eq('status','approuve'),
           client.from('missions').select('id',{count:'exact',head:true}).eq('status','active')
         ]);
+        const firstError=[p,b,m].find(r=>r.error)?.error;
+        if(firstError)throw firstError;
         const {data:cities}=await client.from('profiles').select('city').not('city','is',null);
         const countries=new Set((cities||[]).map(c=>{
           const parts=(c.city||'').split(',').map(s=>s.trim());
           return parts[parts.length-1]||'';
         }).filter(Boolean));
-        return {profiles:p.count||0,businesses:b.count||0,missions:m.count||0,countries:countries.size||0};
-      }catch(e){return {profiles:0,businesses:0,missions:0,countries:0}}
+        return {profiles:p.count||0,businesses:b.count||0,missions:m.count||0,countries:countries.size||0,available:true};
+      }catch(e){
+        console.error('[AfroPulse] Statistiques publiques indisponibles:',e);
+        return {profiles:null,businesses:null,missions:null,countries:null,available:false,error:e};
+      }
     },
 
     /* ─── Activité récente ─── */
@@ -273,19 +297,9 @@ const DB=(()=>{
 
     /* ─── Compteur en ligne ─── */
     async getOnlineCount(){
-      if(!ready)return {count:15,isReal:false};
-      await wait();
-      try{
-        const since=new Date(Date.now()-24*3600*1000).toISOString();
-        const {count,error}=await client.from('profiles')
-          .select('id',{count:'exact',head:true})
-          .gte('created_at',since);
-        if(!error){
-          const base=Math.max(8,Math.min(60,(count||0)*3+12));
-          return {count:base,isReal:true};
-        }
-        return {count:15,isReal:false};
-      }catch(e){return {count:15,isReal:false}}
+      // Le nombre de profils récents n'est pas un nombre de visiteurs en ligne.
+      // La présence temps réel est gérée par Realtime Presence.
+      return {count:null,isReal:false};
     },
 
     /* ─── Stats admin ─── */
@@ -373,15 +387,30 @@ const DB=(()=>{
         id:'demo-'+i,full_name:b.n,city:b.c,avatar_url:null,job_title:b.o,skills:b.o,bio:b.d,role:'particulier'
       }));
       await wait();
-      let query=client.from('profiles').select('id,full_name,city,avatar_url,job_title,experience,skills,bio,role');
+      const columns='id,full_name,city,avatar_url,job_title,experience,skills,bio,role';
+      let query=client.from('profiles').select(columns);
       if(role)query=query.eq('role',role);
       if(q){
         const term=`%${q}%`;
         query=query.or(`full_name.ilike.${term},job_title.ilike.${term},skills.ilike.${term},bio.ilike.${term}`);
       }
       if(country)query=query.ilike('city',`%${country}`);
-      const {data,error}=await query.order('created_at',{ascending:false}).limit(limit);
-      if(error)return [];
+      let {data,error}=await query.order('created_at',{ascending:false}).limit(limit);
+      // Compatibilité avec les anciens schémas profiles qui ne possèdent pas
+      // encore tous les champs enrichis.
+      if(error){
+        let fallback=client.from('profiles').select('id,full_name,city,avatar_url,role,created_at');
+        if(role)fallback=fallback.eq('role',role);
+        if(q)fallback=fallback.ilike('full_name',`%${q}%`);
+        if(country)fallback=fallback.ilike('city',`%${country}`);
+        const retry=await fallback.order('created_at',{ascending:false}).limit(limit);
+        data=retry.data;
+        error=retry.error||error;
+      }
+      if(error){
+        console.error('[AfroPulse] Chargement des talents impossible:',error);
+        throw error;
+      }
       return (data||[]).filter(p=>p.full_name);
     },
 

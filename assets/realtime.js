@@ -108,6 +108,7 @@
     const listeners = {
       notification: [], unread: [], ready: [], error: [],
       'content:testimonials': [], 'content:plans': [], 'content:faqs': [],
+      'content:profiles': [], 'content:businesses': [], 'content:missions': [],
       'message': []
     };
 
@@ -167,6 +168,9 @@
         .on('postgres_changes', { event: '*', schema: 'public', table: 'testimonials' }, () => emit('content:testimonials'))
         .on('postgres_changes', { event: '*', schema: 'public', table: 'plans' }, () => emit('content:plans'))
         .on('postgres_changes', { event: '*', schema: 'public', table: 'faqs' }, () => emit('content:faqs'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => emit('content:profiles'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'businesses' }, () => emit('content:businesses'))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'missions' }, () => emit('content:missions'))
         .subscribe(() => {});
     };
 

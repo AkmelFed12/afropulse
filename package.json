@@ -7,6 +7,8 @@
     "build:env": "node scripts/build-env.js",
     "build:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --minify",
     "build": "npm run build:env && npm run build:css",
+    "start": "npx serve -l 3000",
+    "dev": "npx serve -l 3000",
     "dev:css": "tailwindcss -i ./assets/tailwind-input.css -o ./assets/tailwind.css --watch",
     "migrate": "node scripts/migrate-html.js",
     "postinstall": "node scripts/postinstall.js"

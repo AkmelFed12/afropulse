@@ -9,6 +9,10 @@
 
 ## 1. 🚀 Installation & prérequis
 
+- [ ] Copier `.env.example` vers `.env`
+- [ ] Renseigner `SUPABASE_URL=https://dwysszdxzdbaswtublxy.supabase.co`
+- [ ] Renseigner `SUPABASE_KEY` avec la clé publique **anon** de Supabase (jamais `service_role`)
+- [ ] Relancer `npm run build` après toute modification du `.env`
 - [ ] Démarrer le serveur local : `npx serve -l 3000`
 - [ ] Ouvrir `http://192.168.1.87:3000`
 - [ ] Vider le cache : F12 → Clic droit recharger → **Vider le cache**

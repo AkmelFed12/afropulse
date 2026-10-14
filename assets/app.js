@@ -538,11 +538,10 @@ const Life={
   onlineCount(){
     const el=document.getElementById('onlineCount');
     if(!el)return;
-    let base=parseInt(el.textContent,10)||87;
-    setInterval(()=>{
-      base=Math.max(60,Math.min(150,base+Math.floor(Math.random()*7)-3));
-      el.textContent=base;
-    },5000);
+    // Le compteur réel est alimenté par assets/presence.js. Ne jamais
+    // afficher un nombre inventé si Supabase/Reatime est indisponible.
+    if(typeof Presence!=='undefined')return;
+    el.textContent='—';
   },
   parallax(){
     const hero=document.getElementById('hero');
