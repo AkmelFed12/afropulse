@@ -37,10 +37,18 @@ const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || '';
 
 if(!SUPABASE_URL || !SUPABASE_KEY){
-  console.warn('⚠️  SUPABASE_URL ou SUPABASE_KEY manquante.');
-  console.warn('   → Sur Netlify : Site configuration → Environment variables');
-  console.warn('   → En local     : crée un fichier .env à la racine');
-  console.warn('   → Debug        : ' + (SUPABASE_URL ? 'URL ✓' : 'URL ✗') + ' | ' + (SUPABASE_KEY ? 'KEY ✓' : 'KEY ✗'));
+  console.error('❌ Configuration Supabase incomplète.');
+  console.error('   → Netlify : configure SUPABASE_URL et SUPABASE_KEY dans les variables de build');
+  console.error('   → Local   : renseigne ces deux variables dans .env');
+  process.exit(1);
+}
+
+try{
+  const parsedUrl = new URL(SUPABASE_URL);
+  if(!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error('protocole invalide');
+}catch(e){
+  console.error('❌ SUPABASE_URL invalide :', e.message);
+  process.exit(1);
 }
 
 const content = `/* ═══════════════════════════════════════════════════════════════════════
